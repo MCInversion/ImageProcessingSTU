@@ -1,0 +1,30 @@
+^D:\VS_PROJECTS\IMAGEVIEWERIP\SRC\IMAGEVIEWER.UI
+setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\VS_PROJECTS\IMAGEVIEWERIP\SRC\NEWIMGDIALOG.UI
+setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_NewImgDialog.h D:/VS_Projects/ImageViewerIP/src/NewImgDialog.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\VS_PROJECTS\IMAGEVIEWERIP\CMAKELISTS.TXT
+setlocal
+D:\Cmake\bin\cmake.exe -SD:/VS_Projects/ImageViewerIP -BD:/VS_Projects/ImageViewerIP/build --check-stamp-file D:/VS_Projects/ImageViewerIP/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

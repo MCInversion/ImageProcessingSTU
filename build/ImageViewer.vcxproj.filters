@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.ui" />
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\NewImgDialog.ui" />
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{7592A353-0E53-3D76-9BC5-2FC5D1755B5A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2462514D-D18C-3C0A-A551-2957D56C0A37}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
