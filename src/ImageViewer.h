@@ -5,6 +5,7 @@
 #include "ui_ImageViewer.h"
 #include "ViewerWidget.h"
 #include "NewImageDialog.h"
+#include "MirrorExtendDialog.h"
 // #include "ImageProcessor.h"
 
 class ImageViewer : public QMainWindow
@@ -17,6 +18,7 @@ public:
 private:
 	Ui::ImageViewerClass* ui;
 	NewImageDialog* newImgDialog;
+	MirrorExtendDialog* mirrorExtendDialog;
 
 	QSettings settings;
 	QMessageBox msgBox;
@@ -63,6 +65,7 @@ private slots:
 	//Image slots
 	void on_actionNew_triggered();
 	void newImageAccepted();
+	void mirrorExtendAccepted();
 	void on_actionOpen_triggered();
 	void on_actionSave_as_triggered();
 	void on_actionClear_triggered();

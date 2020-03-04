@@ -186,6 +186,7 @@ bool ImageViewer::invertColors()
 bool ImageViewer::mirrorExtendImageBy(int nPixels)
 {
 	ViewerWidget* w = getCurrentViewerWidget();
+	int oldDataSize = w->getImage()->sizeInBytes();
 	uchar* data = w->getData();
 
 	int row = w->getImage()->bytesPerLine();
@@ -207,50 +208,49 @@ bool ImageViewer::mirrorExtendImageBy(int nPixels)
 			int iPos; int jPos;
 			// upper left corner
 			if (i < nPixels && j < nPixels) {
-				iPos = 2 * nPixels - 1 - i;
-				jPos = 2 * nPixels - 1 - j;
+				iPos = nPixels - 1 - i;
+				jPos = nPixels - 1 - j;
 			}
 			// top strip
 			else if (i < nPixels && j >= nPixels && j < newWidth - nPixels) {
-				iPos = 2 * nPixels - 1 - i;
-				jPos = j;
+				iPos = nPixels - 1 - i;
+				jPos = j - nPixels;
 			}
 			// top right corner
-			else if (i <= nPixels && newWidth - j <= nPixels) {
-				iPos = 2 * nPixels - 1 - i;
-				jPos = 2 * nPixels + 2 * oldWidth - 1 - j;
+			else if (i < nPixels && newWidth - j <= nPixels) {
+				iPos = nPixels - 1 - i;
+				jPos = nPixels + 2 * oldWidth - 1 - j;
 			}
 			// left strip
 			else if (i >= nPixels && i < nPixels + oldHeight && j < nPixels) {
-				iPos = i;
-				jPos = 2 * nPixels - 1 - j;
+				iPos = i - nPixels;
+				jPos = nPixels - 1 - j;
 			}
 			// right strip
 			else if (i >= nPixels && i < nPixels + oldHeight && j >= newWidth - nPixels) {
-				iPos = i;
-				jPos = 2 * nPixels + 2 * oldWidth - 1 - j;
+				iPos = i - nPixels;
+				jPos = nPixels + 2 * oldWidth - 1 - j;
 			}
 			// bottom left corner
 			else if (i >= nPixels + oldHeight && j < nPixels) {
-				iPos = 2 * nPixels + 2 * oldHeight - 1 - i;
-				jPos = 2 * nPixels - 1 - j;
+				iPos = nPixels + 2 * oldHeight - 1 - i;
+				jPos = nPixels - 1 - j;
 			}
 			// bottom strip
 			else if (i >= nPixels + oldHeight && j >= nPixels && j < newWidth - nPixels) {
-				iPos = 2 * nPixels + 2 * oldHeight - 1 - i;
-				jPos = j;
+				iPos = nPixels + 2 * oldHeight - 1 - i;
+				jPos = j - nPixels;
 			}
 			// bottom right corner
 			else if (i >= nPixels + oldHeight && j >= newWidth - nPixels) {
-				iPos = 2 * nPixels + 2 * oldHeight - 1 - i;
-				jPos = 2 * nPixels + 2 * oldWidth - 1 - j;
+				iPos = nPixels + 2 * oldHeight - 1 - i;
+				jPos = nPixels + 2 * oldWidth - 1 - j;
 			}
 			// inside old image
 			else {
 				iPos = i - nPixels;
 				jPos = j - nPixels;
 			}
-
 
 			if (depth == 8) {
 				w->setPixel(j, i, static_cast<uchar>(data[iPos * row + jPos]));
@@ -312,6 +312,15 @@ void ImageViewer::newImageAccepted()
 	openNewTabForImg(new ViewerWidget(name, QSize(width, height)));
 	ui->tabWidget->setCurrentIndex(ui->tabWidget->count() - 1);
 }
+
+void ImageViewer::mirrorExtendAccepted()
+{
+	MirrorExtendDialog* mirrorExtendDialog = static_cast<MirrorExtendDialog*>(sender());
+
+	int nPixels = mirrorExtendDialog->getPixels();
+	mirrorExtendImageBy(nPixels);
+}
+
 void ImageViewer::on_actionOpen_triggered()
 {
 	QString folder = settings.value("folder_img_load_path", "").toString();
@@ -387,5 +396,8 @@ void ImageViewer::on_actionMirror_Extend_test_triggered()
 		msgBox.exec();
 		return;
 	}
-	mirrorExtendImageBy(20);
+
+	mirrorExtendDialog = new MirrorExtendDialog(this);
+	connect(mirrorExtendDialog, SIGNAL(accepted()), this, SLOT(mirrorExtendAccepted()));
+	mirrorExtendDialog->exec();
 }

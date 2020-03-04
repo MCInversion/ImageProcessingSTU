@@ -16,14 +16,9 @@
     <ClCompile Include="..\src\ImageProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MirrorExtendDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,6 +31,10 @@
     <ClInclude Include="..\src\ImageProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ui_ImageViewer.h" />
+    <ClInclude Include="..\src\ui_NewImgDialog.h" />
+    <ClInclude Include="MirrorExtendDialog.h" />
+    <ClInclude Include="ui_MirrorExtendDialog.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.ui" />
@@ -49,5 +48,8 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{2462514D-D18C-3C0A-A551-2957D56C0A37}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MirrorExtendDialog.ui" />
   </ItemGroup>
 </Project>

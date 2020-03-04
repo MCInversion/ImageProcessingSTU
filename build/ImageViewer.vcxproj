@@ -557,12 +557,15 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\main.cpp" />
+    <ClCompile Include="MirrorExtendDialog.cpp" />
     <ClInclude Include="..\src\ImageProcessor.h" />
+    <ClInclude Include="..\src\ui_ImageViewer.h" />
+    <ClInclude Include="..\src\ui_NewImgDialog.h" />
     <ClInclude Include="..\src\ViewerWidget.h" />
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h" />
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h" />
+    <ClInclude Include="MirrorExtendDialog.h" />
+    <ClInclude Include="ui_MirrorExtendDialog.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\VS_Projects\ImageViewerIP\build\ZERO_CHECK.vcxproj">
@@ -571,6 +574,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MirrorExtendDialog.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
