@@ -7,6 +7,6 @@ D:/VS_Projects/ImageViewerIP/src/NewImageDialog.h
  uic:ui_NewImgDialog.h
 D:/VS_Projects/ImageViewerIP/src/ViewerWidget.h
  mmc:Q_OBJECT
-D:/VS_Projects/ImageViewerIP/src/main.cpp
 D:/VS_Projects/ImageViewerIP/src/ImageViewer.cpp
+D:/VS_Projects/ImageViewerIP/src/main.cpp
 D:/VS_Projects/ImageViewerIP/src/ViewerWidget.cpp

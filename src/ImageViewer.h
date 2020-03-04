@@ -5,6 +5,7 @@
 #include "ui_ImageViewer.h"
 #include "ViewerWidget.h"
 #include "NewImageDialog.h"
+// #include "ImageProcessor.h"
 
 class ImageViewer : public QMainWindow
 {
@@ -19,6 +20,8 @@ private:
 
 	QSettings settings;
 	QMessageBox msgBox;
+
+	// ImageProcessor imProc = ImageProcessor();
 
 	//ViewerWidget functions
 	ViewerWidget* getViewerWidget(int tabId);
@@ -45,6 +48,9 @@ private:
 	bool saveImage(QString filename);
 	bool clearImage();
 	bool invertColors();
+	bool mirrorExtendImageBy(int nPixels);
+
+	//Processing actions:
 
 	//Inline functions
 	inline bool isImgOpened() { return ui->tabWidget->count() == 0 ? false : true; }
@@ -61,4 +67,5 @@ private slots:
 	void on_actionSave_as_triggered();
 	void on_actionClear_triggered();
 	void on_actionInvert_colors_triggered();
+	void on_actionMirror_Extend_test_triggered();
 };

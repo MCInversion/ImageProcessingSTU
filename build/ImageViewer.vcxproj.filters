@@ -13,6 +13,9 @@
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ImageProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h">
@@ -27,7 +30,10 @@
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.h">
+    <ClInclude Include="..\src\ViewerWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ImageProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

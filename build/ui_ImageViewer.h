@@ -32,6 +32,7 @@ public:
     QAction *actionRename;
     QAction *actionClear;
     QAction *actionInvert_colors;
+    QAction *actionMirror_Extend_test;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget;
@@ -58,6 +59,8 @@ public:
         actionClear->setObjectName(QString::fromUtf8("actionClear"));
         actionInvert_colors = new QAction(ImageViewerClass);
         actionInvert_colors->setObjectName(QString::fromUtf8("actionInvert_colors"));
+        actionMirror_Extend_test = new QAction(ImageViewerClass);
+        actionMirror_Extend_test->setObjectName(QString::fromUtf8("actionMirror_Extend_test"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -96,6 +99,7 @@ public:
         menuImage->addAction(actionRename);
         menuImage->addAction(actionClear);
         menuImage->addAction(actionInvert_colors);
+        menuImage->addAction(actionMirror_Extend_test);
 
         retranslateUi(ImageViewerClass);
 
@@ -111,6 +115,7 @@ public:
         actionRename->setText(QCoreApplication::translate("ImageViewerClass", "Rename", nullptr));
         actionClear->setText(QCoreApplication::translate("ImageViewerClass", "Clear", nullptr));
         actionInvert_colors->setText(QCoreApplication::translate("ImageViewerClass", "Invert colors", nullptr));
+        actionMirror_Extend_test->setText(QCoreApplication::translate("ImageViewerClass", "Mirror Extend (test)", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));
     } // retranslateUi

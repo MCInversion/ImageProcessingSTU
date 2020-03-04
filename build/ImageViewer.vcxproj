@@ -552,15 +552,17 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ImageProcessor.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\main.cpp" />
+    <ClInclude Include="..\src\ImageProcessor.h" />
+    <ClInclude Include="..\src\ViewerWidget.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h" />
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\VS_Projects\ImageViewerIP\build\ZERO_CHECK.vcxproj">

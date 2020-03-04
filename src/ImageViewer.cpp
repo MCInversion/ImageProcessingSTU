@@ -183,6 +183,91 @@ bool ImageViewer::invertColors()
 	return true;
 }
 
+bool ImageViewer::mirrorExtendImageBy(int nPixels)
+{
+	ViewerWidget* w = getCurrentViewerWidget();
+	uchar* data = w->getData();
+
+	int row = w->getImage()->bytesPerLine();
+	int depth = w->getImage()->depth();
+
+	const int oldHeight = w->getImgHeight();
+	const int oldWidth = w->getImgWidth();
+	const int newHeight = oldHeight + 2 * nPixels;
+	const int newWidth = oldWidth + 2 * nPixels;
+
+	QImage::Format format = w->getImage()->format();
+	QImage newImg = QImage(QSize(newWidth, newHeight), format);
+	newImg.fill(QColor(0, 0, 0));
+	w->setImage(newImg);
+
+	for (int i = 0; i < newHeight; i++) {
+		for (int j = 0; j < newWidth; j++) {
+			
+			int iPos; int jPos;
+			// upper left corner
+			if (i < nPixels && j < nPixels) {
+				iPos = 2 * nPixels - 1 - i;
+				jPos = 2 * nPixels - 1 - j;
+			}
+			// top strip
+			else if (i < nPixels && j >= nPixels && j < newWidth - nPixels) {
+				iPos = 2 * nPixels - 1 - i;
+				jPos = j;
+			}
+			// top right corner
+			else if (i <= nPixels && newWidth - j <= nPixels) {
+				iPos = 2 * nPixels - 1 - i;
+				jPos = 2 * nPixels + 2 * oldWidth - 1 - j;
+			}
+			// left strip
+			else if (i >= nPixels && i < nPixels + oldHeight && j < nPixels) {
+				iPos = i;
+				jPos = 2 * nPixels - 1 - j;
+			}
+			// right strip
+			else if (i >= nPixels && i < nPixels + oldHeight && j >= newWidth - nPixels) {
+				iPos = i;
+				jPos = 2 * nPixels + 2 * oldWidth - 1 - j;
+			}
+			// bottom left corner
+			else if (i >= nPixels + oldHeight && j < nPixels) {
+				iPos = 2 * nPixels + 2 * oldHeight - 1 - i;
+				jPos = 2 * nPixels - 1 - j;
+			}
+			// bottom strip
+			else if (i >= nPixels + oldHeight && j >= nPixels && j < newWidth - nPixels) {
+				iPos = 2 * nPixels + 2 * oldHeight - 1 - i;
+				jPos = j;
+			}
+			// bottom right corner
+			else if (i >= nPixels + oldHeight && j >= newWidth - nPixels) {
+				iPos = 2 * nPixels + 2 * oldHeight - 1 - i;
+				jPos = 2 * nPixels + 2 * oldWidth - 1 - j;
+			}
+			// inside old image
+			else {
+				iPos = i - nPixels;
+				jPos = j - nPixels;
+			}
+
+
+			if (depth == 8) {
+				w->setPixel(j, i, static_cast<uchar>(data[iPos * row + jPos]));
+			}
+			else {
+				uchar r = static_cast<uchar>(data[iPos * row + jPos * 4]);
+				uchar g = static_cast<uchar>(data[iPos * row + jPos * 4 + 1]);
+				uchar b = static_cast<uchar>(data[iPos * row + jPos * 4 + 2]);
+				w->setPixel(j, i, r, g, b);
+			}
+		}
+	}
+
+	w->update();
+	return true;
+}
+
 //Slots
 
 //Tabs slots
@@ -292,4 +377,15 @@ void ImageViewer::on_actionInvert_colors_triggered() {
 		return;
 	}
 	invertColors();
+}
+
+void ImageViewer::on_actionMirror_Extend_test_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+	mirrorExtendImageBy(20);
 }

@@ -1,4 +1,4 @@
-#include   "ViewerWidget.h"
+#include "ViewerWidget.h"
 
 ViewerWidget::ViewerWidget(QString viewerName, QSize imgSize, QWidget* parent)
 	: QWidget(parent)
@@ -30,7 +30,7 @@ void ViewerWidget::resizeWidget(QSize size)
 bool ViewerWidget::setImage(const QImage& inputImg)
 {
 	if (img != nullptr) {
-		delete img;
+		// delete img;
 	}
 	img = new QImage(inputImg);
 	if (!img) {
@@ -66,7 +66,7 @@ void ViewerWidget::setPixel(const int& x, const int& y, double& val)
 		setPixel(x, y, static_cast<uchar>(255 * val));
 	}
 }
-void ViewerWidget::setPixel(const int& x, const int& y,  double& valR,  double& valG,  double& valB,const double& valA)
+void ViewerWidget::setPixel(const int& x, const int& y,  double& valR,  double& valG,  double& valB, const double& valA)
 {
 	if (isInside(x, y)) {
 		if (valR > 1) valR = 1;

@@ -54,6 +54,7 @@
     <addaction name="actionRename"/>
     <addaction name="actionClear"/>
     <addaction name="actionInvert_colors"/>
+    <addaction name="actionMirror_Extend_test"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
@@ -95,6 +96,11 @@
   <action name="actionInvert_colors">
    <property name="text">
     <string>Invert colors</string>
+   </property>
+  </action>
+  <action name="actionMirror_Extend_test">
+   <property name="text">
+    <string>Mirror Extend (test)</string>
    </property>
   </action>
  </widget>

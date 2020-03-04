@@ -1,5 +1,6 @@
 #pragma once
 #include <QtWidgets>
+
 class ViewerWidget :public QWidget {
 	Q_OBJECT
 
@@ -13,7 +14,7 @@ public:
 	void setPixel(const int& x, const int& y, const uchar& r, const uchar& g, const uchar& b, const uchar& a = 255);
 	void setPixel(const int& x, const int& y, const uchar& val);
 	void setPixel(const int& x, const int& y, double& val);
-	void setPixel(const int& x, const int& y, double& valR, double& valG, double& valB,const double& valA = 1.);
+	void setPixel(const int& x, const int& y, double& valR, double& valG, double& valB, const double& valA = 1.);
 
 	//Draw functions
 	void freeDraw(const QPoint& end, const QPen& pen);
