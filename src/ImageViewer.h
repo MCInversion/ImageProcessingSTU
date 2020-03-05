@@ -2,10 +2,11 @@
 
 #include <QtWidgets/QMainWindow>
 //#include <QtWidgets>
-#include "ui_ImageViewer.h"
+#include "../build/ui_ImageViewer.h"
 #include "ViewerWidget.h"
 #include "NewImageDialog.h"
 #include "MirrorExtendDialog.h"
+#include "HistogramWindow.h"
 // #include "ImageProcessor.h"
 
 class ImageViewer : public QMainWindow
@@ -19,6 +20,7 @@ private:
 	Ui::ImageViewerClass* ui;
 	NewImageDialog* newImgDialog;
 	MirrorExtendDialog* mirrorExtendDialog;
+	HistogramWindow* histogramWindow;
 
 	QSettings settings;
 	QMessageBox msgBox;
@@ -71,4 +73,5 @@ private slots:
 	void on_actionClear_triggered();
 	void on_actionInvert_colors_triggered();
 	void on_actionMirror_Extend_test_triggered();
+	void on_actionHistogram_triggered();
 };

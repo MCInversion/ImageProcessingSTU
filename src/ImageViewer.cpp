@@ -401,3 +401,16 @@ void ImageViewer::on_actionMirror_Extend_test_triggered()
 	connect(mirrorExtendDialog, SIGNAL(accepted()), this, SLOT(mirrorExtendAccepted()));
 	mirrorExtendDialog->exec();
 }
+
+void ImageViewer::on_actionHistogram_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	histogramWindow = new HistogramWindow(this);
+	histogramWindow->show();
+}

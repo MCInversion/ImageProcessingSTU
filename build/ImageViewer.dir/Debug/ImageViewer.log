@@ -1,13 +1,8 @@
 ﻿  Automatic MOC and UIC for target ImageViewer
-  Generating ui_ImageViewer.h
-  Generating ui_NewImgDialog.h
-  Building Custom Rule D:/VS_Projects/ImageViewerIP/CMakeLists.txt
-  ImageProcessor.cpp
+  HistogramWindow.cpp
   mocs_compilation.cpp
   ImageViewer.cpp
-  ViewerWidget.cpp
   main.cpp
-  MirrorExtendDialog.cpp
   ImageViewer.vcxproj -> D:\VS_Projects\ImageViewerIP\build\Debug\ImageViewer.exe
   Win deploy qt
   D:\VS_Projects\ImageViewerIP\build\Debug\ImageViewer.exe 64 bit, debug executable
@@ -16,32 +11,27 @@
   All dependencies   : Qt5Core Qt5Gui Qt5Widgets
   To be deployed     : Qt5Core Qt5Gui Qt5Svg Qt5Widgets
 EXEC : warning : Cannot find Visual Studio installation directory, VCINSTALLDIR is not set.
-  Updating Qt5Cored.dll.
-  Updating Qt5Guid.dll.
-  Updating Qt5Svgd.dll.
-  Updating Qt5Widgetsd.dll.
-  Updating libGLESV2d.dll.
-  Updating libEGLd.dll.
-  Updating D3Dcompiler_47.dll.
-  Updating opengl32sw.dll.
+  Qt5Cored.dll is up to date.
+  Qt5Guid.dll is up to date.
+  Qt5Svgd.dll is up to date.
+  Qt5Widgetsd.dll is up to date.
+  libGLESV2d.dll is up to date.
+  libEGLd.dll is up to date.
+  D3Dcompiler_47.dll is up to date.
+  opengl32sw.dll is up to date.
   Patching Qt5Cored.dll...
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Debug/iconengines.
-  Updating qsvgicond.dll.
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Debug/imageformats.
-  Updating qgifd.dll.
-  Updating qicnsd.dll.
-  Updating qicod.dll.
-  Updating qjpegd.dll.
-  Updating qsvgd.dll.
-  Updating qtgad.dll.
-  Updating qtiffd.dll.
-  Updating qwbmpd.dll.
-  Updating qwebpd.dll.
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Debug/platforms.
-  Updating qwindowsd.dll.
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Debug/styles.
-  Updating qwindowsvistastyled.dll.
-  Creating D:\VS_Projects\ImageViewerIP\build\Debug\translations...
+  qsvgicond.dll is up to date.
+  qgifd.dll is up to date.
+  qicnsd.dll is up to date.
+  qicod.dll is up to date.
+  qjpegd.dll is up to date.
+  qsvgd.dll is up to date.
+  qtgad.dll is up to date.
+  qtiffd.dll is up to date.
+  qwbmpd.dll is up to date.
+  qwebpd.dll is up to date.
+  qwindowsd.dll is up to date.
+  qwindowsvistastyled.dll is up to date.
   Creating qt_ar.qm...
   Creating qt_bg.qm...
   Creating qt_ca.qm...

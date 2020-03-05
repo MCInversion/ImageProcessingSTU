@@ -16,13 +16,15 @@
     <ClCompile Include="..\src\ImageProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MirrorExtendDialog.cpp" />
+    <ClCompile Include="..\src\MirrorExtendDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\HistogramWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ViewerWidget.h">
@@ -31,14 +33,21 @@
     <ClInclude Include="..\src\ImageProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ui_ImageViewer.h" />
+    <ClInclude Include="ui_ImageViewer.h" />
+    <ClInclude Include="..\src\HistogramWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\NewImageDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MirrorExtendDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui_HistogramWindow.h" />
+    <ClInclude Include="..\src\ui_MirrorExtendDialog.h" />
     <ClInclude Include="..\src\ui_NewImgDialog.h" />
-    <ClInclude Include="MirrorExtendDialog.h" />
-    <ClInclude Include="ui_MirrorExtendDialog.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.ui" />
-    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\NewImgDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +59,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MirrorExtendDialog.ui" />
+    <None Include="..\src\HistogramWindow.ui" />
+    <None Include="..\src\MirrorExtendDialog.ui" />
+    <None Include="..\src\NewImgDialog.ui" />
+    <None Include="ImageViewer.ui" />
   </ItemGroup>
 </Project>
