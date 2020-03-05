@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HistogramWindow</class>
- <widget class="QWidget" name="HistogramWindow">
+ <class>histogramWindow</class>
+ <widget class="QWidget" name="histogramWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>476</width>
-    <height>354</height>
+    <width>592</width>
+    <height>437</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Histogram</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QGraphicsView" name="graphicsView"/>
-   </item>
    <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -27,7 +24,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="horizontalSlider">
+      <widget class="QLabel" name="minLabel">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="minSlider">
        <property name="maximum">
         <number>255</number>
        </property>
@@ -37,6 +41,9 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGraphicsView" name="histogramView"/>
    </item>
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -48,7 +55,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="horizontalSlider_2">
+      <widget class="QLabel" name="maxLabel">
+       <property name="text">
+        <string>255</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="maxSlider">
        <property name="maximum">
         <number>255</number>
        </property>
@@ -62,8 +76,68 @@
      </item>
     </layout>
    </item>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="applyButton">
+     <property name="text">
+      <string>Apply</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>maxSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionStretch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>171</x>
+     <y>382</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>minSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionStretch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>348</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>371</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>applyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionApply()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>419</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>332</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>ActionStretch()</slot>
+  <slot>ActionApply()</slot>
+ </slots>
 </ui>

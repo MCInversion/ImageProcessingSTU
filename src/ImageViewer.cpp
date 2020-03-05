@@ -412,5 +412,9 @@ void ImageViewer::on_actionHistogram_triggered()
 	}
 
 	histogramWindow = new HistogramWindow(this);
+
+	ViewerWidget* w = getCurrentViewerWidget();
+	histogramWindow->processImage(w->getImage());
+	histogramWindow->plotHistogram();
 	histogramWindow->show();
 }

@@ -4,7 +4,16 @@
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.cpp">
@@ -13,41 +22,49 @@
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ImageProcessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\MirrorExtendDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\HistogramWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_HistogramWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MirrorExtendDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ViewerWidget.h">
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ImageProcessor.h">
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ui_ImageViewer.h" />
-    <ClInclude Include="..\src\HistogramWindow.h">
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\NewImageDialog.h">
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_HistogramWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\MirrorExtendDialog.h">
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_MirrorExtendDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ui_HistogramWindow.h" />
-    <ClInclude Include="..\src\ui_MirrorExtendDialog.h" />
-    <ClInclude Include="..\src\ui_NewImgDialog.h" />
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_NewImgDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.ui" />
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.ui" />
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\NewImgDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -57,11 +74,5 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{2462514D-D18C-3C0A-A551-2957D56C0A37}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\HistogramWindow.ui" />
-    <None Include="..\src\MirrorExtendDialog.ui" />
-    <None Include="..\src\NewImgDialog.ui" />
-    <None Include="ImageViewer.ui" />
   </ItemGroup>
 </Project>
