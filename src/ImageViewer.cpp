@@ -412,9 +412,16 @@ void ImageViewer::on_actionHistogram_triggered()
 	}
 
 	histogramWindow = new HistogramWindow(this);
+	connect(histogramWindow, SIGNAL(sigStretch()), this, SLOT(on_stretch()));
 
 	ViewerWidget* w = getCurrentViewerWidget();
-	histogramWindow->processImage(w->getImage());
+	histogramWindow->setImage(w->getImage());
 	histogramWindow->plotHistogram();
 	histogramWindow->show();
+}
+
+void ImageViewer::on_stretch()
+{
+	ViewerWidget* w = getCurrentViewerWidget();
+	w->update();
 }

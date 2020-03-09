@@ -6,7 +6,7 @@
 
 class MirrorExtendDialog :	public QDialog
 {
-	// Q_OBJECT
+	Q_OBJECT
 
 public:
 	MirrorExtendDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent), mirrorExtendUi(new Ui::DialogMirrorExtend)

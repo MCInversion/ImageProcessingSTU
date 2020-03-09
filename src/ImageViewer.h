@@ -74,4 +74,7 @@ private slots:
 	void on_actionInvert_colors_triggered();
 	void on_actionMirror_Extend_test_triggered();
 	void on_actionHistogram_triggered();
+
+	//Histogram slots
+	void on_stretch();
 };

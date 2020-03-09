@@ -6,51 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>437</height>
+    <width>900</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Histogram</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Stretch min:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="minLabel">
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="minSlider">
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="0">
-    <widget class="QGraphicsView" name="histogramView"/>
-   </item>
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Stretch max:</string>
+        <string>intensity max:</string>
        </property>
       </widget>
      </item>
@@ -76,6 +45,9 @@
      </item>
     </layout>
    </item>
+   <item row="0" column="0">
+    <widget class="QGraphicsView" name="histogramView"/>
+   </item>
    <item row="3" column="0">
     <widget class="QPushButton" name="applyButton">
      <property name="text">
@@ -83,10 +55,54 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>intensity min:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="minLabel">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="minSlider">
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
  <resources/>
  <connections>
+  <connection>
+   <sender>applyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionApply()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>419</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>332</y>
+    </hint>
+   </hints>
+  </connection>
   <connection>
    <sender>maxSlider</sender>
    <signal>valueChanged(int)</signal>
@@ -116,22 +132,6 @@
     <hint type="destinationlabel">
      <x>2</x>
      <y>371</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>applyButton</sender>
-   <signal>clicked()</signal>
-   <receiver>histogramWindow</receiver>
-   <slot>ActionApply()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>140</x>
-     <y>419</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>8</x>
-     <y>332</y>
     </hint>
    </hints>
   </connection>
