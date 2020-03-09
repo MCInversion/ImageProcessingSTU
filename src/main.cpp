@@ -4,9 +4,13 @@
 // DONE:
 // - Extend image bounds by mirroring for masks (3x3 or higher) with adjustable extent (n)
 // - Histogram window
+// - Full Scale Histogram Stretch
+// - Window resize event for histogram
+
+// WIP:
+// - Multiple channel histogram bounds
 
 // TODO:
-// - Full Scale Histogram Stretch
 // - Normalized Cumulative histogram window
 // - filter with an NxN mask (arbitrary normalized matrix kernel)
 // - gaussian filter

@@ -36,21 +36,6 @@
 			"D:/VS_Projects/ImageViewerIP/src/ViewerWidget.h",
 			"MU",
 			"UVLADIE3JM/moc_ViewerWidget.cpp"
-		],
-		[
-			"D:/VS_Projects/ImageViewerIP/src/ui_HistogramWindow.h",
-			"MU",
-			"UVLADIE3JM/moc_ui_HistogramWindow.cpp"
-		],
-		[
-			"D:/VS_Projects/ImageViewerIP/src/ui_MirrorExtendDialog.h",
-			"MU",
-			"UVLADIE3JM/moc_ui_MirrorExtendDialog.cpp"
-		],
-		[
-			"D:/VS_Projects/ImageViewerIP/src/ui_NewImgDialog.h",
-			"MU",
-			"UVLADIE3JM/moc_ui_NewImgDialog.cpp"
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],

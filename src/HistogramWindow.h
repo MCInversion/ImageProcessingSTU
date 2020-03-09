@@ -2,9 +2,10 @@
 #define HISTOGRAMWINDOW_H
 
 #include <QWidget>
+#include <QDebug>
 #include <QtCore/QObject>
 #include <QGraphicsPixmapItem>
-#include "ui_HistogramWindow.h"
+#include "../build/ui_HistogramWindow.h"
 
 class HistogramWindow :	public QWidget
 {
@@ -19,8 +20,12 @@ public slots:
 	void plotHistogram(bool plotMinmax = false);
 	void ActionStretch();
 	void ActionApply();
+	void ActionOpenCumHist();
+	void ActionLockChannels();
 signals:
 	float sigStretch();
+protected:
+	void resizeEvent(QResizeEvent* event);
 private:
 	QImage* _targetImage = nullptr;
 	QImage* _histogramPlot = nullptr;
@@ -33,20 +38,27 @@ private:
 	int _min_GREEN = 0; int _max_GREEN = 255;
 	int _min_BLUE = 0; int _max_BLUE = 255;
 
-	int _newMin = 0; int _newMax = 255;
-	int _minTotal = 0; int _maxTotal = 255;
-
+	int _newMin_RED = 0; int _newMax_RED = 255;
+	int _newMin_GREEN = 0; int _newMax_GREEN = 255;
+	int _newMin_BLUE = 0; int _newMax_BLUE = 255;
 
 	unsigned int _max_value = 1000;
 	bool _grayscale = false;
 
+	bool _channelsLocked = false;
+
 	void drawLine(const QPoint& startPt, const QPoint& endPt, QColor color, int width, Qt::PenStyle style = Qt::SolidLine);
 	void drawText(QString text, const QPoint& position, QColor color, int width);
+	void clearCounters();
 
 	void processImage();
 	void displayImage(QImage* image);
-	void getIntensityBounds(float percentile1 = FLT_EPSILON, float percentile2 = 1.0f - FLT_EPSILON);
+	void getIntensityBounds(float percentile1 = 0.0f, float percentile2 = 1.0f);
 	void contrastStretch();
+
+	QImage getResized(QImage* image, const QSize& newSize, bool keepAspectRatio);
+
+	void lockChannelUI(bool lock);
 };
 
 #endif

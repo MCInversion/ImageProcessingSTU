@@ -14,10 +14,12 @@ void HistogramWindow::setImage(QImage* targetImage)
 {
 	_targetImage = targetImage;
 	processImage();
+	lockChannelUI(_grayscale);
 }
 
 void HistogramWindow::processImage()
 {
+	this->clearCounters();
 	int depth = _targetImage->depth();
 	_grayscale = depth == 8;
 
@@ -47,20 +49,51 @@ void HistogramWindow::processImage()
 			}
 		}
 	}
+	
 	getIntensityBounds();
 }
 
 void HistogramWindow::ActionStretch()
 {
-	if (ui.minSlider->value() >= ui.maxSlider->value()) {
-		ui.minSlider->setValue(ui.maxSlider->value() - 1);
-	}
-	int val1 = ui.minSlider->value();
-	int val2 = ui.maxSlider->value();
-	ui.minLabel->setText(QString::number(val1));
-	ui.maxLabel->setText(QString::number(val2));
+	if (_grayscale) {
+		if (ui.minSlider->value() >= ui.maxSlider->value()) {
+			ui.minSlider->setValue(ui.maxSlider->value() - 1);
+		}
+		int val1 = ui.minSlider->value();
+		int val2 = ui.maxSlider->value();
+		ui.minLabel->setText(QString::number(val1));
+		ui.maxLabel->setText(QString::number(val2));
 
-	_newMin = val1; _newMax = val2;
+		_newMin_RED = val1; _newMax_RED = val2;
+		_newMin_GREEN = val1; _newMax_GREEN = val2;
+		_newMin_BLUE = val1; _newMax_BLUE = val2;
+
+	} else {
+		if (ui.minGreenSlider->value() >= ui.maxGreenSlider->value()) {
+			ui.minGreenSlider->setValue(ui.maxGreenSlider->value() - 1);
+		}
+		if (ui.minBlueSlider->value() >= ui.maxBlueSlider->value()) {
+			ui.minBlueSlider->setValue(ui.maxBlueSlider->value() - 1);
+		}
+
+		int val1red = ui.minSlider->value(); int val2red = ui.maxSlider->value();
+		int val1green = (_channelsLocked ? val1red : ui.minGreenSlider->value());
+		int val2green = (_channelsLocked ? val2red : ui.maxGreenSlider->value());
+		int val1blue = (_channelsLocked ? val1red : ui.minBlueSlider->value());
+		int val2blue = (_channelsLocked ? val2red : ui.maxBlueSlider->value());
+
+		ui.minLabel->setText(QString::number(val1red));
+		ui.maxLabel->setText(QString::number(val2red));
+		ui.minGreenLabel->setText(QString::number(val1green));
+		ui.maxGreenLabel->setText(QString::number(val2green));
+		ui.minBlueLabel->setText(QString::number(val1blue));
+		ui.maxBlueLabel->setText(QString::number(val2blue));
+
+		_newMin_RED = val1red; _newMax_RED = val2red;
+		_newMin_GREEN = val1green; _newMax_GREEN = val2green;
+		_newMin_BLUE = val1blue; _newMax_BLUE = val2blue;
+	}
+
 	plotHistogram(true);
 }
 
@@ -68,8 +101,31 @@ void HistogramWindow::ActionApply()
 {
 	contrastStretch();
 	emit sigStretch();
+
 	processImage();
-	plotHistogram();
+	plotHistogram(true);
+}
+
+void HistogramWindow::ActionOpenCumHist()
+{
+}
+
+void HistogramWindow::ActionLockChannels()
+{
+	_channelsLocked = ui.checkBoxChannelLock->isChecked();
+	lockChannelUI(_channelsLocked);
+	plotHistogram(true);
+}
+
+void HistogramWindow::resizeEvent(QResizeEvent* event)
+{
+	QWidget::resizeEvent(event);
+
+	if (_histogramPlot != nullptr) {
+		QSize viewerSize = ui.histogramView->size();
+		QImage displayedImg = getResized(_histogramPlot, viewerSize, true);
+		displayImage(&displayedImg);
+	}
 }
 
 void HistogramWindow::plotHistogram(bool plotMinmax)
@@ -82,7 +138,7 @@ void HistogramWindow::plotHistogram(bool plotMinmax)
 	_histogramPlot = new QImage(width, height, QImage::Format_RGB32);
 	_histogramPlot->fill(qRgb(255, 255, 255));
 	int width_step = ((int)(width / 256. + 0.5));
-	float normalization_value = ((float)(_max_value));
+	float normalization_value = ((float)(1.2 * _max_value));
 	float normalizedValue0, normalizedValue1;
 	int x0, x1, y0, y1;
 	drawLine(QPoint(0, height - y_offset), QPoint(width - 10 * width_step, height - y_offset), QColor(0, 0, 0), pen_width); // x-axis
@@ -158,27 +214,37 @@ void HistogramWindow::plotHistogram(bool plotMinmax)
 	// intensity bounds
 	int bound_width = pen_width / 2;
 	if (_grayscale) {
-		drawLine(QPoint(_min_RED * width_step, y_offset), QPoint(_min_RED * width_step, height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DashLine);
-		drawLine(QPoint(_max_RED * width_step, y_offset), QPoint(_max_RED * width_step, height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DashLine);
+		drawLine(QPoint(_min_RED * width_step, y_offset), QPoint(_min_RED * width_step, height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(_max_RED * width_step, y_offset), QPoint(_max_RED * width_step, height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DotLine);
 	}
 	else {
-		drawLine(QPoint(_min_RED * width_step, y_offset), QPoint(_min_RED * width_step, height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DashLine);
-		drawLine(QPoint(_max_RED * width_step, y_offset), QPoint(_max_RED * width_step, height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DashLine);
+		drawLine(QPoint(_min_RED * width_step, y_offset), QPoint(_min_RED * width_step, height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(_max_RED * width_step, y_offset), QPoint(_max_RED * width_step, height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DotLine);
 
-		drawLine(QPoint(_min_GREEN * width_step, y_offset), QPoint(_min_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DashLine);
-		drawLine(QPoint(_max_GREEN * width_step, y_offset), QPoint(_max_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DashLine);
+		drawLine(QPoint(_min_GREEN * width_step, y_offset), QPoint(_min_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(_max_GREEN * width_step, y_offset), QPoint(_max_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DotLine);
 
-		drawLine(QPoint(_min_BLUE * width_step, y_offset), QPoint(_min_BLUE * width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DashLine);
-		drawLine(QPoint(_max_BLUE* width_step, y_offset), QPoint(_max_BLUE* width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DashLine);
+		drawLine(QPoint(_min_BLUE * width_step, y_offset), QPoint(_min_BLUE * width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(_max_BLUE* width_step, y_offset), QPoint(_max_BLUE* width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DotLine);
 	}
 
 	// controlled bounds
 	if (plotMinmax) {
-		drawLine(QPoint(_newMin * width_step, y_offset), QPoint(_newMin * width_step, height - y_offset), QColor(22, 130, 201, 100), bound_width, Qt::DashLine);
-		drawLine(QPoint(_newMax * width_step, y_offset), QPoint(_newMax * width_step, height - y_offset), QColor(22, 130, 201, 100), bound_width, Qt::DashLine);
+		drawLine(QPoint(_newMin_RED * width_step, y_offset), QPoint(_newMin_RED * width_step, height - y_offset), (_grayscale ? QColor(22, 130, 201, 100) : QColor(255, 0, 0, 100)), bound_width, Qt::DashLine);
+		drawLine(QPoint(_newMax_RED * width_step, y_offset), QPoint(_newMax_RED * width_step, height - y_offset), (_grayscale ? QColor(22, 130, 201, 100) : QColor(255, 0, 0, 100)), bound_width, Qt::DashLine);
+
+		if (!_grayscale) {
+			drawLine(QPoint(_newMin_GREEN * width_step, y_offset), QPoint(_newMin_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DashLine);
+			drawLine(QPoint(_newMax_GREEN * width_step, y_offset), QPoint(_newMax_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DashLine);
+
+			drawLine(QPoint(_newMin_BLUE * width_step, y_offset), QPoint(_newMin_BLUE * width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DashLine);
+			drawLine(QPoint(_newMax_BLUE * width_step, y_offset), QPoint(_newMax_BLUE * width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DashLine);
+		}
 	}
 
-	displayImage(_histogramPlot);
+	QSize viewerSize = ui.histogramView->size();
+	QImage displayedImg = getResized(_histogramPlot, viewerSize, true);
+	displayImage(&displayedImg);
 }
 
 void HistogramWindow::drawLine(const QPoint& startPt, const QPoint& endPt, QColor color, int width, Qt::PenStyle style)
@@ -193,6 +259,14 @@ void HistogramWindow::drawText(QString text, const QPoint& position, QColor colo
 	QPainter painter(_histogramPlot);
 	painter.setPen(QPen(color, width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 	painter.drawText(position.x(), position.y(), 15 * width, 20 * width, Qt::AlignLeft, text);
+}
+
+void HistogramWindow::clearCounters()
+{
+	_count_RED.clear(); _count_GREEN.clear(); _count_BLUE.clear();
+	_count_RED = std::vector<int>(256, 0);
+	_count_GREEN = std::vector<int>(256, 0);
+	_count_BLUE = std::vector<int>(256, 0);
 }
 
 void HistogramWindow::displayImage(QImage* image)
@@ -216,100 +290,143 @@ void HistogramWindow::getIntensityBounds(float percentile1, float percentile2)
 	int i, j;
 	for (i = 0; i < 256; i++) {
 		cumsum += _count_RED[i];
-		if (cumsum >= sumL) {
+		if (cumsum > sumL) {
 			_min_RED = i;
 			break;
 		}
 	}
 	for (j = i + 1; j < 256; j++) {
 		cumsum += _count_RED[j];
-		if (cumsum >= sumU) {
+		if (cumsum > sumU) {
 			_max_RED = j;
 			break;
 		}
 	}
-
-	_minTotal = _min_RED; _maxTotal = _max_RED;
 
 	if (!_grayscale) {
 		// green channel
 		cumsum = 0;
 		for (i = 0; i < 256; i++) {
 			cumsum += _count_GREEN[i];
-			if (cumsum >= sumL) {
+			if (cumsum > sumL) {
 				_min_GREEN = i;
 				break;
 			}
 		}
 		for (j = i + 1; j < 256; j++) {
 			cumsum += _count_GREEN[j];
-			if (cumsum >= sumU) {
+			if (cumsum > sumU) {
 				_max_GREEN = j;
 				break;
 			}
 		}
-		_minTotal = _min_GREEN < _minTotal ? _min_GREEN : _minTotal;
-		_maxTotal = _max_GREEN > _maxTotal ? _max_GREEN : _maxTotal;
 
 		// blue channel
 		cumsum = 0;
 		for (i = 0; i < 256; i++) {
 			cumsum += _count_BLUE[i];
-			if (cumsum >= sumL) {
+			if (cumsum > sumL) {
 				_min_BLUE = i;
 				break;
 			}
 		}
 		for (j = i + 1; j < 256; j++) {
 			cumsum += _count_BLUE[j];
-			if (cumsum >= sumU) {
+			if (cumsum > sumU) {
 				_max_BLUE = j;
 				break;
 			}
 		}
-
-		_minTotal = _min_BLUE < _minTotal ? _min_BLUE : _minTotal;
-		_maxTotal = _max_BLUE > _maxTotal ? _max_BLUE : _maxTotal;
 	}
 
-	// ui.minSlider->setValue(_minTotal); ui.maxSlider->setValue(_maxTotal);
-	// ui.minLabel->setText(QString::number(_minTotal)); ui.maxLabel->setText(QString::number(_maxTotal));
-}
+	/*
+	_newMin_RED = _min_RED; _newMax_RED = _max_RED;
+	_newMin_GREEN = _min_GREEN; _newMax_GREEN = _max_GREEN;
+	_newMin_BLUE = _min_BLUE; _newMax_BLUE = _max_BLUE;*/
 
-// unsigned char newC = (data[i * row + j] - min)*(newMax - newMin) / (max - min) + newMin;
+	ui.minSlider->setValue(_min_RED); ui.maxSlider->setValue(_max_RED);
+	ui.minLabel->setText(QString::number(_min_RED)); ui.maxLabel->setText(QString::number(_max_RED));
+
+	if (!_grayscale) {
+		ui.minGreenSlider->setValue(_min_GREEN); ui.maxGreenSlider->setValue(_max_GREEN);
+		ui.minGreenLabel->setText(QString::number(_min_GREEN)); ui.maxGreenLabel->setText(QString::number(_max_GREEN));
+
+		ui.minBlueSlider->setValue(_min_BLUE); ui.maxBlueSlider->setValue(_max_BLUE);
+		ui.minBlueLabel->setText(QString::number(_min_BLUE)); ui.maxBlueLabel->setText(QString::number(_max_BLUE));
+	}
+}
 
 void HistogramWindow::contrastStretch()
 {
 	uint h = _targetImage->height();
 	uint w = _targetImage->width();
 	uint NPixels = w * h;
-	float center = 0.5f * (_max_RED + _min_RED);
-	float px, scale = (_newMax - _newMin) / ((float)(_max_RED - _min_RED));
-	printf("scale factor = %f\n", scale);
-	int pxOut;
+
+	float pxR, pxG, pxB;
+	float scaleR = 255.0f / (_newMax_RED - _newMin_RED);
+	float scaleG = 255.0f / (_newMax_GREEN - _newMin_GREEN);
+	float scaleB = 255.0f / (_newMax_BLUE - _newMin_BLUE);
+	int pxOutR, pxOutG, pxOutB;
 	QImage stretchedImg = QImage(QSize(w, h), _targetImage->format());
 
 	for (uint i = 0; i < NPixels; i++) {
-		px = std::round((float)(_targetImage->pixelColor(i % w, i / w).red() - center) * scale + center);
-		pxOut = (px < 0.0f) ? 0 : (px > 255.0 ? 255 : px);
-		stretchedImg.setPixelColor(QPoint(i % w, i / w), QColor(pxOut, pxOut, pxOut));
-	}
+		pxR = std::round((float)(_targetImage->pixelColor(i % w, i / w).red() - _newMin_RED) * scaleR);
+		pxOutR = (pxR < 0.0f) ? 0 : (pxR > 255.0 ? 255 : pxR);
 
-	if (!_grayscale) {
-		float px2; int pxOut2;
-		center = 0.5f * (_max_GREEN + _min_GREEN);
-		scale = (_newMax - _newMin) / ((float)(_max_GREEN - _min_GREEN));
-		float center2 = 0.5f * (_max_BLUE + _min_BLUE);
-		float scale2 = (_newMax - _newMin) / ((float)(_max_BLUE - _min_BLUE));
-		for (uint i = 0; i < NPixels; i++) {
-			px = std::round((float)(_targetImage->pixelColor(i % w, i / w).green() - center) * scale + center);
-			px2 = std::round((float)(_targetImage->pixelColor(i % w, i / w).blue() - center2) * scale2 + center2);
-			pxOut = (px < 0.0f) ? 0 : (px > 255.0 ? 255 : px);
-			pxOut2 = (px2 < 0.0f) ? 0 : (px2 > 255.0 ? 255 : px2);
-			stretchedImg.pixelColor(i % w, i / w).setGreen(pxOut);
-			stretchedImg.pixelColor(i % w, i / w).setBlue(pxOut2);
+		if (_grayscale) {
+			*((uchar*)stretchedImg.scanLine(i / w) + i % w) = pxOutR;
+		}
+		else {
+			pxG = std::round((float)(_targetImage->pixelColor(i % w, i / w).green() - _newMin_GREEN) * scaleG);
+			pxB = std::round((float)(_targetImage->pixelColor(i % w, i / w).blue() - _newMin_BLUE) * scaleB);
+
+			pxOutG = (pxG < 0.0f) ? 0 : (pxG > 255.0 ? 255 : pxG);
+			pxOutB = (pxB < 0.0f) ? 0 : (pxB > 255.0 ? 255 : pxB);
+
+			*((QRgb*)stretchedImg.scanLine(i / w) + i % w) = qRgb(pxOutR, pxOutG, pxOutB);
 		}
 	}
 
-	*_targetImage = QImage(stretchedImg);
+	*_targetImage = stretchedImg;
+}
+
+QImage HistogramWindow::getResized(QImage* image, const QSize& newSize, bool keepAspectRatio)
+{
+	return image->scaled(newSize, (keepAspectRatio ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio), Qt::FastTransformation);
+}
+
+void HistogramWindow::lockChannelUI(bool lock)
+{
+	if (lock) {
+		// green channel ctrls:
+		ui.label_3->hide(); ui.label_4->hide();
+		ui.minGreenLabel->hide(); ui.maxGreenLabel->hide();
+		ui.minGreenSlider->hide(); ui.maxGreenSlider->hide();
+		// blue channel ctrls:
+		ui.label_5->hide(); ui.label_7->hide();
+		ui.minBlueLabel->hide(); ui.maxBlueLabel->hide();
+		ui.minBlueSlider->hide(); ui.maxBlueSlider->hide();
+		// red channel labels:
+		ui.label->setText(QString("intensity min:")); ui.label_2->setText(QString("intensity max:"));	
+	}
+	else {
+		// red channel ctrls:
+		ui.label->setText(QString("red min:     ")); ui.label_2->setText(QString("red max:     "));
+		// green channel ctrls:
+		ui.label_3->show(); ui.label_4->show();
+		ui.minGreenLabel->show(); ui.maxGreenLabel->show();
+		ui.minGreenSlider->show(); ui.maxGreenSlider->show();
+		// blue channel ctrls:
+		ui.label_5->show(); ui.label_7->show();
+		ui.minBlueLabel->show(); ui.maxBlueLabel->show();
+		ui.minBlueSlider->show(); ui.maxBlueSlider->show();	
+	}
+
+	// lock channel switch:
+	if (_grayscale) {
+		ui.checkBoxChannelLock->hide();
+	}
+	else {
+		ui.checkBoxChannelLock->show();
+	}
 }

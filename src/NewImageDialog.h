@@ -3,7 +3,7 @@
 #include <QtWidgets/QDialog>
 #include <QtWidgets>
 
-#include "ui_NewImgDialog.h"
+#include "../build/ui_NewImgDialog.h"
 
 class NewImageDialog : public QDialog
 {

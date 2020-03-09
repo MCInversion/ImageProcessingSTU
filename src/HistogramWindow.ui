@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>915</width>
     <height>600</height>
    </rect>
   </property>
@@ -14,8 +14,112 @@
    <string>Histogram</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item row="7" column="0">
+    <layout class="QHBoxLayout" name="hLayoutButtons">
+     <item>
+      <widget class="QCheckBox" name="checkBoxChannelLock">
+       <property name="text">
+        <string>Channel lock</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="applyButton">
+       <property name="text">
+        <string>Scale</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="openCumHistButton">
+       <property name="text">
+        <string>Cumulative Histogram</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="hLayoutGreen">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>green min:   </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="minGreenLabel">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="minGreenSlider">
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>green max:   </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="maxGreenLabel">
+       <property name="text">
+        <string>255</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="maxGreenSlider">
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="value">
+        <number>255</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="hLayoutRed">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>intensity min:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="minLabel">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="minSlider">
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
@@ -45,35 +149,52 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="0">
-    <widget class="QGraphicsView" name="histogramView"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QPushButton" name="applyButton">
-     <property name="text">
-      <string>Apply</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
+   <item row="5" column="0">
+    <layout class="QHBoxLayout" name="hLayoutBlue">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>intensity min:</string>
+        <string>blue min:     </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="minLabel">
+      <widget class="QLabel" name="minBlueLabel">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="minSlider">
+      <widget class="QSlider" name="minBlueSlider">
        <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>blue max:     </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="maxBlueLabel">
+       <property name="text">
+        <string>255</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="maxBlueSlider">
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="value">
         <number>255</number>
        </property>
        <property name="orientation">
@@ -83,26 +204,13 @@
      </item>
     </layout>
    </item>
+   <item row="0" column="0">
+    <widget class="QGraphicsView" name="histogramView"/>
+   </item>
   </layout>
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>applyButton</sender>
-   <signal>clicked()</signal>
-   <receiver>histogramWindow</receiver>
-   <slot>ActionApply()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>140</x>
-     <y>419</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>8</x>
-     <y>332</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>maxSlider</sender>
    <signal>valueChanged(int)</signal>
@@ -110,8 +218,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>171</x>
-     <y>382</y>
+     <x>743</x>
+     <y>488</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -126,8 +234,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>261</x>
-     <y>348</y>
+     <x>371</x>
+     <y>488</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -135,9 +243,123 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>minGreenSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionStretch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>177</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>maxGreenSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionStretch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>619</x>
+     <y>505</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>464</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>maxBlueSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionStretch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>794</x>
+     <y>537</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>524</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openCumHistButton</sender>
+   <signal>clicked()</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionOpenCumHist()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>871</x>
+     <y>578</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>914</x>
+     <y>542</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>minBlueSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionStretch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>247</x>
+     <y>539</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>494</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxChannelLock</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionLockChannels()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>97</x>
+     <y>576</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>559</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>applyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionApply()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>480</x>
+     <y>576</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ActionStretch()</slot>
   <slot>ActionApply()</slot>
+  <slot>ActionOpenCumHist()</slot>
+  <slot>ActionLockChannels()</slot>
  </slots>
 </ui>

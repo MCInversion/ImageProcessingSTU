@@ -51,15 +51,6 @@
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_HistogramWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_MirrorExtendDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_NewImgDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.ui" />

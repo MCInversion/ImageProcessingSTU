@@ -624,9 +624,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.h" />
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_HistogramWindow.h" />
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_MirrorExtendDialog.h" />
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ui_NewImgDialog.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\VS_Projects\ImageViewerIP\build\ZERO_CHECK.vcxproj">

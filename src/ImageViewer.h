@@ -1,13 +1,11 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-//#include <QtWidgets>
 #include "../build/ui_ImageViewer.h"
 #include "ViewerWidget.h"
 #include "NewImageDialog.h"
 #include "MirrorExtendDialog.h"
 #include "HistogramWindow.h"
-// #include "ImageProcessor.h"
 
 class ImageViewer : public QMainWindow
 {

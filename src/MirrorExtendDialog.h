@@ -2,7 +2,7 @@
 #include <QtWidgets/QDialog>
 #include <QtWidgets>
 
-#include "ui_MirrorExtendDialog.h"
+#include "../build/ui_MirrorExtendDialog.h"
 
 class MirrorExtendDialog :	public QDialog
 {
