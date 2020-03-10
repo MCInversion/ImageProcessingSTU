@@ -6,17 +6,20 @@
 // - Histogram window
 // - Full Scale Histogram Stretch
 // - Window resize event for histogram
+// - Multiple channel histogram bounds
+// - Normalized Cumulative histogram 
 
 // WIP:
-// - Multiple channel histogram bounds
+// - applying extend on stretched image breaks it down (bad resolution)
 
 // TODO:
-// - Normalized Cumulative histogram window
-// - filter with an NxN mask (arbitrary normalized matrix kernel)
+// - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
 // - gaussian filter
+// - UndoRedo (?)
 
-// Unexplainable issues:
+// issues:
 // - cannot delete QImage ptr, why?
+// - repeated multi-channel stretching results in large variation in histogram values
 
 // Solved issues:
 // - Q_OBJECT in MirrorExtendDialog/HistogramWindow cannot be present (lnk 2001 error otherwise)

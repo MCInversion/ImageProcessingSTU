@@ -26,7 +26,6 @@ void HistogramWindow::processImage()
 	int height = _targetImage->height();
 	int width = _targetImage->width();
 
-	_max_value = 0;
 	int red_id, green_id, blue_id;
 
 	for (int x = 0; x < width; x++) {
@@ -51,6 +50,9 @@ void HistogramWindow::processImage()
 	}
 	
 	getIntensityBounds();
+	if (_plotCumulative) {
+		getCumulativeSums();
+	}
 }
 
 void HistogramWindow::ActionStretch()
@@ -99,15 +101,30 @@ void HistogramWindow::ActionStretch()
 
 void HistogramWindow::ActionApply()
 {
+	// printf("max_value (pre-apply) = %d\n", _max_value);
 	contrastStretch();
 	emit sigStretch();
 
 	processImage();
+	// printf("max_value (post-apply) = %d\n", _max_value);
 	plotHistogram(true);
 }
 
-void HistogramWindow::ActionOpenCumHist()
+void HistogramWindow::ActionDarkMode()
 {
+	_darkMode = ui.checkBoxDarkMode->isChecked();
+	_bgColor = (_darkMode ? QColor(11, 45, 77) : QColor(255, 255, 255));
+	_axisColor = (_darkMode ? QColor(255, 255, 255) : QColor(0, 0, 0));
+	plotHistogram(true);
+}
+
+void HistogramWindow::ActionCumulativeHist()
+{
+	_plotCumulative = ui.checkBoxCumulative->isChecked();
+	if (_plotCumulative) {
+		getCumulativeSums();
+	}
+	plotHistogram(true);
 }
 
 void HistogramWindow::ActionLockChannels()
@@ -132,115 +149,193 @@ void HistogramWindow::plotHistogram(bool plotMinmax)
 {
 	int pen_width = 4;
 
-	int width = 800;
-	int height = 600;
+	int width = 1000; int height = 600;
 	int y_offset = 0.1 * height;
+	int x_offset = 0.05 * width;
+
 	_histogramPlot = new QImage(width, height, QImage::Format_RGB32);
-	_histogramPlot->fill(qRgb(255, 255, 255));
-	int width_step = ((int)(width / 256. + 0.5));
+	_histogramPlot->fill(_bgColor);
+	int grayscaleVal = (_darkMode ? 200 : 50);
+
+	float width_step = (width - 2 * x_offset) / 256.;
 	float normalization_value = ((float)(1.2 * _max_value));
-	float normalizedValue0, normalizedValue1;
-	int x0, x1, y0, y1;
-	drawLine(QPoint(0, height - y_offset), QPoint(width - 10 * width_step, height - y_offset), QColor(0, 0, 0), pen_width); // x-axis
-	drawText(
-		"px intensity",
-		QPoint((int)(0.5 * (width - y_offset) + 0.5), (int)(height - 0.5 * y_offset)),
-		QColor(0, 0, 0), 2 * pen_width
-	);
+	// printf("normalization_value = %f\n", normalization_value);
+
+	int colWidth = std::max(1, (int)width_step);
+
+	float normalizedValue;
+	int x, y;
+
+	// === histogram
+	for (int i = 0; i < 256; i++) {
+		if (_grayscale) {
+			normalizedValue = (float)_count_RED[i] / normalization_value;
+			x = x_offset + (int)(i * width_step);
+			y = ((int)(normalizedValue * (height - 2 * y_offset) + 0.5)) + y_offset;
+			drawLine(QPoint(x, height - y_offset), QPoint(x, height - y), QColor(grayscaleVal, grayscaleVal, grayscaleVal), colWidth);
+
+		} else {
+			normalizedValue = (float)_count_RED[i] / normalization_value;
+			x = x_offset + (int)(i * width_step);
+			y = ((int)(normalizedValue * (height - 2 * y_offset) + 0.5)) + y_offset;
+			drawLine(QPoint(x, height - y_offset), QPoint(x, height - y), QColor(255, 0, 0, 125), colWidth);
+
+			normalizedValue = (float)_count_GREEN[i] / normalization_value;
+			x = x_offset + (int)(i * width_step);
+			y = ((int)(normalizedValue * (height - 2 * y_offset) + 0.5)) + y_offset;
+			drawLine(QPoint(x, height - y_offset), QPoint(x, height - y), QColor(0, 255, 0, 125), colWidth);
+
+			normalizedValue = (float)_count_BLUE[i] / normalization_value;
+			x = x_offset + (int)(i * width_step);
+			y = ((int)(normalizedValue * (height - 2 * y_offset) + 0.5)) + y_offset;
+			drawLine(QPoint(x, height - y_offset), QPoint(x, height - y), QColor(0, 0, 255, 125), colWidth);
+		}
+	}
+	// ===
+
+	// cumulative histogram
+	if (_plotCumulative) {
+		float normalizedValue0, normalizedValue2;
+		int x0, x1, y0, y2;
+
+		for (int i = 0; i < 256; i++) {
+			if (_grayscale) {
+				normalizedValue0 = _sums_RED[i] / _sums_RED[255];
+
+				x0 = x_offset + (int)(i * width_step);
+				x1 = x_offset + (int)((i + 1) * width_step);
+				y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), _axisColor, pen_width);
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), QColor(grayscaleVal, grayscaleVal, grayscaleVal), pen_width / 2);
+
+				/**/
+				if (i < 255) {
+					normalizedValue2 = _sums_RED[i + 1] / _sums_RED[255];
+					y2 = ((int)(normalizedValue2 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), _axisColor, pen_width);
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), QColor(grayscaleVal, grayscaleVal, grayscaleVal), pen_width / 2);
+				}
+			} else {
+
+				normalizedValue0 = _sums_RED[i] / _sums_RED[255];
+
+				x0 = x_offset + (int)(i * width_step);
+				x1 = x_offset + (int)((i + 1) * width_step);
+				y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), _axisColor, pen_width);
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), QColor(255, 0, 0), pen_width / 2);
+
+				/**/
+				if (i < 255) {
+					normalizedValue2 = _sums_RED[i + 1] / _sums_RED[255];
+					y2 = ((int)(normalizedValue2 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), _axisColor, pen_width);
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), QColor(255, 0, 0), pen_width / 2);
+				}
+
+				normalizedValue0 = _sums_GREEN[i] / _sums_GREEN[255];
+
+				x0 = x_offset + (int)(i * width_step);
+				x1 = x_offset + (int)((i + 1) * width_step);
+				y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), _axisColor, pen_width);
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), QColor(0, 255, 0), pen_width / 2);
+
+				/**/
+				if (i < 255) {
+					normalizedValue2 = _sums_GREEN[i + 1] / _sums_GREEN[255];
+					y2 = ((int)(normalizedValue2 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), _axisColor, pen_width);
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), QColor(0, 255, 0), pen_width / 2);
+				}
+
+				normalizedValue0 = _sums_BLUE[i] / _sums_BLUE[255];
+
+				x0 = x_offset + (int)(i * width_step);
+				x1 = x_offset + (int)((i + 1) * width_step);
+				y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), _axisColor, pen_width);
+				drawLine(QPoint(x0, height - y0), QPoint(x1, height - y0), QColor(0, 0, 255), pen_width / 2);
+
+				/**/
+				if (i < 255) {
+					normalizedValue2 = _sums_BLUE[i + 1] / _sums_BLUE[255];
+					y2 = ((int)(normalizedValue2 * (height - 2 * y_offset) + 0.5)) + y_offset;
+
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), _axisColor, pen_width);
+					drawLine(QPoint(x1, height - y0), QPoint(x1, height - y2), QColor(0, 0, 255), pen_width / 2);
+				}
+			}
+		}
+	}
+
+	// === intensity bounds
+	int bound_width = pen_width / 2;
+	if (_grayscale) {
+		drawLine(QPoint(x_offset + std::round(_min_RED * width_step), y_offset), QPoint(x_offset + std::round(_min_RED * width_step), height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(x_offset + std::round(_max_RED * width_step), y_offset), QPoint(x_offset + std::round(_max_RED * width_step), height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DotLine);
+	}
+	else {
+		drawLine(QPoint(x_offset + std::round(_min_RED * width_step), y_offset), QPoint(x_offset + std::round(_min_RED * width_step), height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(x_offset + std::round(_max_RED * width_step), y_offset), QPoint(x_offset + std::round(_max_RED * width_step), height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DotLine);
+
+		drawLine(QPoint(x_offset + std::round(_min_GREEN * width_step), y_offset), QPoint(x_offset + std::round(_min_GREEN * width_step), height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(x_offset + std::round(_max_GREEN * width_step), y_offset), QPoint(x_offset + std::round(_max_GREEN * width_step), height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DotLine);
+
+		drawLine(QPoint(x_offset + std::round(_min_BLUE * width_step), y_offset), QPoint(x_offset + std::round(_min_BLUE * width_step), height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DotLine);
+		drawLine(QPoint(x_offset + _max_BLUE* width_step, y_offset), QPoint(x_offset + _max_BLUE* width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DotLine);
+	}
+	// ===
+
+	// === controlled bounds
+	if (plotMinmax) {
+		drawLine(QPoint(x_offset + std::round(_newMin_RED * width_step), y_offset), QPoint(x_offset + std::round(_newMin_RED * width_step), height - y_offset), (_grayscale ? QColor(22, 130, 201, 100) : QColor(255, 0, 0, 100)), pen_width, Qt::DashLine);
+		drawLine(QPoint(x_offset + std::round(_newMax_RED * width_step), y_offset), QPoint(x_offset + std::round(_newMax_RED * width_step), height - y_offset), (_grayscale ? QColor(22, 130, 201, 100) : QColor(255, 0, 0, 100)), pen_width, Qt::DashLine);
+
+		if (!_grayscale) {
+			drawLine(QPoint(x_offset + std::round(_newMin_GREEN * width_step), y_offset), QPoint(x_offset + std::round(_newMin_GREEN * width_step), height - y_offset), QColor(0, 255, 0, 100), pen_width, Qt::DashLine);
+			drawLine(QPoint(x_offset + std::round(_newMax_GREEN * width_step), y_offset), QPoint(x_offset + std::round(_newMax_GREEN * width_step), height - y_offset), QColor(0, 255, 0, 100), pen_width, Qt::DashLine);
+
+			drawLine(QPoint(x_offset + std::round(_newMin_BLUE * width_step), y_offset), QPoint(x_offset + std::round(_newMin_BLUE * width_step), height - y_offset), QColor(0, 0, 255, 100), pen_width, Qt::DashLine);
+			drawLine(QPoint(x_offset + std::round(_newMax_BLUE * width_step), y_offset), QPoint(x_offset + std::round(_newMax_BLUE * width_step), height - y_offset), QColor(0, 0, 255, 100), pen_width, Qt::DashLine);
+		}
+	}
+	// ===
+
+	// === axes frame
+	int textSize = 0.1 * width;
+	drawLine(QPoint(x_offset, height - y_offset), QPoint(width - x_offset, height - y_offset), _axisColor, pen_width); // x-axis
+	drawText("px intensity", QPoint((int)0.5 * width, (int)(height - 0.5 * y_offset)), _axisColor, textSize);
 	// ticks
-	drawText(
-		QString::number(0),
-		QPoint(0, (int)(height - (1 - 0.2) * y_offset)),
-		QColor(0, 0, 0), pen_width
-	);
+	drawText(QString::number(0), QPoint(x_offset, (int)(height - (1 - 0.2) * y_offset)), _axisColor, pen_width);
 	for (int i = 1; i < 51; i++) {
 		float tick_size = i % 2 == 0 ? 0.4 : 0.2;
 		drawLine(
-			QPoint(5 * i * width_step, (int)(height - (1 + 0.5 * tick_size) * y_offset)),
-			QPoint(5 * i * width_step, (int)(height - (1 - 0.5 * tick_size) * y_offset)),
-			QColor(0, 0, 0), pen_width);
+			QPoint(x_offset + std::round(5 * i * width_step), (int)(height - (1 + 0.5 * tick_size) * y_offset)),
+			QPoint(x_offset + std::round(5 * i * width_step), (int)(height - (1 - 0.5 * tick_size) * y_offset)),
+			_axisColor, pen_width);
 		if (i % 10 == 0) {
 			drawText(
-				QString::number(5 * i),
-				QPoint(5 * i * width_step, (int)(height - (1 - 0.2) * y_offset)),
-				QColor(0, 0, 0), pen_width
+				QString::number(5 * i),	QPoint(x_offset + std::round(5 * i * width_step), (int)(height - (1 - 0.2) * y_offset)),
+				_axisColor, textSize
 			);
 		}
 	}
 	drawText(
-		QString::number(255),
-		QPoint(width - 8 * width_step, (int)(height - y_offset)),
-		QColor(0, 0, 0), pen_width
+		QString::number(255), QPoint(width - x_offset, (int)(height - y_offset)),	_axisColor, textSize
 	);
 
-	drawLine(QPoint(0, height - y_offset), QPoint(0, y_offset), QColor(0, 0, 0), pen_width); // y-axis
-	drawLine(QPoint(width - 10 * width_step, height - y_offset), QPoint(width - 10 * width_step, y_offset), QColor(0, 0, 0), (int)(0.5 * pen_width + 0.5));
-	drawLine(QPoint(0, y_offset), QPoint(width - 10 * width_step, y_offset), QColor(0, 0, 0), (int)(0.5 * pen_width + 0.5));
-
-	for (int i = 0; i < 256; i++) {
-		if (_grayscale) {
-
-			normalizedValue0 = (float)_count_RED[i] / normalization_value;
-			normalizedValue1 = (i < 255 ? (float)_count_RED[i + 1] : 0.0f) / normalization_value;
-			x0 = i * width_step, x1 = (i + 1) * width_step;
-			y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			y1 = ((int)(normalizedValue1 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			drawLine(QPoint(x0, height - y0), QPoint(x1, height - y1), QColor(50, 50, 50), pen_width);
-
-		} else {
-			normalizedValue0 = (float)_count_RED[i] / normalization_value;
-			normalizedValue1 = (i < 255 ? (float)_count_RED[i + 1] : 0.0f) / normalization_value;
-			x0 = i * width_step, x1 = (i + 1) * width_step;
-			y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			y1 = ((int)(normalizedValue1 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			drawLine(QPoint(x0, height - y0), QPoint(x1, height - y1), QColor(255, 0, 0, 125), pen_width);
-
-			normalizedValue0 = (float)_count_GREEN[i] / normalization_value;
-			normalizedValue1 = (i < 255 ? (float)_count_GREEN[i + 1] : 0.0f) / normalization_value;
-			x0 = i * width_step, x1 = (i + 1) * width_step;
-			y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			y1 = ((int)(normalizedValue1 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			drawLine(QPoint(x0, height - y0), QPoint(x1, height - y1), QColor(0, 255, 0, 125), pen_width);
-
-			normalizedValue0 = (float)_count_BLUE[i] / normalization_value;
-			normalizedValue1 = (i < 255 ? (float)_count_BLUE[i + 1] : 0.0f) / normalization_value;
-			x0 = i * width_step, x1 = (i + 1) * width_step;
-			y0 = ((int)(normalizedValue0 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			y1 = ((int)(normalizedValue1 * (height - 2 * y_offset) + 0.5)) + y_offset;
-			drawLine(QPoint(x0, height - y0), QPoint(x1, height - y1), QColor(0, 0, 255, 125), pen_width);
-		}
-	}
-
-	// intensity bounds
-	int bound_width = pen_width / 2;
-	if (_grayscale) {
-		drawLine(QPoint(_min_RED * width_step, y_offset), QPoint(_min_RED * width_step, height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DotLine);
-		drawLine(QPoint(_max_RED * width_step, y_offset), QPoint(_max_RED * width_step, height - y_offset), QColor(0, 0, 0, 100), bound_width, Qt::DotLine);
-	}
-	else {
-		drawLine(QPoint(_min_RED * width_step, y_offset), QPoint(_min_RED * width_step, height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DotLine);
-		drawLine(QPoint(_max_RED * width_step, y_offset), QPoint(_max_RED * width_step, height - y_offset), QColor(255, 0, 0, 100), bound_width, Qt::DotLine);
-
-		drawLine(QPoint(_min_GREEN * width_step, y_offset), QPoint(_min_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DotLine);
-		drawLine(QPoint(_max_GREEN * width_step, y_offset), QPoint(_max_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DotLine);
-
-		drawLine(QPoint(_min_BLUE * width_step, y_offset), QPoint(_min_BLUE * width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DotLine);
-		drawLine(QPoint(_max_BLUE* width_step, y_offset), QPoint(_max_BLUE* width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DotLine);
-	}
-
-	// controlled bounds
-	if (plotMinmax) {
-		drawLine(QPoint(_newMin_RED * width_step, y_offset), QPoint(_newMin_RED * width_step, height - y_offset), (_grayscale ? QColor(22, 130, 201, 100) : QColor(255, 0, 0, 100)), bound_width, Qt::DashLine);
-		drawLine(QPoint(_newMax_RED * width_step, y_offset), QPoint(_newMax_RED * width_step, height - y_offset), (_grayscale ? QColor(22, 130, 201, 100) : QColor(255, 0, 0, 100)), bound_width, Qt::DashLine);
-
-		if (!_grayscale) {
-			drawLine(QPoint(_newMin_GREEN * width_step, y_offset), QPoint(_newMin_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DashLine);
-			drawLine(QPoint(_newMax_GREEN * width_step, y_offset), QPoint(_newMax_GREEN * width_step, height - y_offset), QColor(0, 255, 0, 100), bound_width, Qt::DashLine);
-
-			drawLine(QPoint(_newMin_BLUE * width_step, y_offset), QPoint(_newMin_BLUE * width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DashLine);
-			drawLine(QPoint(_newMax_BLUE * width_step, y_offset), QPoint(_newMax_BLUE * width_step, height - y_offset), QColor(0, 0, 255, 100), bound_width, Qt::DashLine);
-		}
-	}
+	drawLine(QPoint(x_offset, height - y_offset), QPoint(x_offset, y_offset), _axisColor, pen_width); // y-axis
+	drawLine(QPoint(width - x_offset, height - y_offset), QPoint(width - x_offset, y_offset), _axisColor, (int)(0.5 * pen_width + 0.5));
+	drawLine(QPoint(x_offset, y_offset), QPoint(width - x_offset, y_offset), _axisColor, (int)(0.5 * pen_width + 0.5));
+	// ===
 
 	QSize viewerSize = ui.histogramView->size();
 	QImage displayedImg = getResized(_histogramPlot, viewerSize, true);
@@ -267,6 +362,15 @@ void HistogramWindow::clearCounters()
 	_count_RED = std::vector<int>(256, 0);
 	_count_GREEN = std::vector<int>(256, 0);
 	_count_BLUE = std::vector<int>(256, 0);
+	_max_value = 0;
+}
+
+void HistogramWindow::clearSums()
+{
+	_sums_RED.clear(); _sums_GREEN.clear(); _sums_BLUE.clear();
+	_sums_RED = std::vector<float>(256, 0.0f);
+	_sums_GREEN = std::vector<float>(256, 0.0f);
+	_sums_BLUE = std::vector<float>(256, 0.0f);
 }
 
 void HistogramWindow::displayImage(QImage* image)
@@ -339,11 +443,6 @@ void HistogramWindow::getIntensityBounds(float percentile1, float percentile2)
 		}
 	}
 
-	/*
-	_newMin_RED = _min_RED; _newMax_RED = _max_RED;
-	_newMin_GREEN = _min_GREEN; _newMax_GREEN = _max_GREEN;
-	_newMin_BLUE = _min_BLUE; _newMax_BLUE = _max_BLUE;*/
-
 	ui.minSlider->setValue(_min_RED); ui.maxSlider->setValue(_max_RED);
 	ui.minLabel->setText(QString::number(_min_RED)); ui.maxLabel->setText(QString::number(_max_RED));
 
@@ -388,6 +487,33 @@ void HistogramWindow::contrastStretch()
 	}
 
 	*_targetImage = stretchedImg;
+}
+
+void HistogramWindow::getCumulativeSums()
+{
+	clearSums();
+	// red (gray) channel
+	uint cumsum = 0;
+	int i, j;
+	for (i = 0; i < 256; i++) {
+		cumsum += _count_RED[i];
+		_sums_RED[i] = cumsum;
+	}
+
+	if (!_grayscale) {
+		// green channel
+		cumsum = 0;
+		for (i = 0; i < 256; i++) {
+			cumsum += _count_GREEN[i];
+			_sums_GREEN[i] = cumsum;
+		}
+		// blue channel
+		cumsum = 0;
+		for (i = 0; i < 256; i++) {
+			cumsum += _count_BLUE[i];
+			_sums_BLUE[i] = cumsum;
+		}
+	}
 }
 
 QImage HistogramWindow::getResized(QImage* image, const QSize& newSize, bool keepAspectRatio)

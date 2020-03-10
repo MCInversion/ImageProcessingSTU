@@ -28,8 +28,9 @@ public:
     QGridLayout *gridLayout;
     QHBoxLayout *hLayoutButtons;
     QCheckBox *checkBoxChannelLock;
+    QCheckBox *checkBoxDarkMode;
+    QCheckBox *checkBoxCumulative;
     QPushButton *applyButton;
-    QPushButton *openCumHistButton;
     QHBoxLayout *hLayoutGreen;
     QLabel *label_3;
     QLabel *minGreenLabel;
@@ -64,18 +65,25 @@ public:
         hLayoutButtons->setObjectName(QString::fromUtf8("hLayoutButtons"));
         checkBoxChannelLock = new QCheckBox(histogramWindow);
         checkBoxChannelLock->setObjectName(QString::fromUtf8("checkBoxChannelLock"));
+        checkBoxChannelLock->setChecked(false);
 
         hLayoutButtons->addWidget(checkBoxChannelLock);
+
+        checkBoxDarkMode = new QCheckBox(histogramWindow);
+        checkBoxDarkMode->setObjectName(QString::fromUtf8("checkBoxDarkMode"));
+        checkBoxDarkMode->setChecked(true);
+
+        hLayoutButtons->addWidget(checkBoxDarkMode);
+
+        checkBoxCumulative = new QCheckBox(histogramWindow);
+        checkBoxCumulative->setObjectName(QString::fromUtf8("checkBoxCumulative"));
+
+        hLayoutButtons->addWidget(checkBoxCumulative);
 
         applyButton = new QPushButton(histogramWindow);
         applyButton->setObjectName(QString::fromUtf8("applyButton"));
 
         hLayoutButtons->addWidget(applyButton);
-
-        openCumHistButton = new QPushButton(histogramWindow);
-        openCumHistButton->setObjectName(QString::fromUtf8("openCumHistButton"));
-
-        hLayoutButtons->addWidget(openCumHistButton);
 
 
         gridLayout->addLayout(hLayoutButtons, 7, 0, 1, 1);
@@ -212,10 +220,11 @@ public:
         QObject::connect(minGreenSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
         QObject::connect(maxGreenSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
         QObject::connect(maxBlueSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
-        QObject::connect(openCumHistButton, SIGNAL(clicked()), histogramWindow, SLOT(ActionOpenCumHist()));
         QObject::connect(minBlueSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
         QObject::connect(checkBoxChannelLock, SIGNAL(clicked(bool)), histogramWindow, SLOT(ActionLockChannels()));
         QObject::connect(applyButton, SIGNAL(clicked()), histogramWindow, SLOT(ActionApply()));
+        QObject::connect(checkBoxDarkMode, SIGNAL(clicked(bool)), histogramWindow, SLOT(ActionDarkMode()));
+        QObject::connect(checkBoxCumulative, SIGNAL(clicked(bool)), histogramWindow, SLOT(ActionCumulativeHist()));
 
         QMetaObject::connectSlotsByName(histogramWindow);
     } // setupUi
@@ -224,8 +233,9 @@ public:
     {
         histogramWindow->setWindowTitle(QCoreApplication::translate("histogramWindow", "Histogram", nullptr));
         checkBoxChannelLock->setText(QCoreApplication::translate("histogramWindow", "Channel lock", nullptr));
+        checkBoxDarkMode->setText(QCoreApplication::translate("histogramWindow", "Dark Mode", nullptr));
+        checkBoxCumulative->setText(QCoreApplication::translate("histogramWindow", "Cumulative Histogram", nullptr));
         applyButton->setText(QCoreApplication::translate("histogramWindow", "Scale", nullptr));
-        openCumHistButton->setText(QCoreApplication::translate("histogramWindow", "Cumulative Histogram", nullptr));
         label_3->setText(QCoreApplication::translate("histogramWindow", "green min:   ", nullptr));
         minGreenLabel->setText(QCoreApplication::translate("histogramWindow", "0", nullptr));
         label_4->setText(QCoreApplication::translate("histogramWindow", "green max:   ", nullptr));

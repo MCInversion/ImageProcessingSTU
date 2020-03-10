@@ -21,19 +21,32 @@
        <property name="text">
         <string>Channel lock</string>
        </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxDarkMode">
+       <property name="text">
+        <string>Dark Mode</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxCumulative">
+       <property name="text">
+        <string>Cumulative Histogram</string>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="applyButton">
        <property name="text">
         <string>Scale</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="openCumHistButton">
-       <property name="text">
-        <string>Cumulative Histogram</string>
        </property>
       </widget>
      </item>
@@ -292,22 +305,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>openCumHistButton</sender>
-   <signal>clicked()</signal>
-   <receiver>histogramWindow</receiver>
-   <slot>ActionOpenCumHist()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>871</x>
-     <y>578</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>914</x>
-     <y>542</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>minBlueSlider</sender>
    <signal>sliderMoved(int)</signal>
    <receiver>histogramWindow</receiver>
@@ -346,7 +343,7 @@
    <slot>ActionApply()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>480</x>
+     <x>855</x>
      <y>576</y>
     </hint>
     <hint type="destinationlabel">
@@ -355,11 +352,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>checkBoxDarkMode</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionDarkMode()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>289</x>
+     <y>575</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>550</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxCumulative</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionCumulativeHist()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>549</x>
+     <y>572</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>681</x>
+     <y>553</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ActionStretch()</slot>
   <slot>ActionApply()</slot>
-  <slot>ActionOpenCumHist()</slot>
+  <slot>ActionCumulativeHist()</slot>
   <slot>ActionLockChannels()</slot>
+  <slot>ActionDarkMode()</slot>
  </slots>
 </ui>
