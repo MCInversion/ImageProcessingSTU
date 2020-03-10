@@ -16,6 +16,9 @@ public:
 	~HistogramWindow();
 	void setImage(QImage* targetImage);
 	Ui::histogramWindow ui;
+
+	QImage* _targetImage = nullptr;
+	QImage* _histogramPlot = nullptr;
 public slots:
 	void plotHistogram(bool plotMinmax = false);
 	void ActionStretch();
@@ -28,10 +31,9 @@ signals:
 protected:
 	void resizeEvent(QResizeEvent* event);
 private:
-	// data
-	QImage* _targetImage = nullptr;
-	QImage* _histogramPlot = nullptr;
+	QGraphicsScene* _scene = nullptr;
 
+	// data
 	std::vector<int> _count_RED = std::vector<int>(256, 0);
 	std::vector<int> _count_GREEN = std::vector<int>(256, 0);
 	std::vector<int> _count_BLUE = std::vector<int>(256, 0);
@@ -53,7 +55,7 @@ private:
 
 	// flags
 	bool _grayscale = false;
-	bool _channelsLocked = false;
+	bool _channelsLocked = true;
 	bool _darkMode = true;
 	bool _plotCumulative = false;
 

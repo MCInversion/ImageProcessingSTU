@@ -65,7 +65,7 @@ public:
         hLayoutButtons->setObjectName(QString::fromUtf8("hLayoutButtons"));
         checkBoxChannelLock = new QCheckBox(histogramWindow);
         checkBoxChannelLock->setObjectName(QString::fromUtf8("checkBoxChannelLock"));
-        checkBoxChannelLock->setChecked(false);
+        checkBoxChannelLock->setChecked(true);
 
         hLayoutButtons->addWidget(checkBoxChannelLock);
 
@@ -210,6 +210,7 @@ public:
 
         histogramView = new QGraphicsView(histogramWindow);
         histogramView->setObjectName(QString::fromUtf8("histogramView"));
+        histogramView->setLayoutDirection(Qt::LeftToRight);
 
         gridLayout->addWidget(histogramView, 0, 0, 1, 1);
 

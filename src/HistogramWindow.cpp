@@ -3,6 +3,7 @@
 HistogramWindow::HistogramWindow(QWidget* parent)
 {
 	ui.setupUi(this);
+	_scene = new QGraphicsScene(ui.histogramView);
 }
 
 HistogramWindow::~HistogramWindow()
@@ -14,7 +15,7 @@ void HistogramWindow::setImage(QImage* targetImage)
 {
 	_targetImage = targetImage;
 	processImage();
-	lockChannelUI(_grayscale);
+	lockChannelUI(_channelsLocked);
 }
 
 void HistogramWindow::processImage()
@@ -57,10 +58,10 @@ void HistogramWindow::processImage()
 
 void HistogramWindow::ActionStretch()
 {
+	if (ui.minSlider->value() >= ui.maxSlider->value()) {
+		ui.minSlider->setValue(ui.maxSlider->value() - 1);
+	}
 	if (_grayscale) {
-		if (ui.minSlider->value() >= ui.maxSlider->value()) {
-			ui.minSlider->setValue(ui.maxSlider->value() - 1);
-		}
 		int val1 = ui.minSlider->value();
 		int val2 = ui.maxSlider->value();
 		ui.minLabel->setText(QString::number(val1));
@@ -130,6 +131,16 @@ void HistogramWindow::ActionCumulativeHist()
 void HistogramWindow::ActionLockChannels()
 {
 	_channelsLocked = ui.checkBoxChannelLock->isChecked();
+	if (!_grayscale) {
+		ui.minGreenSlider->setValue(_newMin_RED); ui.maxGreenSlider->setValue(_newMax_RED);
+		ui.minGreenLabel->setText(QString::number(_newMin_RED)); ui.maxGreenLabel->setText(QString::number(_newMax_RED));
+
+		ui.minBlueSlider->setValue(_newMin_RED); ui.maxBlueSlider->setValue(_newMax_RED);
+		ui.minBlueLabel->setText(QString::number(_newMin_RED)); ui.maxBlueLabel->setText(QString::number(_newMax_RED));
+
+		_newMin_GREEN = _newMin_RED; _newMax_GREEN = _newMax_RED;
+		_newMin_BLUE = _newMin_RED; _newMax_BLUE = _newMax_RED;
+	}
 	lockChannelUI(_channelsLocked);
 	plotHistogram(true);
 }
@@ -311,7 +322,7 @@ void HistogramWindow::plotHistogram(bool plotMinmax)
 
 	// === axes frame
 	int textSize = 0.1 * width;
-	drawLine(QPoint(x_offset, height - y_offset), QPoint(width - x_offset, height - y_offset), _axisColor, pen_width); // x-axis
+	drawLine(QPoint(0.9 * x_offset, height - y_offset), QPoint(width - 0.9 * x_offset, height - y_offset), _axisColor, pen_width); // x-axis
 	drawText("px intensity", QPoint((int)0.5 * width, (int)(height - 0.5 * y_offset)), _axisColor, textSize);
 	// ticks
 	drawText(QString::number(0), QPoint(x_offset, (int)(height - (1 - 0.2) * y_offset)), _axisColor, pen_width);
@@ -332,9 +343,9 @@ void HistogramWindow::plotHistogram(bool plotMinmax)
 		QString::number(255), QPoint(width - x_offset, (int)(height - y_offset)),	_axisColor, textSize
 	);
 
-	drawLine(QPoint(x_offset, height - y_offset), QPoint(x_offset, y_offset), _axisColor, pen_width); // y-axis
-	drawLine(QPoint(width - x_offset, height - y_offset), QPoint(width - x_offset, y_offset), _axisColor, (int)(0.5 * pen_width + 0.5));
-	drawLine(QPoint(x_offset, y_offset), QPoint(width - x_offset, y_offset), _axisColor, (int)(0.5 * pen_width + 0.5));
+	drawLine(QPoint(0.9 * x_offset, height - y_offset), QPoint(0.9 * x_offset, y_offset), _axisColor, (int)(0.5 * pen_width + 0.5)); // y-axis
+	drawLine(QPoint(width - 0.9 * x_offset, height - y_offset), QPoint(width - 0.9 * x_offset, y_offset), _axisColor, (int)(0.5 * pen_width + 0.5));
+	drawLine(QPoint(0.9 * x_offset, y_offset), QPoint(width - 0.9 * x_offset, y_offset), _axisColor, (int)(0.5 * pen_width + 0.5));
 	// ===
 
 	QSize viewerSize = ui.histogramView->size();
@@ -375,11 +386,12 @@ void HistogramWindow::clearSums()
 
 void HistogramWindow::displayImage(QImage* image)
 {
-	QGraphicsScene* scene = new QGraphicsScene();
+	_scene->clear();
+	_scene->setBackgroundBrush(QBrush(_bgColor, Qt::SolidPattern));
 	QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(*image));
 	QPixmap pixmap = QPixmap().fromImage(*image);
-	scene->addPixmap(pixmap);
-	ui.histogramView->setScene(scene);
+	_scene->addPixmap(pixmap);
+	ui.histogramView->setScene(_scene);
 	update();
 }
 
@@ -487,6 +499,10 @@ void HistogramWindow::contrastStretch()
 	}
 
 	*_targetImage = stretchedImg;
+
+	_newMin_RED = 0; _newMax_RED = 255;
+	_newMin_GREEN = 0; _newMax_GREEN = 255;
+	_newMin_BLUE = 0; _newMax_BLUE = 255;
 }
 
 void HistogramWindow::getCumulativeSums()

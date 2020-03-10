@@ -22,7 +22,7 @@
         <string>Channel lock</string>
        </property>
        <property name="checked">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -218,7 +218,11 @@
     </layout>
    </item>
    <item row="0" column="0">
-    <widget class="QGraphicsView" name="histogramView"/>
+    <widget class="QGraphicsView" name="histogramView">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

@@ -423,5 +423,6 @@ void ImageViewer::on_actionHistogram_triggered()
 void ImageViewer::on_stretch()
 {
 	ViewerWidget* w = getCurrentViewerWidget();
+	w->setDataPtr();
 	w->update();
 }
