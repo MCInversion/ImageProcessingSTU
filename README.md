@@ -6,7 +6,7 @@
 <img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/mirrorExtendTestGoodEnough.gif" height="50%" width="50%">
 
 ### Histogram
-<img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/histogramTestGoodEnough.gif" height="50%" width="50%">
+<img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/histogramTestGoodEnough.gif" height="75%" width="75%">
 
 #### Histogram for grayscale images
 <img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/gsLightVsDark.jpg" height="50%" width="50%">
