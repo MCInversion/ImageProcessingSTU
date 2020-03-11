@@ -9,12 +9,13 @@
 // - Multiple channel histogram bounds
 // - Normalized Cumulative histogram 
 // - applying extend on stretched image breaks it down (bad data ptr)
+// - add gaussian kernel matrix function paremetrized by t = sigma^2 / 2 (dialog with spin box)
+// - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
 
 // WIP:
-// - gaussian filter
+// - asymmetrical gaussian kernel
 
 // TODO:
-// - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
 // - UndoRedo (?)
 // - background processing thread
 

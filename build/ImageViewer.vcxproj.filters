@@ -4,6 +4,9 @@
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -21,6 +24,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_BlurDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_HistogramWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -28,6 +34,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.h">
@@ -47,6 +56,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\NewImgDialog.ui" />

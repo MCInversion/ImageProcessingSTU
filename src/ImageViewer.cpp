@@ -268,6 +268,38 @@ bool ImageViewer::mirrorExtendImageBy(int nPixels)
 	return true;
 }
 
+uchar ImageViewer::kernelSum(uchar* img, int row, int x, int y, int r)
+{
+	float sum = 0.0f;
+	for (int i = 0; i < 2 * r + 1; i++) {
+		for (int j = 0; j < 2 * r + 1; j++) {
+			int xPos = x - r + j, yPos = y - r + i;
+			sum += ((float)img[yPos * row + xPos]) * W->at((size_t)i * (2 * r + 1) + j);
+		}
+	}
+
+	return (uchar)std::fminf(sum + 0.5, 255.f);
+}
+
+QRgb ImageViewer::kernelSum(uchar* img, int row, QPoint px, int r)
+{
+	float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
+	for (int i = 0; i < 2 * r + 1; i++) {
+		for (int j = 0; j < 2 * r + 1; j++) {
+			int xPos = px.x() - r + j, yPos = px.y() - r + i;
+			sumR += ((float)img[yPos * row + xPos * 4]) * W->at((size_t)i * (2 * r + 1) + j);
+			sumG += ((float)img[yPos * row + xPos * 4 + 1]) * W->at((size_t)i * (2 * r + 1) + j);
+			sumB += ((float)img[yPos * row + xPos * 4 + 2]) * W->at((size_t)i * (2 * r + 1) + j);
+		}
+	}
+
+	return qRgb(
+		(int)std::fminf(sumR + 0.5, 255.f),
+		(int)std::fminf(sumG + 0.5, 255.f),
+		(int)std::fminf(sumB + 0.5, 255.f)
+	);
+}
+
 bool ImageViewer::blurImage(int radius)
 {
 	ViewerWidget* w = getCurrentViewerWidget();
@@ -299,36 +331,106 @@ bool ImageViewer::blurImage(int radius)
 	return true;
 }
 
-uchar ImageViewer::kernelSum(uchar* img, int row, int x, int y, int r)
+void ImageViewer::getGaussianKernel(int radius, bool print)
 {
-	float sum = 0.0f;
-	for (int i = 0; i < 2 * r + 1; i++) {
-		for (int j = 0; j < 2 * r + 1; j++) {
-			int xPos = x - r + j, yPos = y - r + i;
-			sum += ((float)img[yPos * row + xPos]) * _weights2[(size_t)i * (2 * r + 1) + j];
+	if (W) delete W;
+	const int size = (2 * radius + 1) * (2 * radius + 1);
+	W = new std::vector<float>(size, 0.0f);	
+	
+	float sigma = radius / 3.0f, h = 1.0f;
+	float x0, x1, y0, y1;
+	std::vector<float> w = {};
+
+	// symmetrical (triangular) slice of the kernel
+	for (int i = 0; i <= radius; i++) {
+		for (int j = 0; j <= i; j++) {
+			x0 = (2 * i - 1) * h / 2; x1 = (2 * i + 1) * h / 2;
+			y0 = (2 * j - 1) * h / 2; y1 = (2 * j + 1) * h / 2;
+			w.push_back( 0.25f * (erf(x1 / (M_SQRT2 * sigma)) - erf(x0 / (M_SQRT2 * sigma))) * (erf(y1 / (M_SQRT2 * sigma)) - erf(y0 / (M_SQRT2 * sigma))) );
 		}
 	}
 
-	return (uchar)std::fminf(sum + 0.5, 255.f);
+	// compose kernel from symmetrical slices
+	for (int sy = -1; sy <= 1; sy += 2) {
+		for (int sx = -1; sx <= 1; sx += 2) {
+
+			float** Wsym = new float* [(size_t)radius + 1];
+			for (int i = 0; i <= radius; i++) Wsym[i] = new float[(size_t)radius + 1]();
+
+			// compose symmetrical sub-kernel
+			for (int i = 0; i <= radius; i++) {
+				for (int j = 0; j <= radius; j++) {
+					int iPos = (sy > 0 ? i : radius - i); int jPos = (sx > 0 ? j : radius - j);
+					int id = iPos * (iPos + 1) / 2 + jPos;
+					Wsym[i][j] = w[id];
+				}
+			}
+
+			// corner bounds
+			int iMin = ((1 + sy) / 2) * radius, iMax = ((1 + sy) / 2 + 1) * radius;
+			int jMin = ((1 + sx) / 2) * radius, jMax = ((1 + sx) / 2 + 1) * radius;
+
+			for (int iy = iMin, i = 0; iy <= iMax; iy++, i++) {
+				for (int jx = jMin, j = 0; jx <= jMax; jx++, j++) {
+					int id = iy * (2 * radius + 1) + jx;
+					W->at(id) = Wsym[i][j];
+				}
+			}
+
+			// cleanup
+			for (int i = 0; i <= radius; i++) delete[] Wsym[i];
+			delete[] Wsym;
+		}
+	}
+
+	// count weights
+	float wSum = 0.0f;
+	for (int i = 0; i <= 2 * radius; i++) {
+		for (int j = 0; j <= 2 * radius; j++) {
+			int id = i * (2 * radius + 1) + j;
+			wSum += W->at(id);
+		}
+	}
+
+	// normalize
+	for (int i = 0; i <= 2 * radius; i++) {
+		for (int j = 0; j <= 2 * radius; j++) {
+			int id = i * (2 * radius + 1) + j;
+			W->at(id) /= wSum;
+		}
+	}
+
+	w.clear();
+
+	if (print) {
+		printf("K = \n");
+		for (int i = 0; i <= 2 * radius; i++) {
+			for (int j = 0; j <= 2 * radius; j++) {
+				int id = i * (2 * radius + 1) + j;
+				printf("%f ", W->at(id));
+			}
+			printf("\n");
+		}
+	}
 }
 
-QRgb ImageViewer::kernelSum(uchar* img, int row, QPoint px, int r)
+void ImageViewer::getAveragingKernel(int radius, bool print)
 {
-	float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
-	for (int i = 0; i < 2 * r + 1; i++) {
-		for (int j = 0; j < 2 * r + 1; j++) {
-			int xPos = px.x() - r + j, yPos = px.y() - r + i;
-			sumR += ((float)img[yPos * row + xPos * 4]) * _weights2[(size_t)i * (2 * r + 1) + j];
-			sumG += ((float)img[yPos * row + xPos * 4 + 1]) * _weights2[(size_t)i * (2 * r + 1) + j];
-			sumB += ((float)img[yPos * row + xPos * 4 + 2]) * _weights2[(size_t)i * (2 * r + 1) + j];
+	if (W) delete W;
+	int size = (2 * radius + 1) * (2 * radius + 1);
+	float pxWeight = 1.0f / size;
+	W = new std::vector<float>(size, pxWeight);
+
+	if (print) {
+		printf("K = \n");
+		for (int i = 0; i <= 2 * radius; i++) {
+			for (int j = 0; j <= 2 * radius; j++) {
+				int id = i * (2 * radius + 1) + j;
+				printf("%f ", W->at(id));
+			}
+			printf("\n");
 		}
 	}
-
-	return qRgb(
-		(int)std::fminf(sumR + 0.5, 255.f),
-		(int)std::fminf(sumG + 0.5, 255.f),
-		(int)std::fminf(sumB + 0.5, 255.f)
-	);
 }
 
 //Slots
@@ -382,6 +484,29 @@ void ImageViewer::mirrorExtendAccepted()
 
 	int nPixels = mirrorExtendDialog->getPixels();
 	mirrorExtendImageBy(nPixels);
+}
+
+void ImageViewer::blurAccepted()
+{
+	BlurDialog* blurDialog = static_cast<BlurDialog*>(sender());
+
+	int radius = blurDialog->getRadius();
+	bool printToConsole = blurDialog->printKernelToConsole();
+	int kerType = blurDialog->getKernelType();
+	// 0 - Gaussian, 1 - Averaging
+	if (kerType == 0) {
+		getGaussianKernel(radius, printToConsole);
+	}
+	else {
+		getAveragingKernel(radius, printToConsole);
+	}
+	
+	ViewerWidget* w = getCurrentViewerWidget();
+	QImage* img = w->getImage();
+	QImage extended = QImage(*img);
+	w->setImage(extended);
+	mirrorExtendImageBy(radius);
+	blurImage(radius);
 }
 
 void ImageViewer::on_actionOpen_triggered()
@@ -485,13 +610,16 @@ void ImageViewer::on_actionHistogram_triggered()
 
 void ImageViewer::on_actionBlur_triggered()
 {
-	// W = &_weights2;
-	ViewerWidget* w = getCurrentViewerWidget();
-	QImage* img = w->getImage();
-	QImage extended = QImage(*img);
-	w->setImage(extended);
-	mirrorExtendImageBy(2);
-	blurImage(2);
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	blurDialog = new BlurDialog(this);
+	connect(blurDialog, SIGNAL(accepted()), this, SLOT(blurAccepted()));
+	blurDialog->exec();
 }
 
 void ImageViewer::on_stretch()

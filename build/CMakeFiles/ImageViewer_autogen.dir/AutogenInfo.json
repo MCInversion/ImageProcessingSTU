@@ -8,6 +8,11 @@
 	"HEADERS" : 
 	[
 		[
+			"D:/VS_Projects/ImageViewerIP/src/BlurDialog.h",
+			"MU",
+			"UVLADIE3JM/moc_BlurDialog.cpp"
+		],
+		[
 			"D:/VS_Projects/ImageViewerIP/src/HistogramWindow.h",
 			"MU",
 			"UVLADIE3JM/moc_HistogramWindow.cpp"
@@ -68,6 +73,7 @@
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
+		"D:/VS_Projects/ImageViewerIP/build/ui_BlurDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_HistogramWindow.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_MirrorExtendDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_NewImgDialog.h"
@@ -89,6 +95,7 @@
 	"SETTINGS_FILE_Release" : "D:/VS_Projects/ImageViewerIP/build/CMakeFiles/ImageViewer_autogen.dir/AutogenUsed_Release.txt",
 	"SOURCES" : 
 	[
+		[ "D:/VS_Projects/ImageViewerIP/src/BlurDialog.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/HistogramWindow.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/ImageViewer.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.cpp", "MU" ],
@@ -99,9 +106,11 @@
 	"UIC_SEARCH_PATHS" : [],
 	"UIC_SKIP" : 
 	[
+		"D:/VS_Projects/ImageViewerIP/build/ui_BlurDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_HistogramWindow.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_MirrorExtendDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_NewImgDialog.h",
+		"D:/VS_Projects/ImageViewerIP/src/BlurDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/HistogramWindow.ui",
 		"D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/NewImgDialog.ui"

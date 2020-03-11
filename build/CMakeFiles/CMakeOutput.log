@@ -1,7 +1,7 @@
 The system is: Windows - 10.0.18362 - AMD64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
 Compiler:  
-Build flags: 
+Build flags: /DWIN32;/D_WINDOWS;/W3
 Id flags:  
 
 The output was:
@@ -9,7 +9,7 @@ The output was:
 Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
-Build started 2/27/2020 10:00:01 AM.
+Build started 3/11/2020 8:07:53 PM.
 Project "D:\VS_Projects\ImageViewerIP\build\CMakeFiles\3.16.0-rc3\CompilerIdC\CompilerIdC.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "Debug\".
@@ -35,7 +35,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.27
+Time Elapsed 00:00:01.90
 
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -46,7 +46,7 @@ The C compiler identification is MSVC, found in "D:/VS_Projects/ImageViewerIP/bu
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
 Compiler:  
-Build flags: 
+Build flags: /DWIN32;/D_WINDOWS;/W3;/GR;/EHsc
 Id flags:  
 
 The output was:
@@ -54,7 +54,7 @@ The output was:
 Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
-Build started 2/27/2020 10:00:03 AM.
+Build started 3/11/2020 8:07:56 PM.
 Project "D:\VS_Projects\ImageViewerIP\build\CMakeFiles\3.16.0-rc3\CompilerIdCXX\CompilerIdCXX.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "Debug\".
@@ -80,7 +80,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.31
+Time Elapsed 00:00:00.99
 
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -92,56 +92,56 @@ The CXX compiler identification is MSVC, found in "D:/VS_Projects/ImageViewerIP/
 Determining if the C compiler works passed with the following output:
 Change Dir: D:/VS_Projects/ImageViewerIP/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_e4bc1.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
+Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_fd930.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.24.28314 for x64
-  testCCompiler.c
   Copyright (C) Microsoft Corporation.  All rights reserved.
-  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_e4bc1.dir\Debug\\" /Fd"cmTC_e4bc1.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\testCCompiler.c
-  cmTC_e4bc1.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_e4bc1.exe
+  testCCompiler.c
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_fd930.dir\Debug\\" /Fd"cmTC_fd930.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\testCCompiler.c
+  cmTC_fd930.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_fd930.exe
 
 
 
 Detecting C compiler ABI info compiled with the following output:
 Change Dir: D:/VS_Projects/ImageViewerIP/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_5eae0.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
+Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_dc1ba.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.24.28314 for x64
   CMakeCCompilerABI.c
   Copyright (C) Microsoft Corporation.  All rights reserved.
-  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5eae0.dir\Debug\\" /Fd"cmTC_5eae0.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "D:\Cmake\share\cmake-3.16\Modules\CMakeCCompilerABI.c"
-  cmTC_5eae0.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_5eae0.exe
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_dc1ba.dir\Debug\\" /Fd"cmTC_dc1ba.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "D:\Cmake\share\cmake-3.16\Modules\CMakeCCompilerABI.c"
+  cmTC_dc1ba.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_dc1ba.exe
 
 
 
 Determining if the CXX compiler works passed with the following output:
 Change Dir: D:/VS_Projects/ImageViewerIP/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_9d4f9.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
+Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_b2ac5.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.24.28314 for x64
   testCXXCompiler.cxx
   Copyright (C) Microsoft Corporation.  All rights reserved.
-  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_9d4f9.dir\Debug\\" /Fd"cmTC_9d4f9.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
-  cmTC_9d4f9.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_9d4f9.exe
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_b2ac5.dir\Debug\\" /Fd"cmTC_b2ac5.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+  cmTC_b2ac5.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_b2ac5.exe
 
 
 
 Detecting CXX compiler ABI info compiled with the following output:
 Change Dir: D:/VS_Projects/ImageViewerIP/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_c0f0e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
+Run Build Command(s):D:/VS Community/MSBuild/Current/Bin/MSBuild.exe cmTC_1f6c5.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m && Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.24.28314 for x64
   CMakeCXXCompilerABI.cpp
   Copyright (C) Microsoft Corporation.  All rights reserved.
-  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_c0f0e.dir\Debug\\" /Fd"cmTC_c0f0e.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "D:\Cmake\share\cmake-3.16\Modules\CMakeCXXCompilerABI.cpp"
-  cmTC_c0f0e.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_c0f0e.exe
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_1f6c5.dir\Debug\\" /Fd"cmTC_1f6c5.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "D:\Cmake\share\cmake-3.16\Modules\CMakeCXXCompilerABI.cpp"
+  cmTC_1f6c5.vcxproj -> D:\VS_Projects\ImageViewerIP\build\CMakeFiles\CMakeTmp\Debug\cmTC_1f6c5.exe
 
 
 
