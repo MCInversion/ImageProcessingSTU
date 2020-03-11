@@ -3,7 +3,7 @@
 ## Features 
 
 ### Mirror Extend by n pixels
-![extend](https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/mirrorExtendTestGoodEnough.gif){:height="50%" width="50%"}
+<img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/mirrorExtendTestGoodEnough.gif" height="50%" width="50%">
 
 ### Histogram
 ![histo](https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/histogramTestGoodEnough.gif){:height="50%" width="50%"}
