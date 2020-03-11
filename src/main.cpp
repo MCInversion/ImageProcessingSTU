@@ -13,11 +13,11 @@
 // - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
 
 // WIP:
-// - asymmetrical gaussian kernel
 
 // TODO:
 // - UndoRedo (?)
 // - background processing thread
+// - active img <--> widgets communication/update
 
 // issues:
 // - cannot delete QImage ptr, why?
@@ -30,6 +30,7 @@
 //   => (kernel mask with integral > 1)
 // - blur makes the picture darker
 //   => (kernel mask with integral < 1)
+// - asymmetrical gaussian kernel
 
 int main(int argc, char* argv[])
 {

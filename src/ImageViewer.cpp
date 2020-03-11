@@ -338,57 +338,20 @@ void ImageViewer::getGaussianKernel(int radius, bool print)
 	W = new std::vector<float>(size, 0.0f);	
 	
 	float sigma = radius / 3.0f, h = 1.0f;
-	float x0, x1, y0, y1;
-	std::vector<float> w = {};
+	float x0, x1, y0, y1, wSum = 0.0f;
 
-	// symmetrical (triangular) slice of the kernel
-	for (int i = 0; i <= radius; i++) {
-		for (int j = 0; j <= i; j++) {
-			x0 = (2 * i - 1) * h / 2; x1 = (2 * i + 1) * h / 2;
-			y0 = (2 * j - 1) * h / 2; y1 = (2 * j + 1) * h / 2;
-			w.push_back( 0.25f * (erf(x1 / (M_SQRT2 * sigma)) - erf(x0 / (M_SQRT2 * sigma))) * (erf(y1 / (M_SQRT2 * sigma)) - erf(y0 / (M_SQRT2 * sigma))) );
-		}
-	}
-
-	// compose kernel from symmetrical slices
-	for (int sy = -1; sy <= 1; sy += 2) {
-		for (int sx = -1; sx <= 1; sx += 2) {
-
-			float** Wsym = new float* [(size_t)radius + 1];
-			for (int i = 0; i <= radius; i++) Wsym[i] = new float[(size_t)radius + 1]();
-
-			// compose symmetrical sub-kernel
-			for (int i = 0; i <= radius; i++) {
-				for (int j = 0; j <= radius; j++) {
-					int iPos = (sy > 0 ? i : radius - i); int jPos = (sx > 0 ? j : radius - j);
-					int id = iPos * (iPos + 1) / 2 + jPos;
-					Wsym[i][j] = w[id];
-				}
-			}
-
-			// corner bounds
-			int iMin = ((1 + sy) / 2) * radius, iMax = ((1 + sy) / 2 + 1) * radius;
-			int jMin = ((1 + sx) / 2) * radius, jMax = ((1 + sx) / 2 + 1) * radius;
-
-			for (int iy = iMin, i = 0; iy <= iMax; iy++, i++) {
-				for (int jx = jMin, j = 0; jx <= jMax; jx++, j++) {
-					int id = iy * (2 * radius + 1) + jx;
-					W->at(id) = Wsym[i][j];
-				}
-			}
-
-			// cleanup
-			for (int i = 0; i <= radius; i++) delete[] Wsym[i];
-			delete[] Wsym;
-		}
-	}
-
-	// count weights
-	float wSum = 0.0f;
+	// direct integration of the kernel using error function (erf)
 	for (int i = 0; i <= 2 * radius; i++) {
 		for (int j = 0; j <= 2 * radius; j++) {
+			x0 = (2 * i - 1) * h / 2 - radius;	x1 = (2 * i + 1) * h / 2 - radius;
+			y0 = (2 * j - 1) * h / 2 - radius;	y1 = (2 * j + 1) * h / 2 - radius;
+
+			// 2D gaussians are independent G(x,y) = G(x) G(y) and so are their integrals
+			float pxIntegral = 0.25f * (erf(x1 / (M_SQRT2 * sigma)) - erf(x0 / (M_SQRT2 * sigma))) * (erf(y1 / (M_SQRT2 * sigma)) - erf(y0 / (M_SQRT2 * sigma)));
+			
 			int id = i * (2 * radius + 1) + j;
-			wSum += W->at(id);
+			W->at(id) = pxIntegral;
+			wSum += pxIntegral;
 		}
 	}
 
@@ -399,8 +362,6 @@ void ImageViewer::getGaussianKernel(int radius, bool print)
 			W->at(id) /= wSum;
 		}
 	}
-
-	w.clear();
 
 	if (print) {
 		printf("K = \n");

@@ -1,7 +1,4 @@
 ﻿  Automatic MOC and UIC for target ImageViewer
-  Generating ui_BlurDialog.h
-  mocs_compilation.cpp
-  BlurDialog.cpp
   ImageViewer.cpp
   main.cpp
   ImageViewer.vcxproj -> D:\VS_Projects\ImageViewerIP\build\Debug\ImageViewer.exe
