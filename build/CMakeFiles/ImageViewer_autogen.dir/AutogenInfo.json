@@ -13,11 +13,6 @@
 			"UVLADIE3JM/moc_HistogramWindow.cpp"
 		],
 		[
-			"D:/VS_Projects/ImageViewerIP/src/ImageProcessor.h",
-			"MU",
-			"UVLADIE3JM/moc_ImageProcessor.cpp"
-		],
-		[
 			"D:/VS_Projects/ImageViewerIP/src/ImageViewer.h",
 			"MU",
 			"UVLADIE3JM/moc_ImageViewer.cpp"
@@ -95,7 +90,6 @@
 	"SOURCES" : 
 	[
 		[ "D:/VS_Projects/ImageViewerIP/src/HistogramWindow.cpp", "MU" ],
-		[ "D:/VS_Projects/ImageViewerIP/src/ImageProcessor.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/ImageViewer.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/ViewerWidget.cpp", "MU" ],

@@ -55,6 +55,7 @@
     <addaction name="actionClear"/>
     <addaction name="actionInvert_colors"/>
     <addaction name="actionMirror_Extend_test"/>
+    <addaction name="actionBlur"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -62,7 +63,15 @@
     </property>
     <addaction name="actionHistogram"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuImage"/>
    <addaction name="menuTools"/>
   </widget>
@@ -115,10 +124,23 @@
     <string>Histogram</string>
    </property>
   </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionBlur">
+   <property name="text">
+    <string>Blur</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="ImageViewer.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

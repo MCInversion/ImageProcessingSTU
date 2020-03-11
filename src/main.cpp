@@ -11,11 +11,12 @@
 // - applying extend on stretched image breaks it down (bad data ptr)
 
 // WIP:
-// - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
+// - gaussian filter
 
 // TODO:
-// - gaussian filter
+// - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
 // - UndoRedo (?)
+// - background processing thread
 
 // issues:
 // - cannot delete QImage ptr, why?
@@ -23,7 +24,11 @@
 
 // Solved issues:
 // - Q_OBJECT in MirrorExtendDialog/HistogramWindow cannot be present (lnk 2001 error otherwise)
-// both issues => regenerate build via CMake (Q_OBJECT macro necessary for signals & slots inside new QWindow)
+//	 both issues => regenerate build via CMake (Q_OBJECT macro necessary for signals & slots inside new QWindow)
+// - after multiband histogram scaling mirror extend switches colors
+//   => (kernel mask with integral > 1)
+// - blur makes the picture darker
+//   => (kernel mask with integral < 1)
 
 int main(int argc, char* argv[])
 {

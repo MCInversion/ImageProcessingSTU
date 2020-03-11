@@ -610,7 +610,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp" />
-    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.cpp" />
@@ -619,7 +618,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MirrorExtendDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.h" />
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h" />

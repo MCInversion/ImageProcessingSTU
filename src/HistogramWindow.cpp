@@ -102,12 +102,10 @@ void HistogramWindow::ActionStretch()
 
 void HistogramWindow::ActionApply()
 {
-	// printf("max_value (pre-apply) = %d\n", _max_value);
 	contrastStretch();
 	emit sigStretch();
 
 	processImage();
-	// printf("max_value (post-apply) = %d\n", _max_value);
 	plotHistogram(true);
 }
 

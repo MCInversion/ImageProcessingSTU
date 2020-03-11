@@ -23,8 +23,6 @@ private:
 	QSettings settings;
 	QMessageBox msgBox;
 
-	// ImageProcessor imProc = ImageProcessor();
-
 	//ViewerWidget functions
 	ViewerWidget* getViewerWidget(int tabId);
 	ViewerWidget* getCurrentViewerWidget();
@@ -51,6 +49,33 @@ private:
 	bool clearImage();
 	bool invertColors();
 	bool mirrorExtendImageBy(int nPixels);
+	bool blurImage(int radius);
+	uchar kernelSum(uchar* img, int row, int x, int y, int r);
+	QRgb kernelSum(uchar* img, int row, QPoint px, int r);
+
+	std::vector<float> _weights = {
+		1.f / 9.f,		1.f / 9.f,	   1.f / 9.f,
+		1.f / 9.f,		1.f / 9.f,	   1.f / 9.f,
+		1.f / 9.f,		1.f / 9.f,	   1.f / 9.f
+	};
+
+	std::vector<float> _weights2 = {
+		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,		1.f / 25.f,
+		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,		1.f / 25.f,
+		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,		1.f / 25.f,
+		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,		1.f / 25.f,
+		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,		1.f / 25.f
+	};
+
+	std::vector<float> _weights5 = {
+		0.00550747f,	0.0177061f,		0.026117f,		0.0177061f,		0.00550747f,
+		0.0177061f,	    0.0569236f,		0.0839642f,		0.0569236f,		0.0177061f,
+		0.026117f,		0.0839642f,		0.168302f,		0.0839642f,		0.026117f,
+		0.0177061f,		0.0569236f,		0.0839642f,		0.0569236f,		0.0177061f,
+		0.00550747f,	0.0177061f,		0.026117f,		0.0177061f,		0.00550747f
+	};
+
+	std::vector<float>* W = nullptr;
 
 	//Processing actions:
 
@@ -72,6 +97,7 @@ private slots:
 	void on_actionInvert_colors_triggered();
 	void on_actionMirror_Extend_test_triggered();
 	void on_actionHistogram_triggered();
+	void on_actionBlur_triggered();
 
 	//Histogram slots
 	void on_stretch();

@@ -34,6 +34,9 @@ public:
     QAction *actionInvert_colors;
     QAction *actionMirror_Extend_test;
     QAction *actionHistogram;
+    QAction *actionUndo;
+    QAction *actionRedo;
+    QAction *actionBlur;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget;
@@ -41,6 +44,7 @@ public:
     QMenu *menuFile;
     QMenu *menuImage;
     QMenu *menuTools;
+    QMenu *menuEdit;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -65,6 +69,12 @@ public:
         actionMirror_Extend_test->setObjectName(QString::fromUtf8("actionMirror_Extend_test"));
         actionHistogram = new QAction(ImageViewerClass);
         actionHistogram->setObjectName(QString::fromUtf8("actionHistogram"));
+        actionUndo = new QAction(ImageViewerClass);
+        actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
+        actionRedo = new QAction(ImageViewerClass);
+        actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
+        actionBlur = new QAction(ImageViewerClass);
+        actionBlur->setObjectName(QString::fromUtf8("actionBlur"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -89,6 +99,8 @@ public:
         menuImage->setObjectName(QString::fromUtf8("menuImage"));
         menuTools = new QMenu(menuBar);
         menuTools->setObjectName(QString::fromUtf8("menuTools"));
+        menuEdit = new QMenu(menuBar);
+        menuEdit->setObjectName(QString::fromUtf8("menuEdit"));
         ImageViewerClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(ImageViewerClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -98,6 +110,7 @@ public:
         ImageViewerClass->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
+        menuBar->addAction(menuEdit->menuAction());
         menuBar->addAction(menuImage->menuAction());
         menuBar->addAction(menuTools->menuAction());
         menuFile->addAction(actionNew);
@@ -107,7 +120,10 @@ public:
         menuImage->addAction(actionClear);
         menuImage->addAction(actionInvert_colors);
         menuImage->addAction(actionMirror_Extend_test);
+        menuImage->addAction(actionBlur);
         menuTools->addAction(actionHistogram);
+        menuEdit->addAction(actionUndo);
+        menuEdit->addAction(actionRedo);
 
         retranslateUi(ImageViewerClass);
 
@@ -125,9 +141,13 @@ public:
         actionInvert_colors->setText(QCoreApplication::translate("ImageViewerClass", "Invert colors", nullptr));
         actionMirror_Extend_test->setText(QCoreApplication::translate("ImageViewerClass", "Mirror Extend (test)", nullptr));
         actionHistogram->setText(QCoreApplication::translate("ImageViewerClass", "Histogram", nullptr));
+        actionUndo->setText(QCoreApplication::translate("ImageViewerClass", "Undo", nullptr));
+        actionRedo->setText(QCoreApplication::translate("ImageViewerClass", "Redo", nullptr));
+        actionBlur->setText(QCoreApplication::translate("ImageViewerClass", "Blur", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));
         menuTools->setTitle(QCoreApplication::translate("ImageViewerClass", "Tools", nullptr));
+        menuEdit->setTitle(QCoreApplication::translate("ImageViewerClass", "Edit", nullptr));
     } // retranslateUi
 
 };

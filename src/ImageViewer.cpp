@@ -204,7 +204,7 @@ bool ImageViewer::mirrorExtendImageBy(int nPixels)
 
 	for (int i = 0; i < newHeight; i++) {
 		for (int j = 0; j < newWidth; j++) {
-			
+
 			int iPos; int jPos;
 			// upper left corner
 			if (i < nPixels && j < nPixels) {
@@ -266,6 +266,69 @@ bool ImageViewer::mirrorExtendImageBy(int nPixels)
 
 	w->update();
 	return true;
+}
+
+bool ImageViewer::blurImage(int radius)
+{
+	ViewerWidget* w = getCurrentViewerWidget();
+	int height = w->getImgHeight();
+	int width = w->getImgWidth();
+	uchar* data = w->getData();
+
+	int row = w->getImage()->bytesPerLine();
+	int depth = w->getImage()->depth();
+
+	QImage blurredImg = QImage(QSize(width - 2 * radius, height - 2 * radius), w->getImage()->format());
+	blurredImg.fill(QColor(0, 0, 0));
+	w->setImage(blurredImg);
+
+	for (int x = 0; x < blurredImg.width(); x++) {
+		for (int y = 0; y < blurredImg.height(); y++) {
+			int xPos = x + radius, yPos = y + radius;
+			if (depth == 8) {
+				w->setPixel(x, y, static_cast<uchar>(kernelSum(data, row, xPos, yPos, radius)));
+			}
+			else {
+				QColor col = kernelSum(data, row, QPoint(xPos, yPos), radius);
+				w->setPixel(x, y, col.red(), col.green(), col.blue());
+			}
+		}
+	}
+
+	w->update();
+	return true;
+}
+
+uchar ImageViewer::kernelSum(uchar* img, int row, int x, int y, int r)
+{
+	float sum = 0.0f;
+	for (int i = 0; i < 2 * r + 1; i++) {
+		for (int j = 0; j < 2 * r + 1; j++) {
+			int xPos = x - r + j, yPos = y - r + i;
+			sum += ((float)img[yPos * row + xPos]) * _weights2[(size_t)i * (2 * r + 1) + j];
+		}
+	}
+
+	return (uchar)std::fminf(sum + 0.5, 255.f);
+}
+
+QRgb ImageViewer::kernelSum(uchar* img, int row, QPoint px, int r)
+{
+	float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
+	for (int i = 0; i < 2 * r + 1; i++) {
+		for (int j = 0; j < 2 * r + 1; j++) {
+			int xPos = px.x() - r + j, yPos = px.y() - r + i;
+			sumR += ((float)img[yPos * row + xPos * 4]) * _weights2[(size_t)i * (2 * r + 1) + j];
+			sumG += ((float)img[yPos * row + xPos * 4 + 1]) * _weights2[(size_t)i * (2 * r + 1) + j];
+			sumB += ((float)img[yPos * row + xPos * 4 + 2]) * _weights2[(size_t)i * (2 * r + 1) + j];
+		}
+	}
+
+	return qRgb(
+		(int)std::fminf(sumR + 0.5, 255.f),
+		(int)std::fminf(sumG + 0.5, 255.f),
+		(int)std::fminf(sumB + 0.5, 255.f)
+	);
 }
 
 //Slots
@@ -418,6 +481,17 @@ void ImageViewer::on_actionHistogram_triggered()
 	histogramWindow->setImage(w->getImage());
 	histogramWindow->plotHistogram();
 	histogramWindow->show();
+}
+
+void ImageViewer::on_actionBlur_triggered()
+{
+	// W = &_weights2;
+	ViewerWidget* w = getCurrentViewerWidget();
+	QImage* img = w->getImage();
+	QImage extended = QImage(*img);
+	w->setImage(extended);
+	mirrorExtendImageBy(2);
+	blurImage(2);
 }
 
 void ImageViewer::on_stretch()
