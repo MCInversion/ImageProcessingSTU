@@ -5,7 +5,7 @@
 ### Mirror Extend by n pixels
 <img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/mirrorExtendTestGoodEnough.gif" height="50%" width="50%">
 Extends the image by its mirror transformations and by reflections along its corners by a given amount of pixels.
-Will be used in `Blur`.
+Will be used in *Blur*.
 
 ### Histogram
 <img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/histogramTestGoodEnough.gif" height="80%" width="80%">
