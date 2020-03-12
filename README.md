@@ -9,7 +9,7 @@ Will be used in `Blur`.
 
 ### Histogram
 <img src="https://github.com/MCInversion/ImageProcessingSTU/blob/master/screens/histogramTestGoodEnough.gif" height="80%" width="80%">
-A fully interactive histogram window with the following features:
+A fully resizeable histogram window with the following features:
 - Grayscale / RGB histogram plot of the active image
 - Cumulative histograms (CDF) available from the respective checkbox
 - Histogram transformations (contrast stretch) with adjustable boundaries
