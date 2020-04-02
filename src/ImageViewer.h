@@ -20,12 +20,6 @@ public:
 private:
 	Ui::ImageViewerClass* ui;
 
-	// openable windows/widget/dialogs
-	NewImageDialog* newImgDialog;
-	MirrorExtendDialog* mirrorExtendDialog;
-	HistogramWindow* histogramWindow;
-	BlurDialog* blurDialog;
-
 	QSettings settings;
 	QMessageBox msgBox;
 
@@ -63,28 +57,6 @@ private:
 
 	void getGaussianKernel(int radius, bool print = false);
 	void getAveragingKernel(int radius, bool print = false);
-
-	std::vector<float> _weights = {
-		1.f / 9.f,		1.f / 9.f,	   1.f / 9.f,
-		1.f / 9.f,		1.f / 9.f,	   1.f / 9.f,
-		1.f / 9.f,		1.f / 9.f,	   1.f / 9.f
-	};
-
-	std::vector<float> _weights2 = {
-		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,
-		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,
-		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,
-		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f,
-		1.f / 25.f,		1.f / 25.f,	   1.f / 25.f,     1.f / 25.f,     1.f / 25.f
-	};
-
-	std::vector<float> _weights5 = {
-		0.00550747f,	0.0177061f,		0.026117f,		0.0177061f,		0.00550747f,
-		0.0177061f,	    0.0569236f,		0.0839642f,		0.0569236f,		0.0177061f,
-		0.026117f,		0.0839642f,		0.168302f,		0.0839642f,		0.026117f,
-		0.0177061f,		0.0569236f,		0.0839642f,		0.0569236f,		0.0177061f,
-		0.00550747f,	0.0177061f,		0.026117f,		0.0177061f,		0.00550747f
-	};
 
 	std::vector<float>* W = nullptr;
 

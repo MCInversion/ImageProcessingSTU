@@ -16,8 +16,8 @@ ViewerWidget::ViewerWidget(QString viewerName, QSize imgSize, QWidget* parent)
 }
 ViewerWidget::~ViewerWidget()
 {
-	// delete painter;
 	delete img;
+	//delete painter;
 }
 void ViewerWidget::resizeWidget(QSize size)
 {
@@ -30,7 +30,7 @@ void ViewerWidget::resizeWidget(QSize size)
 bool ViewerWidget::setImage(const QImage& inputImg)
 {
 	if (img != nullptr) {
-		// delete img;
+		delete img;
 	}
 	img = new QImage(inputImg);
 	if (!img) {
@@ -42,33 +42,38 @@ bool ViewerWidget::setImage(const QImage& inputImg)
 	return true;
 }
 
-void ViewerWidget::setPixel(const int& x, const int& y, const uchar& r, const uchar& g, const uchar& b, const uchar& a)
+void ViewerWidget::setPixel(QImage* img, int x, int y, uchar r, uchar g, uchar b, uchar a)
 {
-	if (isInside(x, y)) {
+	uchar* d = img->bits();
+	if (isInside(img, x, y)) {
 		int startbyte = y * img->bytesPerLine() + x * 4;
-		data[startbyte] = r;
-		data[startbyte + 1] = g;
-		data[startbyte + 2] = b;
-		data[startbyte + 3] = a;
+		d[startbyte] = r;
+		d[startbyte + 1] = g;
+		d[startbyte + 2] = b;
+		d[startbyte + 3] = a;
 	}
 }
-void ViewerWidget::setPixel(const int& x, const int& y, const uchar& val)
+
+void ViewerWidget::setPixel(QImage* img, int x, int y, uchar val)
 {
-	if (isInside(x, y)) {
-		data[y * img->bytesPerLine() + x] = val;
+	uchar * d = img->bits();
+	if (isInside(img, x, y)) {
+		d[y * img->bytesPerLine() + x] = val;
 	}
 }
-void ViewerWidget::setPixel(const int& x, const int& y, double& val)
+
+void ViewerWidget::setPixel(QImage* img, int x, int y, double val)
 {
-	if (isInside(x, y)) {
+	if (isInside(img, x, y)) {
 		if (val > 1) val = 1;
 		if (val < 0) val = 0;
-		setPixel(x, y, static_cast<uchar>(255 * val));
+		setPixel(img, x, y, static_cast<uchar>(255 * val));
 	}
 }
-void ViewerWidget::setPixel(const int& x, const int& y,  double& valR,  double& valG,  double& valB, const double& valA)
+
+void ViewerWidget::setPixel(QImage* img, int x, int y, double valR, double valG, double valB, double valA)
 {
-	if (isInside(x, y)) {
+	if (isInside(img, x, y)) {
 		if (valR > 1) valR = 1;
 		if (valG > 1) valG = 1;
 		if (valB > 1) valB = 1;
@@ -81,7 +86,7 @@ void ViewerWidget::setPixel(const int& x, const int& y,  double& valR,  double& 
 		double newValA = valA;
 		if (newValA > 1) newValA = 1;
 		if (newValA < 0) newValA = 0;
-		setPixel(x, y, static_cast<uchar>(255 * valR), static_cast<uchar>(255 * valG), static_cast<uchar>(255 * valB), static_cast<uchar>(255 * valA));
+		setPixel(img, x, y, static_cast<uchar>(255 * valR), static_cast<uchar>(255 * valG), static_cast<uchar>(255 * valB), static_cast<uchar>(255 * valA));
 	}
 }
 

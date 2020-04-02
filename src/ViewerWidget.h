@@ -10,11 +10,11 @@ public:
 	void resizeWidget(QSize size);
 
 	//Image functions
-	bool setImage(const QImage& inputImg);	
-	void setPixel(const int& x, const int& y, const uchar& r, const uchar& g, const uchar& b, const uchar& a = 255);
-	void setPixel(const int& x, const int& y, const uchar& val);
-	void setPixel(const int& x, const int& y, double& val);
-	void setPixel(const int& x, const int& y, double& valR, double& valG, double& valB, const double& valA = 1.);
+	bool setImage(const QImage& inputImg);
+	void setPixel(QImage * img, int x, int y, uchar r, uchar g, uchar b, uchar a = 255);
+	void setPixel(QImage * img, int x, int y, uchar val);
+	void setPixel(QImage * img, int x, int y, double val);
+	void setPixel(QImage * img, int x, int y, double valR, double valG, double valB, const double valA = 1.);
 
 	//Draw functions
 	void freeDraw(const QPoint& end, const QPen& pen);
@@ -28,12 +28,12 @@ public:
 	inline void clear() {  };
 	inline QImage* getImage() { return img; };
 	inline uchar* getImageData() { return data; };
-	inline bool isInside(int x, int y) { return (x >= 0 && y >= 0 && x < img->width() && y < img->height()) ? true : false; }
+	inline bool isInside(QImage* image, int x, int y) { return (x >= 0 && y >= 0 && x < image->width() && y < image->height()); }
 	inline void setPainter() { painter = new QPainter(img); }
-	inline void setDataPtr() {	data = img->bits();}
+	inline void setDataPtr() { data = img->bits(); }
 
 	inline void setFreeDrawBegin(const QPoint& begin) { freeDrawBegin = begin; }
-	inline const QPoint& getFreeDrawBegin() { freeDrawBegin; }
+	inline const QPoint& getFreeDrawBegin() { return freeDrawBegin; }
 	inline void setFreeDrawActivated(bool state) { freeDrawActivated = state; }
 	inline bool getFreeDrawActivated() { return freeDrawActivated; }
 

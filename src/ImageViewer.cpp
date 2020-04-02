@@ -169,13 +169,13 @@ bool ImageViewer::invertColors()
 		for (int j = 0; j < w->getImgWidth(); j++)
 		{
 			if (depth == 8) {
-				w->setPixel(j, i, static_cast<uchar>(255 - data[i * row + j ]));
+				w->setPixel(w->getImage(), j, i, static_cast<uchar>(255 - data[i * row + j]));
 			}
 			else {
 				uchar r = static_cast<uchar>(255 - data[i * row + j * 4]);
 				uchar g = static_cast<uchar>(255 - data[i * row + j * 4 + 1]);
 				uchar b = static_cast<uchar>(255 - data[i * row + j * 4 + 2]);
-				w->setPixel(j, i, r, g, b);
+				w->setPixel(w->getImage(), j, i, r, g, b);
 			}			
 		}
 	}
@@ -200,7 +200,6 @@ bool ImageViewer::mirrorExtendImageBy(int nPixels)
 	QImage::Format format = w->getImage()->format();
 	QImage newImg = QImage(QSize(newWidth, newHeight), format);
 	newImg.fill(QColor(0, 0, 0));
-	w->setImage(newImg);
 
 	for (int i = 0; i < newHeight; i++) {
 		for (int j = 0; j < newWidth; j++) {
@@ -253,17 +252,18 @@ bool ImageViewer::mirrorExtendImageBy(int nPixels)
 			}
 
 			if (depth == 8) {
-				w->setPixel(j, i, static_cast<uchar>(data[iPos * row + jPos]));
+				w->setPixel(&newImg, j, i, static_cast<uchar>(data[iPos * row + jPos]));
 			}
 			else {
 				uchar r = static_cast<uchar>(data[iPos * row + jPos * 4]);
 				uchar g = static_cast<uchar>(data[iPos * row + jPos * 4 + 1]);
 				uchar b = static_cast<uchar>(data[iPos * row + jPos * 4 + 2]);
-				w->setPixel(j, i, r, g, b);
+				w->setPixel(&newImg, j, i, r, g, b);
 			}
 		}
 	}
 
+	w->setImage(newImg);
 	w->update();
 	return true;
 }
@@ -312,21 +312,21 @@ bool ImageViewer::blurImage(int radius)
 
 	QImage blurredImg = QImage(QSize(width - 2 * radius, height - 2 * radius), w->getImage()->format());
 	blurredImg.fill(QColor(0, 0, 0));
-	w->setImage(blurredImg);
 
 	for (int x = 0; x < blurredImg.width(); x++) {
 		for (int y = 0; y < blurredImg.height(); y++) {
 			int xPos = x + radius, yPos = y + radius;
 			if (depth == 8) {
-				w->setPixel(x, y, static_cast<uchar>(kernelSum(data, row, xPos, yPos, radius)));
+				w->setPixel(&blurredImg, x, y, static_cast<uchar>(kernelSum(data, row, xPos, yPos, radius)));
 			}
 			else {
 				QColor col = kernelSum(data, row, QPoint(xPos, yPos), radius);
-				w->setPixel(x, y, col.red(), col.green(), col.blue());
+				w->setPixel(&blurredImg, x, y, static_cast<uchar>(col.red()), static_cast<uchar>(col.green()), static_cast<uchar>(col.blue()));
 			}
 		}
 	}
 
+	w->setImage(blurredImg);
 	w->update();
 	return true;
 }
@@ -424,7 +424,7 @@ void ImageViewer::on_actionRename_triggered()
 //Image slots
 void ImageViewer::on_actionNew_triggered()
 {
-	newImgDialog = new NewImageDialog(this);
+	NewImageDialog* newImgDialog = new NewImageDialog(this);
 	connect(newImgDialog, SIGNAL(accepted()), this, SLOT(newImageAccepted()));
 	newImgDialog->exec();
 }
@@ -546,7 +546,7 @@ void ImageViewer::on_actionMirror_Extend_test_triggered()
 		return;
 	}
 
-	mirrorExtendDialog = new MirrorExtendDialog(this);
+	MirrorExtendDialog* mirrorExtendDialog = new MirrorExtendDialog(this);
 	connect(mirrorExtendDialog, SIGNAL(accepted()), this, SLOT(mirrorExtendAccepted()));
 	mirrorExtendDialog->exec();
 }
@@ -560,7 +560,7 @@ void ImageViewer::on_actionHistogram_triggered()
 		return;
 	}
 
-	histogramWindow = new HistogramWindow(this);
+	HistogramWindow* histogramWindow = new HistogramWindow(this);
 	connect(histogramWindow, SIGNAL(sigStretch()), this, SLOT(on_stretch()));
 
 	ViewerWidget* w = getCurrentViewerWidget();
@@ -578,7 +578,7 @@ void ImageViewer::on_actionBlur_triggered()
 		return;
 	}
 
-	blurDialog = new BlurDialog(this);
+	BlurDialog* blurDialog = new BlurDialog(this);
 	connect(blurDialog, SIGNAL(accepted()), this, SLOT(blurAccepted()));
 	blurDialog->exec();
 }
