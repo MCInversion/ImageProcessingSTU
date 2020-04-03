@@ -1,5 +1,5 @@
-#ifndef HISTOGRAMWINDOW_H
-#define HISTOGRAMWINDOW_H
+#ifndef HISTOGRAMWINDOW_H_
+#define HISTOGRAMWINDOW_H_
 
 #include <QWidget>
 #include <QDebug>

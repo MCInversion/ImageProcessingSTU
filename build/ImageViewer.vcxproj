@@ -496,6 +496,62 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating ui_ImageViewer.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating ui_ImageViewer.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generating ui_ImageViewer.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generating ui_ImageViewer.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.ui">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating ui_MirrorExtendDialog.h</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
@@ -667,16 +723,19 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp" />
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\main.cpp" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_BlurDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_HistogramWindow.h" />
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MirrorExtendDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.h" />
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h" />

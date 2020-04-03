@@ -18,6 +18,16 @@ endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd
+^D:\VS_PROJECTS\IMAGEVIEWERIP\SRC\IMAGEVIEWER.UI
+setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
 ^D:\VS_PROJECTS\IMAGEVIEWERIP\SRC\MIRROREXTENDDIALOG.UI
 setlocal
 D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_MirrorExtendDialog.h D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.ui

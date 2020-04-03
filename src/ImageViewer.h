@@ -9,6 +9,7 @@
 #include "MirrorExtendDialog.h"
 #include "HistogramWindow.h"
 #include "BlurDialog.h"
+#include "ImageProcessor.h"
 
 class ImageViewer : public QMainWindow
 {
@@ -46,21 +47,6 @@ private:
 	void openNewTabForImg(ViewerWidget* vW);
 	bool openImage(QString filename);
 	bool saveImage(QString filename);
-	bool clearImage();
-	bool invertColors();
-	bool mirrorExtendImageBy(int nPixels);
-
-	// Mask image functions
-	uchar kernelSum(uchar* img, int row, int x, int y, int r);
-	QRgb kernelSum(uchar* img, int row, QPoint px, int r);
-	bool blurImage(int radius);
-
-	void getGaussianKernel(int radius, bool print = false);
-	void getAveragingKernel(int radius, bool print = false);
-
-	std::vector<float>* W = nullptr;
-
-	//Processing actions:
 
 	//Inline functions
 	inline bool isImgOpened() { return ui->tabWidget->count() == 0 ? false : true; }
@@ -73,8 +59,6 @@ private slots:
 	// Image slots
 	void on_actionNew_triggered();
 	void newImageAccepted();
-	void mirrorExtendAccepted();
-	void blurAccepted();
 
 	// Action slots
 	void on_actionOpen_triggered();
@@ -84,7 +68,4 @@ private slots:
 	void on_actionMirror_Extend_test_triggered();
 	void on_actionHistogram_triggered();
 	void on_actionBlur_triggered();
-
-	//Histogram slots
-	void on_stretch();
 };

@@ -10,6 +10,9 @@
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,6 +33,9 @@
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_HistogramWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_ImageViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MirrorExtendDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -40,6 +46,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h">
@@ -58,6 +67,7 @@
   <ItemGroup>
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.ui" />
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\NewImgDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\CMakeLists.txt" />

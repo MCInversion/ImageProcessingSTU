@@ -8,7 +8,10 @@ HistogramWindow::HistogramWindow(QWidget* parent)
 
 HistogramWindow::~HistogramWindow()
 {
+
 	delete _histogramPlot;
+	delete _targetImage;
+	delete _scene;
 }
 
 void HistogramWindow::setImage(QImage* targetImage)
@@ -162,6 +165,7 @@ void HistogramWindow::plotHistogram(bool plotMinmax)
 	int y_offset = 0.1 * height;
 	int x_offset = 0.05 * width;
 
+	delete _histogramPlot;
 	_histogramPlot = new QImage(width, height, QImage::Format_RGB32);
 	_histogramPlot->fill(_bgColor);
 	int grayscaleVal = (_darkMode ? 200 : 50);
@@ -391,6 +395,7 @@ void HistogramWindow::displayImage(QImage* image)
 	_scene->addPixmap(pixmap);
 	ui.histogramView->setScene(_scene);
 	update();
+	delete item;
 }
 
 void HistogramWindow::getIntensityBounds(float percentile1, float percentile2)
