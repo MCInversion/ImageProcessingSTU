@@ -37,6 +37,28 @@ void ImageProcessor::blurAccepted()
 	_view_w->setImage(extended);
 	mirrorExtendImageBy(radius);
 	blurImage(radius);
+	clearMasks();
+}
+
+void ImageProcessor::bernsenThresholdAccepted()
+{
+	BernsenThresholdDialog* bernsenThresholdDialog = static_cast<BernsenThresholdDialog*>(sender());
+
+	int bgType = bernsenThresholdDialog->getBackgroundType();
+	int radius = bernsenThresholdDialog->getRadius();
+	int minContrast = bernsenThresholdDialog->getMinContrast();
+	bool printMaskToConsole = bernsenThresholdDialog->printMaskToConsole();
+	bool convertToGrayscale = bernsenThresholdDialog->convertToGrayscale();
+
+	getCircularKernel(radius, printMaskToConsole);
+
+	if (convertToGrayscale) grayscale();
+	QImage* img = _view_w->getImage();
+	QImage extended = QImage(*img);
+	_view_w->setImage(extended);
+	mirrorExtendImageBy(radius);
+	bernsenThreshold(radius, minContrast, bgType);
+	clearMasks();
 }
 
 // update viewer image after histogram stretch
@@ -55,15 +77,15 @@ bool ImageProcessor::clearImage()
 
 bool ImageProcessor::invertColors()
 {
+	int height = _view_w->getImgHeight();
+	int width = _view_w->getImgWidth();
 	uchar* data = _view_w->getData();
 
 	int row = _view_w->getImage()->bytesPerLine();
 	int depth = _view_w->getImage()->depth();
 
-	for (int i = 0; i < _view_w->getImgHeight(); i++)
-	{
-		for (int j = 0; j < _view_w->getImgWidth(); j++)
-		{
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
 			if (depth == 8) {
 				_view_w->setPixel(_view_w->getImage(), j, i, static_cast<uchar>(255 - data[i * row + j]));
 			}
@@ -75,6 +97,42 @@ bool ImageProcessor::invertColors()
 			}
 		}
 	}
+	_view_w->update();
+	return true;
+}
+
+bool ImageProcessor::grayscale(float wRed, float wGreen, float wBlue, float gamma)
+{
+	if (_view_w->getImage()->depth() == 8) {
+		return true;
+	}
+
+	int height = _view_w->getImgHeight();
+	int width = _view_w->getImgWidth();
+	uchar* data = _view_w->getData();
+
+	int row = _view_w->getImage()->bytesPerLine();
+
+	QImage bwImage = QImage(QSize(width, height), QImage::Format_Grayscale8);
+	bwImage.fill(QColor(0, 0, 0));
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			uchar r = static_cast<uchar>(data[i * row + j * 4]);
+			uchar g = static_cast<uchar>(data[i * row + j * 4 + 1]);
+			uchar b = static_cast<uchar>(data[i * row + j * 4 + 2]);
+			// gamma correction:
+			float rLin = pow((float)r / 256.0f, gamma);
+			float gLin = pow((float)g / 256.0f, gamma);
+			float bLin = pow((float)b / 256.0f, gamma);
+			int intensity = std::round(wRed * rLin * 256 + wGreen * gLin * 256 + wBlue * bLin * 256);
+			intensity = std::max(0, std::min(intensity, 255));
+
+			_view_w->setPixel(&bwImage, j, i, static_cast<uchar>(intensity));
+		}
+	}
+
+	_view_w->setImage(bwImage);
 	_view_w->update();
 	return true;
 }
@@ -162,7 +220,7 @@ bool ImageProcessor::mirrorExtendImageBy(int nPixels)
 	return true;
 }
 
-uchar ImageProcessor::kernelSum(uchar* img, int row, int x, int y, int r)
+uchar ImageProcessor::kernelSumGS(uchar* img, int row, int x, int y, int r)
 {
 	float sum = 0.0f;
 	for (int i = 0; i < 2 * r + 1; i++) {
@@ -175,12 +233,12 @@ uchar ImageProcessor::kernelSum(uchar* img, int row, int x, int y, int r)
 	return (uchar)std::fminf(sum + 0.5, 255.f);
 }
 
-QRgb ImageProcessor::kernelSum(uchar* img, int row, QPoint px, int r)
+QRgb ImageProcessor::kernelSumRGB(uchar* img, int row, int x, int y, int r)
 {
 	float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
 	for (int i = 0; i < 2 * r + 1; i++) {
 		for (int j = 0; j < 2 * r + 1; j++) {
-			int xPos = px.x() - r + j, yPos = px.y() - r + i;
+			int xPos = x - r + j, yPos = y - r + i;
 			sumR += ((float)img[yPos * row + xPos * 4]) * W->at((size_t)i * (2 * r + 1) + j);
 			sumG += ((float)img[yPos * row + xPos * 4 + 1]) * W->at((size_t)i * (2 * r + 1) + j);
 			sumB += ((float)img[yPos * row + xPos * 4 + 2]) * W->at((size_t)i * (2 * r + 1) + j);
@@ -192,6 +250,29 @@ QRgb ImageProcessor::kernelSum(uchar* img, int row, QPoint px, int r)
 		(int)std::fminf(sumG + 0.5, 255.f),
 		(int)std::fminf(sumB + 0.5, 255.f)
 	);
+}
+
+void ImageProcessor::findGrayscaleExtremesWithinCircle(uchar* img, int row, int x, int y, uchar* minVal, uchar* maxVal)
+{
+	for (int i = 0; i < iMask->size(); i += 2) {
+		int iPos = y + iMask->at(i); int jPos = x + iMask->at((size_t)i + 1);
+		*minVal = (img[iPos * row + jPos] < *minVal ? img[iPos * row + jPos] : *minVal);
+		*maxVal = (img[iPos * row + jPos] > *maxVal ? img[iPos * row + jPos] : *maxVal);
+	}
+}
+
+void ImageProcessor::findRGBExtremesWithinCircle(uchar* img, int row, int x, int y, QColor* minVal, QColor* maxVal)
+{
+	for (int i = 0; i < iMask->size(); i += 2) {
+		int iPos = y + iMask->at(i); int jPos = x + iMask->at((size_t)i + 1);
+		minVal->setRed(img[iPos * row + jPos * 4] < minVal->red() ? img[iPos * row + jPos * 4] : minVal->red());
+		minVal->setGreen(img[iPos * row + jPos * 4 + 1] < minVal->green() ? img[iPos * row + jPos * 4 + 1] : minVal->green());
+		minVal->setBlue(img[iPos * row + jPos * 4 + 2] < minVal->blue() ? img[iPos * row + jPos * 4 + 2] : minVal->blue());
+
+		maxVal->setRed(img[iPos * row + jPos * 4] > maxVal->red() ? img[iPos * row + jPos * 4] : maxVal->red());
+		maxVal->setGreen(img[iPos * row + jPos * 4 + 1] > maxVal->green() ? img[iPos * row + jPos * 4 + 1] : maxVal->green());
+		maxVal->setBlue(img[iPos * row + jPos * 4 + 2] > maxVal->blue() ? img[iPos * row + jPos * 4 + 2] : maxVal->blue());
+	}
 }
 
 bool ImageProcessor::blurImage(int radius)
@@ -210,10 +291,10 @@ bool ImageProcessor::blurImage(int radius)
 		for (int y = 0; y < blurredImg.height(); y++) {
 			int xPos = x + radius, yPos = y + radius;
 			if (depth == 8) {
-				_view_w->setPixel(&blurredImg, x, y, static_cast<uchar>(kernelSum(data, row, xPos, yPos, radius)));
+				_view_w->setPixel(&blurredImg, x, y, static_cast<uchar>(kernelSumGS(data, row, xPos, yPos, radius)));
 			}
 			else {
-				QColor col = kernelSum(data, row, QPoint(xPos, yPos), radius);
+				QColor col = kernelSumRGB(data, row, xPos, yPos, radius);
 				_view_w->setPixel(&blurredImg, x, y,
 					static_cast<uchar>(col.red()), static_cast<uchar>(col.green()), static_cast<uchar>(col.blue())
 				);
@@ -222,6 +303,63 @@ bool ImageProcessor::blurImage(int radius)
 	}
 
 	_view_w->setImage(blurredImg);
+	_view_w->update();
+	return true;
+}
+
+bool ImageProcessor::bernsenThreshold(int radius, int minContrast, int bgType)
+{
+	uchar subThreshold = (bgType ? 0 : 255);
+
+	int height = _view_w->getImgHeight();
+	int width = _view_w->getImgWidth();
+	uchar* data = _view_w->getData();
+
+	int row = _view_w->getImage()->bytesPerLine();
+	int depth = _view_w->getImage()->depth();
+
+	QImage binaryImg = QImage(QSize(width - 2 * radius, height - 2 * radius), _view_w->getImage()->format());
+	binaryImg.fill(QColor(0, 0, 0));
+
+	for (int x = 0; x < binaryImg.width(); x++) {
+		for (int y = 0; y < binaryImg.height(); y++) {
+			int xPos = x + radius, yPos = y + radius;
+			if (depth == 8) {
+				uchar Imin = 255; uchar Imax = 0;
+				findGrayscaleExtremesWithinCircle(data, row, xPos, yPos, &Imin, &Imax);
+				uchar contrast = Imax - Imin;
+				uchar threshold = (contrast >= minContrast ? std::round(0.5f * ((float)Imax + (float)Imin)) : subThreshold);
+				uchar pxVal = (data[yPos * row + xPos] > threshold ? 255 : 0);
+				
+				_view_w->setPixel(&binaryImg, x, y, static_cast<uchar>(pxVal));
+			}
+			else {
+				QColor Imin = QColor(255, 255, 255);
+				QColor Imax = QColor(0, 0, 0);
+				findRGBExtremesWithinCircle(data, row, xPos, yPos, &Imin, &Imax);
+				QColor contrast = QColor(Imax.red() - Imin.red(), Imax.green() - Imin.green(), Imax.blue() - Imin.blue());
+				QColor threshold = QColor(
+					(contrast.red() >= minContrast ? std::round(0.5f * ((float)Imax.red() + (float)Imin.red())) : subThreshold),
+					(contrast.green() >= minContrast ? std::round(0.5f * ((float)Imax.green() + (float)Imin.green())) : subThreshold),
+					(contrast.blue() >= minContrast ? std::round(0.5f * ((float)Imax.blue() + (float)Imin.blue())) : subThreshold)
+				);
+				uchar r = static_cast<uchar>(data[yPos * row + xPos * 4]);
+				uchar g = static_cast<uchar>(data[yPos * row + xPos * 4 + 1]);
+				uchar b = static_cast<uchar>(data[yPos * row + xPos * 4 + 2]);
+				QColor col = QColor(
+					(r > threshold.red() ? 255 : 0),
+					(g > threshold.green() ? 255 : 0),
+					(b > threshold.blue() ? 255 : 0)
+				);
+
+				_view_w->setPixel(&binaryImg, x, y,
+					static_cast<uchar>(col.red()), static_cast<uchar>(col.green()), static_cast<uchar>(col.blue())
+				);
+			}
+		}
+	}
+
+	_view_w->setImage(binaryImg);
 	_view_w->update();
 	return true;
 }
@@ -287,5 +425,52 @@ void ImageProcessor::getAveragingKernel(int radius, bool print)
 			}
 			printf("\n");
 		}
+	}
+}
+
+void ImageProcessor::getCircularKernel(int radius, bool print)
+{
+	if (iMask) delete iMask;
+	int radiusSq = radius * radius;
+	iMask = new std::vector<int>();
+
+	for (int i = 0; i <= 2 * radius; i++) {
+		for (int j = 0; j <= 2 * radius; j++) {
+			int iPos = (i - radius); int jPos = (j - radius);
+			if (iPos * iPos + jPos * jPos <= radiusSq) {
+				iMask->push_back(iPos); iMask->push_back(jPos);
+			}
+		}
+	}
+
+	if (print) {
+		int iId = 0;
+		printf("K = \n");
+		for (int i = 0; i <= 2 * radius; i++) {
+			for (int j = 0; j <= 2 * radius; j++) {
+				int iPos = (i - radius); int jPos = (j - radius);
+				if (iPos * iPos + jPos * jPos <= radiusSq) {
+					printf("(%s%d, %s%d) ", (iPos < 0 ? "" : " "), iMask->at(iId++), (jPos < 0 ? "" : " "), iMask->at(iId++));
+				}
+				else {
+					printf("(  ,   ) ");
+				}
+			}
+			printf("\n");
+		}
+	}
+}
+
+void ImageProcessor::clearMasks()
+{
+	if (W) {
+		W->clear();
+		delete W;
+		W = nullptr;
+	}
+	if (iMask) {
+		iMask->clear();
+		delete iMask;
+		iMask = nullptr;
 	}
 }

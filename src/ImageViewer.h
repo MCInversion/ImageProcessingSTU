@@ -9,6 +9,7 @@
 #include "MirrorExtendDialog.h"
 #include "HistogramWindow.h"
 #include "BlurDialog.h"
+#include "BernsenThresholdDialog.h"
 #include "ImageProcessor.h"
 
 class ImageViewer : public QMainWindow
@@ -64,8 +65,12 @@ private slots:
 	void on_actionOpen_triggered();
 	void on_actionSave_as_triggered();
 	void on_actionClear_triggered();
+
 	void on_actionInvert_colors_triggered();
+	void on_actionGrayscale_triggered();
+
 	void on_actionMirror_Extend_test_triggered();
 	void on_actionHistogram_triggered();
 	void on_actionBlur_triggered();
+	void on_actionThreshold_triggered();
 };

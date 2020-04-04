@@ -13,10 +13,14 @@
 // - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
 
 // WIP:
+//
+// - Bernsen threshold
 
 // TODO:
+// - Isodata threshold
+// - image sequence (slider)
 // - UndoRedo (?)
-// - background processing thread
+// - background processing thread (major problem with viewerWidget - the processing thread of the image processor cannot write to it)
 // - active img <--> widgets communication/update
 
 // issues:

@@ -275,6 +275,18 @@ void ImageViewer::on_actionInvert_colors_triggered() {
 	ip->invertColors();
 }
 
+void ImageViewer::on_actionGrayscale_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	ip->grayscale();
+}
+
 void ImageViewer::on_actionMirror_Extend_test_triggered()
 {
 	if (!isImgOpened()) {
@@ -322,4 +334,19 @@ void ImageViewer::on_actionBlur_triggered()
 	BlurDialog* blurDialog = new BlurDialog(this);
 	connect(blurDialog, SIGNAL(accepted()), ip, SLOT(blurAccepted()));
 	blurDialog->exec();
+}
+
+void ImageViewer::on_actionThreshold_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	BernsenThresholdDialog* bernsenThresholdDialog = new BernsenThresholdDialog(this);
+	connect(bernsenThresholdDialog, SIGNAL(accepted()), ip, SLOT(bernsenThresholdAccepted()));
+	bernsenThresholdDialog->exec();
 }

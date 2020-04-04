@@ -94,6 +94,7 @@ public:
 
         checkBox = new QCheckBox(blurDialog);
         checkBox->setObjectName(QString::fromUtf8("checkBox"));
+        checkBox->setChecked(true);
 
         horizontalLayout_2->addWidget(checkBox);
 

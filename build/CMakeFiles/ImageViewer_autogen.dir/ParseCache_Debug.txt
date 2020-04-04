@@ -25,3 +25,7 @@ D:/VS_Projects/ImageViewerIP/src/ImageViewer.cpp
 D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.cpp
 D:/VS_Projects/ImageViewerIP/src/ViewerWidget.cpp
 D:/VS_Projects/ImageViewerIP/src/main.cpp
+D:/VS_Projects/ImageViewerIP/src/BernsenThresholdDialog.h
+ mmc:Q_OBJECT
+ uic:../build/ui_BernsenThresholdDialog.h
+D:/VS_Projects/ImageViewerIP/src/BernsenThresholdDialog.cpp

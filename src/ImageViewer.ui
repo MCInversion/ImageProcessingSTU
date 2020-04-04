@@ -53,9 +53,13 @@
     </property>
     <addaction name="actionRename"/>
     <addaction name="actionClear"/>
+    <addaction name="separator"/>
     <addaction name="actionInvert_colors"/>
+    <addaction name="actionGrayscale"/>
+    <addaction name="separator"/>
     <addaction name="actionMirror_Extend_test"/>
     <addaction name="actionBlur"/>
+    <addaction name="actionThreshold"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -105,6 +109,9 @@
    </property>
   </action>
   <action name="actionClear">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Clear</string>
    </property>
@@ -130,6 +137,9 @@
    </property>
   </action>
   <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Redo</string>
    </property>
@@ -137,6 +147,16 @@
   <action name="actionBlur">
    <property name="text">
     <string>Blur</string>
+   </property>
+  </action>
+  <action name="actionThreshold">
+   <property name="text">
+    <string>Threshold (Bernsen)</string>
+   </property>
+  </action>
+  <action name="actionGrayscale">
+   <property name="text">
+    <string>Grayscale</string>
    </property>
   </action>
  </widget>

@@ -37,6 +37,8 @@ public:
     QAction *actionUndo;
     QAction *actionRedo;
     QAction *actionBlur;
+    QAction *actionThreshold;
+    QAction *actionGrayscale;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget;
@@ -63,6 +65,7 @@ public:
         actionRename->setObjectName(QString::fromUtf8("actionRename"));
         actionClear = new QAction(ImageViewerClass);
         actionClear->setObjectName(QString::fromUtf8("actionClear"));
+        actionClear->setEnabled(false);
         actionInvert_colors = new QAction(ImageViewerClass);
         actionInvert_colors->setObjectName(QString::fromUtf8("actionInvert_colors"));
         actionMirror_Extend_test = new QAction(ImageViewerClass);
@@ -73,8 +76,13 @@ public:
         actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
         actionRedo = new QAction(ImageViewerClass);
         actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
+        actionRedo->setEnabled(false);
         actionBlur = new QAction(ImageViewerClass);
         actionBlur->setObjectName(QString::fromUtf8("actionBlur"));
+        actionThreshold = new QAction(ImageViewerClass);
+        actionThreshold->setObjectName(QString::fromUtf8("actionThreshold"));
+        actionGrayscale = new QAction(ImageViewerClass);
+        actionGrayscale->setObjectName(QString::fromUtf8("actionGrayscale"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -118,9 +126,13 @@ public:
         menuFile->addAction(actionSave_as);
         menuImage->addAction(actionRename);
         menuImage->addAction(actionClear);
+        menuImage->addSeparator();
         menuImage->addAction(actionInvert_colors);
+        menuImage->addAction(actionGrayscale);
+        menuImage->addSeparator();
         menuImage->addAction(actionMirror_Extend_test);
         menuImage->addAction(actionBlur);
+        menuImage->addAction(actionThreshold);
         menuTools->addAction(actionHistogram);
         menuEdit->addAction(actionUndo);
         menuEdit->addAction(actionRedo);
@@ -144,6 +156,8 @@ public:
         actionUndo->setText(QCoreApplication::translate("ImageViewerClass", "Undo", nullptr));
         actionRedo->setText(QCoreApplication::translate("ImageViewerClass", "Redo", nullptr));
         actionBlur->setText(QCoreApplication::translate("ImageViewerClass", "Blur", nullptr));
+        actionThreshold->setText(QCoreApplication::translate("ImageViewerClass", "Threshold (Bernsen)", nullptr));
+        actionGrayscale->setText(QCoreApplication::translate("ImageViewerClass", "Grayscale", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));
         menuTools->setTitle(QCoreApplication::translate("ImageViewerClass", "Tools", nullptr));
