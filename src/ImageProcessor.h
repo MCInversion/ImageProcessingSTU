@@ -32,6 +32,8 @@ public slots:
 
 	//Histogram slots
 	void on_stretch();
+	void on_histogramGrayscale();
+	void on_singleThreshold();
 
 private:
 	ViewerWidget* _view_w = nullptr;
@@ -57,6 +59,8 @@ private:
 	std::vector<int>* iMask = nullptr;
 
 	void clearMasks();
+signals:
+	void sigGrayscaled();
 };
 
 #endif

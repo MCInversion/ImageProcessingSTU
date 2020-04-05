@@ -11,21 +11,22 @@
 // - applying extend on stretched image breaks it down (bad data ptr)
 // - add gaussian kernel matrix function paremetrized by t = sigma^2 / 2 (dialog with spin box)
 // - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
+// - Bernsen threshold
+// - Isodata threshold
 
 // WIP:
 //
-// - Bernsen threshold
+// - image sequence (slider)
 
 // TODO:
-// - Isodata threshold
-// - image sequence (slider)
 // - UndoRedo (?)
 // - background processing thread (major problem with viewerWidget - the processing thread of the image processor cannot write to it)
 // - active img <--> widgets communication/update
 
 // issues:
-// - cannot delete QImage ptr, why?
+// - cannot delete QPainter ptr, why?
 // - repeated multi-channel stretching results in large variation in histogram values (possibly a feature)
+// - the ViewerWidget implementation makes it very inconvenient to perform any background computation in a separate thread
 
 // Solved issues:
 // - Q_OBJECT in MirrorExtendDialog/HistogramWindow cannot be present (lnk 2001 error otherwise)

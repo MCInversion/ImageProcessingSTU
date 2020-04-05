@@ -59,6 +59,17 @@ void HistogramWindow::processImage()
 	}
 }
 
+int HistogramWindow::threshold()
+{
+	return _threshold;
+}
+
+void HistogramWindow::updateHistogram()
+{
+	processImage();
+	plotHistogram(true);
+}
+
 void HistogramWindow::ActionStretch()
 {
 	if (ui.minSlider->value() >= ui.maxSlider->value()) {
@@ -107,6 +118,21 @@ void HistogramWindow::ActionApply()
 {
 	contrastStretch();
 	emit sigStretch();
+
+	processImage();
+	plotHistogram(true);
+}
+
+void HistogramWindow::ActionIsodata()
+{
+	emit sigGrayscale();
+}
+
+void HistogramWindow::ActionIsodataCompute()
+{
+	_threshold = getIsodataThresholdRED();
+
+	emit sigThreshold();
 
 	processImage();
 	plotHistogram(true);
@@ -384,6 +410,7 @@ void HistogramWindow::clearSums()
 	_sums_RED = std::vector<float>(256, 0.0f);
 	_sums_GREEN = std::vector<float>(256, 0.0f);
 	_sums_BLUE = std::vector<float>(256, 0.0f);
+	_cumulativeComputed = false;
 }
 
 void HistogramWindow::displayImage(QImage* image)
@@ -533,6 +560,107 @@ void HistogramWindow::getCumulativeSums()
 			_sums_BLUE[i] = cumsum;
 		}
 	}
+	_cumulativeComputed = true;
+}
+
+int HistogramWindow::getIsodataThresholdRED()
+{
+	if (!_cumulativeComputed) getCumulativeSums();
+
+	int threshold = pixelMeanRED(0, 255);
+	int prevThreshold, iter = 0, maxIter = 256;
+
+	while (iter < maxIter) {
+		int bg_population = _sums_RED[threshold] - _sums_RED[0];
+		int fg_population = _sums_RED[255] - _sums_RED[threshold + 1];
+
+		if (bg_population == 0 || fg_population == 1) {
+			return -1; // all pixels have the same intensity
+		}
+
+		int bg_mean = pixelMeanRED(0, threshold);
+		int fg_mean = pixelMeanRED(threshold + 1, 255);
+		prevThreshold = threshold;
+		threshold = std::floor(0.5f * (bg_mean + fg_mean));
+
+		if (threshold == prevThreshold) break;
+		iter++;
+	}
+
+	return threshold;
+}
+
+int HistogramWindow::getIsodataThresholdGREEN()
+{
+	if (!_cumulativeComputed) getCumulativeSums();
+
+	int threshold = pixelMeanGREEN(0, 255);
+	int prevThreshold, iter = 0, maxIter = 256;
+
+	do {
+		int bg_population = _sums_GREEN[threshold] - _sums_GREEN[0];
+		int fg_population = _sums_GREEN[255] - _sums_GREEN[threshold + 1];
+
+		if (bg_population == 0 || fg_population == 1) {
+			return -1; // all pixels have the same intensity
+		}
+
+		int bg_mean = pixelMeanGREEN(0, threshold);
+		int fg_mean = pixelMeanGREEN(threshold + 1, 255);
+		prevThreshold = threshold;
+		threshold = std::floor(0.5f * (bg_mean + fg_mean));
+
+		iter++;
+	} while (iter < maxIter || threshold == prevThreshold);
+
+	return threshold;
+}
+
+int HistogramWindow::getIsodataThresholdBLUE()
+{
+	if (!_cumulativeComputed) getCumulativeSums();
+
+	int threshold = pixelMeanBLUE(0, 255);
+	int prevThreshold, iter = 0, maxIter = 256;
+
+	do {
+		int bg_population = _sums_BLUE[threshold] - _sums_BLUE[0];
+		int fg_population = _sums_BLUE[255] - _sums_BLUE[threshold + 1];
+
+		if (bg_population == 0 || fg_population == 1) {
+			return -1; // all pixels have the same intensity
+		}
+
+		int bg_mean = pixelMeanBLUE(0, threshold);
+		int fg_mean = pixelMeanBLUE(threshold + 1, 255);
+		prevThreshold = threshold;
+		threshold = std::floor(0.5f * (bg_mean + fg_mean));
+
+		iter++;
+	} while (iter < maxIter || threshold == prevThreshold);
+
+	return threshold;
+}
+
+int HistogramWindow::pixelMeanRED(int iMin, int iMax)
+{
+	int mean = 0, population = _sums_RED[iMax] - _sums_RED[iMin];
+	for (int i = iMin; i <= iMax; i++) mean += i * _count_RED[i];
+	return std::round((float)mean / population);
+}
+
+int HistogramWindow::pixelMeanGREEN(int iMin, int iMax)
+{
+	int mean = 0, population = _sums_GREEN[iMax] - _sums_GREEN[iMin];
+	for (int i = iMin; i <= iMax; i++) mean += i * _count_GREEN[i];
+	return std::round((float)mean / population);
+}
+
+int HistogramWindow::pixelMeanBLUE(int iMin, int iMax)
+{
+	int mean = 0, population = _sums_BLUE[iMax] - _sums_BLUE[iMin];
+	for (int i = iMin; i <= iMax; i++) mean += i * _count_BLUE[i];
+	return std::round((float)mean / population);
 }
 
 QImage HistogramWindow::getResized(QImage* image, const QSize& newSize, bool keepAspectRatio)

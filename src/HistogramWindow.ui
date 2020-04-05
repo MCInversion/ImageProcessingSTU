@@ -7,69 +7,31 @@
     <x>0</x>
     <y>0</y>
     <width>915</width>
-    <height>600</height>
+    <height>638</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Histogram</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="7" column="0">
-    <layout class="QHBoxLayout" name="hLayoutButtons">
+   <item row="5" column="0">
+    <layout class="QHBoxLayout" name="hLayoutBlue">
      <item>
-      <widget class="QCheckBox" name="checkBoxChannelLock">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Channel lock</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
+        <string>blue min:     </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBoxDarkMode">
-       <property name="text">
-        <string>Dark Mode</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBoxCumulative">
-       <property name="text">
-        <string>Cumulative Histogram</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="applyButton">
-       <property name="text">
-        <string>Scale</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="3" column="0">
-    <layout class="QHBoxLayout" name="hLayoutGreen">
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>green min:   </string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="minGreenLabel">
+      <widget class="QLabel" name="minBlueLabel">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="minGreenSlider">
+      <widget class="QSlider" name="minBlueSlider">
        <property name="maximum">
         <number>255</number>
        </property>
@@ -79,21 +41,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>green max:   </string>
+        <string>blue max:     </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="maxGreenLabel">
+      <widget class="QLabel" name="maxBlueLabel">
        <property name="text">
         <string>255</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="maxGreenSlider">
+      <widget class="QSlider" name="maxBlueSlider">
        <property name="maximum">
         <number>255</number>
        </property>
@@ -162,24 +124,24 @@
      </item>
     </layout>
    </item>
-   <item row="5" column="0">
-    <layout class="QHBoxLayout" name="hLayoutBlue">
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="hLayoutGreen">
      <item>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>blue min:     </string>
+        <string>green min:   </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="minBlueLabel">
+      <widget class="QLabel" name="minGreenLabel">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="minBlueSlider">
+      <widget class="QSlider" name="minGreenSlider">
        <property name="maximum">
         <number>255</number>
        </property>
@@ -189,21 +151,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>blue max:     </string>
+        <string>green max:   </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="maxBlueLabel">
+      <widget class="QLabel" name="maxGreenLabel">
        <property name="text">
         <string>255</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="maxBlueSlider">
+      <widget class="QSlider" name="maxGreenSlider">
        <property name="maximum">
         <number>255</number>
        </property>
@@ -224,6 +186,51 @@
      </property>
     </widget>
    </item>
+   <item row="7" column="0">
+    <layout class="QHBoxLayout" name="hLayoutButtons">
+     <item>
+      <widget class="QCheckBox" name="checkBoxChannelLock">
+       <property name="text">
+        <string>Channel lock</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxDarkMode">
+       <property name="text">
+        <string>Dark Mode</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxCumulative">
+       <property name="text">
+        <string>Cumulative Histogram</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="applyButton">
+       <property name="text">
+        <string>Scale</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Apply Threshold (ISODATA)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
  <resources/>
@@ -235,8 +242,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>488</y>
+     <x>902</x>
+     <y>526</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -251,8 +258,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>371</x>
-     <y>488</y>
+     <x>445</x>
+     <y>526</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -267,8 +274,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>177</x>
-     <y>501</y>
+     <x>285</x>
+     <y>557</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -283,8 +290,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>619</x>
-     <y>505</y>
+     <x>902</x>
+     <y>557</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -299,8 +306,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>794</x>
-     <y>537</y>
+     <x>902</x>
+     <y>588</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -315,8 +322,8 @@
    <slot>ActionStretch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>247</x>
-     <y>539</y>
+     <x>354</x>
+     <y>588</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -331,8 +338,8 @@
    <slot>ActionLockChannels()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>97</x>
-     <y>576</y>
+     <x>109</x>
+     <y>621</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -347,11 +354,11 @@
    <slot>ActionApply()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>855</x>
-     <y>576</y>
+     <x>722</x>
+     <y>625</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-1</x>
+     <x>0</x>
      <y>335</y>
     </hint>
    </hints>
@@ -363,8 +370,8 @@
    <slot>ActionDarkMode()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>289</x>
-     <y>575</y>
+     <x>363</x>
+     <y>621</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -379,12 +386,28 @@
    <slot>ActionCumulativeHist()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>549</x>
-     <y>572</y>
+     <x>543</x>
+     <y>621</y>
     </hint>
     <hint type="destinationlabel">
      <x>681</x>
      <y>553</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>histogramWindow</receiver>
+   <slot>ActionIsodata()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>817</x>
+     <y>601</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>589</y>
     </hint>
    </hints>
   </connection>
@@ -395,5 +418,6 @@
   <slot>ActionCumulativeHist()</slot>
   <slot>ActionLockChannels()</slot>
   <slot>ActionDarkMode()</slot>
+  <slot>ActionIsodata()</slot>
  </slots>
 </ui>

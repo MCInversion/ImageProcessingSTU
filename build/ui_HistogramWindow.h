@@ -26,25 +26,6 @@ class Ui_histogramWindow
 {
 public:
     QGridLayout *gridLayout;
-    QHBoxLayout *hLayoutButtons;
-    QCheckBox *checkBoxChannelLock;
-    QCheckBox *checkBoxDarkMode;
-    QCheckBox *checkBoxCumulative;
-    QPushButton *applyButton;
-    QHBoxLayout *hLayoutGreen;
-    QLabel *label_3;
-    QLabel *minGreenLabel;
-    QSlider *minGreenSlider;
-    QLabel *label_4;
-    QLabel *maxGreenLabel;
-    QSlider *maxGreenSlider;
-    QHBoxLayout *hLayoutRed;
-    QLabel *label;
-    QLabel *minLabel;
-    QSlider *minSlider;
-    QLabel *label_2;
-    QLabel *maxLabel;
-    QSlider *maxSlider;
     QHBoxLayout *hLayoutBlue;
     QLabel *label_5;
     QLabel *minBlueLabel;
@@ -52,81 +33,74 @@ public:
     QLabel *label_7;
     QLabel *maxBlueLabel;
     QSlider *maxBlueSlider;
+    QHBoxLayout *hLayoutRed;
+    QLabel *label;
+    QLabel *minLabel;
+    QSlider *minSlider;
+    QLabel *label_2;
+    QLabel *maxLabel;
+    QSlider *maxSlider;
+    QHBoxLayout *hLayoutGreen;
+    QLabel *label_3;
+    QLabel *minGreenLabel;
+    QSlider *minGreenSlider;
+    QLabel *label_4;
+    QLabel *maxGreenLabel;
+    QSlider *maxGreenSlider;
     QGraphicsView *histogramView;
+    QHBoxLayout *hLayoutButtons;
+    QCheckBox *checkBoxChannelLock;
+    QCheckBox *checkBoxDarkMode;
+    QCheckBox *checkBoxCumulative;
+    QPushButton *applyButton;
+    QPushButton *pushButton;
 
     void setupUi(QWidget *histogramWindow)
     {
         if (histogramWindow->objectName().isEmpty())
             histogramWindow->setObjectName(QString::fromUtf8("histogramWindow"));
-        histogramWindow->resize(915, 600);
+        histogramWindow->resize(915, 638);
         gridLayout = new QGridLayout(histogramWindow);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        hLayoutButtons = new QHBoxLayout();
-        hLayoutButtons->setObjectName(QString::fromUtf8("hLayoutButtons"));
-        checkBoxChannelLock = new QCheckBox(histogramWindow);
-        checkBoxChannelLock->setObjectName(QString::fromUtf8("checkBoxChannelLock"));
-        checkBoxChannelLock->setChecked(true);
+        hLayoutBlue = new QHBoxLayout();
+        hLayoutBlue->setObjectName(QString::fromUtf8("hLayoutBlue"));
+        label_5 = new QLabel(histogramWindow);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
 
-        hLayoutButtons->addWidget(checkBoxChannelLock);
+        hLayoutBlue->addWidget(label_5);
 
-        checkBoxDarkMode = new QCheckBox(histogramWindow);
-        checkBoxDarkMode->setObjectName(QString::fromUtf8("checkBoxDarkMode"));
-        checkBoxDarkMode->setChecked(true);
+        minBlueLabel = new QLabel(histogramWindow);
+        minBlueLabel->setObjectName(QString::fromUtf8("minBlueLabel"));
 
-        hLayoutButtons->addWidget(checkBoxDarkMode);
+        hLayoutBlue->addWidget(minBlueLabel);
 
-        checkBoxCumulative = new QCheckBox(histogramWindow);
-        checkBoxCumulative->setObjectName(QString::fromUtf8("checkBoxCumulative"));
+        minBlueSlider = new QSlider(histogramWindow);
+        minBlueSlider->setObjectName(QString::fromUtf8("minBlueSlider"));
+        minBlueSlider->setMaximum(255);
+        minBlueSlider->setOrientation(Qt::Horizontal);
 
-        hLayoutButtons->addWidget(checkBoxCumulative);
+        hLayoutBlue->addWidget(minBlueSlider);
 
-        applyButton = new QPushButton(histogramWindow);
-        applyButton->setObjectName(QString::fromUtf8("applyButton"));
+        label_7 = new QLabel(histogramWindow);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
 
-        hLayoutButtons->addWidget(applyButton);
+        hLayoutBlue->addWidget(label_7);
 
+        maxBlueLabel = new QLabel(histogramWindow);
+        maxBlueLabel->setObjectName(QString::fromUtf8("maxBlueLabel"));
 
-        gridLayout->addLayout(hLayoutButtons, 7, 0, 1, 1);
+        hLayoutBlue->addWidget(maxBlueLabel);
 
-        hLayoutGreen = new QHBoxLayout();
-        hLayoutGreen->setObjectName(QString::fromUtf8("hLayoutGreen"));
-        label_3 = new QLabel(histogramWindow);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
+        maxBlueSlider = new QSlider(histogramWindow);
+        maxBlueSlider->setObjectName(QString::fromUtf8("maxBlueSlider"));
+        maxBlueSlider->setMaximum(255);
+        maxBlueSlider->setValue(255);
+        maxBlueSlider->setOrientation(Qt::Horizontal);
 
-        hLayoutGreen->addWidget(label_3);
-
-        minGreenLabel = new QLabel(histogramWindow);
-        minGreenLabel->setObjectName(QString::fromUtf8("minGreenLabel"));
-
-        hLayoutGreen->addWidget(minGreenLabel);
-
-        minGreenSlider = new QSlider(histogramWindow);
-        minGreenSlider->setObjectName(QString::fromUtf8("minGreenSlider"));
-        minGreenSlider->setMaximum(255);
-        minGreenSlider->setOrientation(Qt::Horizontal);
-
-        hLayoutGreen->addWidget(minGreenSlider);
-
-        label_4 = new QLabel(histogramWindow);
-        label_4->setObjectName(QString::fromUtf8("label_4"));
-
-        hLayoutGreen->addWidget(label_4);
-
-        maxGreenLabel = new QLabel(histogramWindow);
-        maxGreenLabel->setObjectName(QString::fromUtf8("maxGreenLabel"));
-
-        hLayoutGreen->addWidget(maxGreenLabel);
-
-        maxGreenSlider = new QSlider(histogramWindow);
-        maxGreenSlider->setObjectName(QString::fromUtf8("maxGreenSlider"));
-        maxGreenSlider->setMaximum(255);
-        maxGreenSlider->setValue(255);
-        maxGreenSlider->setOrientation(Qt::Horizontal);
-
-        hLayoutGreen->addWidget(maxGreenSlider);
+        hLayoutBlue->addWidget(maxBlueSlider);
 
 
-        gridLayout->addLayout(hLayoutGreen, 3, 0, 1, 1);
+        gridLayout->addLayout(hLayoutBlue, 5, 0, 1, 1);
 
         hLayoutRed = new QHBoxLayout();
         hLayoutRed->setObjectName(QString::fromUtf8("hLayoutRed"));
@@ -168,51 +142,83 @@ public:
 
         gridLayout->addLayout(hLayoutRed, 1, 0, 1, 1);
 
-        hLayoutBlue = new QHBoxLayout();
-        hLayoutBlue->setObjectName(QString::fromUtf8("hLayoutBlue"));
-        label_5 = new QLabel(histogramWindow);
-        label_5->setObjectName(QString::fromUtf8("label_5"));
+        hLayoutGreen = new QHBoxLayout();
+        hLayoutGreen->setObjectName(QString::fromUtf8("hLayoutGreen"));
+        label_3 = new QLabel(histogramWindow);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
 
-        hLayoutBlue->addWidget(label_5);
+        hLayoutGreen->addWidget(label_3);
 
-        minBlueLabel = new QLabel(histogramWindow);
-        minBlueLabel->setObjectName(QString::fromUtf8("minBlueLabel"));
+        minGreenLabel = new QLabel(histogramWindow);
+        minGreenLabel->setObjectName(QString::fromUtf8("minGreenLabel"));
 
-        hLayoutBlue->addWidget(minBlueLabel);
+        hLayoutGreen->addWidget(minGreenLabel);
 
-        minBlueSlider = new QSlider(histogramWindow);
-        minBlueSlider->setObjectName(QString::fromUtf8("minBlueSlider"));
-        minBlueSlider->setMaximum(255);
-        minBlueSlider->setOrientation(Qt::Horizontal);
+        minGreenSlider = new QSlider(histogramWindow);
+        minGreenSlider->setObjectName(QString::fromUtf8("minGreenSlider"));
+        minGreenSlider->setMaximum(255);
+        minGreenSlider->setOrientation(Qt::Horizontal);
 
-        hLayoutBlue->addWidget(minBlueSlider);
+        hLayoutGreen->addWidget(minGreenSlider);
 
-        label_7 = new QLabel(histogramWindow);
-        label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_4 = new QLabel(histogramWindow);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
 
-        hLayoutBlue->addWidget(label_7);
+        hLayoutGreen->addWidget(label_4);
 
-        maxBlueLabel = new QLabel(histogramWindow);
-        maxBlueLabel->setObjectName(QString::fromUtf8("maxBlueLabel"));
+        maxGreenLabel = new QLabel(histogramWindow);
+        maxGreenLabel->setObjectName(QString::fromUtf8("maxGreenLabel"));
 
-        hLayoutBlue->addWidget(maxBlueLabel);
+        hLayoutGreen->addWidget(maxGreenLabel);
 
-        maxBlueSlider = new QSlider(histogramWindow);
-        maxBlueSlider->setObjectName(QString::fromUtf8("maxBlueSlider"));
-        maxBlueSlider->setMaximum(255);
-        maxBlueSlider->setValue(255);
-        maxBlueSlider->setOrientation(Qt::Horizontal);
+        maxGreenSlider = new QSlider(histogramWindow);
+        maxGreenSlider->setObjectName(QString::fromUtf8("maxGreenSlider"));
+        maxGreenSlider->setMaximum(255);
+        maxGreenSlider->setValue(255);
+        maxGreenSlider->setOrientation(Qt::Horizontal);
 
-        hLayoutBlue->addWidget(maxBlueSlider);
+        hLayoutGreen->addWidget(maxGreenSlider);
 
 
-        gridLayout->addLayout(hLayoutBlue, 5, 0, 1, 1);
+        gridLayout->addLayout(hLayoutGreen, 3, 0, 1, 1);
 
         histogramView = new QGraphicsView(histogramWindow);
         histogramView->setObjectName(QString::fromUtf8("histogramView"));
         histogramView->setLayoutDirection(Qt::LeftToRight);
 
         gridLayout->addWidget(histogramView, 0, 0, 1, 1);
+
+        hLayoutButtons = new QHBoxLayout();
+        hLayoutButtons->setObjectName(QString::fromUtf8("hLayoutButtons"));
+        checkBoxChannelLock = new QCheckBox(histogramWindow);
+        checkBoxChannelLock->setObjectName(QString::fromUtf8("checkBoxChannelLock"));
+        checkBoxChannelLock->setChecked(true);
+
+        hLayoutButtons->addWidget(checkBoxChannelLock);
+
+        checkBoxDarkMode = new QCheckBox(histogramWindow);
+        checkBoxDarkMode->setObjectName(QString::fromUtf8("checkBoxDarkMode"));
+        checkBoxDarkMode->setChecked(true);
+
+        hLayoutButtons->addWidget(checkBoxDarkMode);
+
+        checkBoxCumulative = new QCheckBox(histogramWindow);
+        checkBoxCumulative->setObjectName(QString::fromUtf8("checkBoxCumulative"));
+
+        hLayoutButtons->addWidget(checkBoxCumulative);
+
+        applyButton = new QPushButton(histogramWindow);
+        applyButton->setObjectName(QString::fromUtf8("applyButton"));
+
+        hLayoutButtons->addWidget(applyButton);
+
+        pushButton = new QPushButton(histogramWindow);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+
+        hLayoutButtons->addWidget(pushButton);
+
+
+        gridLayout->addLayout(hLayoutButtons, 7, 0, 1, 1);
 
 
         retranslateUi(histogramWindow);
@@ -226,6 +232,7 @@ public:
         QObject::connect(applyButton, SIGNAL(clicked()), histogramWindow, SLOT(ActionApply()));
         QObject::connect(checkBoxDarkMode, SIGNAL(clicked(bool)), histogramWindow, SLOT(ActionDarkMode()));
         QObject::connect(checkBoxCumulative, SIGNAL(clicked(bool)), histogramWindow, SLOT(ActionCumulativeHist()));
+        QObject::connect(pushButton, SIGNAL(clicked()), histogramWindow, SLOT(ActionIsodata()));
 
         QMetaObject::connectSlotsByName(histogramWindow);
     } // setupUi
@@ -233,22 +240,23 @@ public:
     void retranslateUi(QWidget *histogramWindow)
     {
         histogramWindow->setWindowTitle(QCoreApplication::translate("histogramWindow", "Histogram", nullptr));
-        checkBoxChannelLock->setText(QCoreApplication::translate("histogramWindow", "Channel lock", nullptr));
-        checkBoxDarkMode->setText(QCoreApplication::translate("histogramWindow", "Dark Mode", nullptr));
-        checkBoxCumulative->setText(QCoreApplication::translate("histogramWindow", "Cumulative Histogram", nullptr));
-        applyButton->setText(QCoreApplication::translate("histogramWindow", "Scale", nullptr));
-        label_3->setText(QCoreApplication::translate("histogramWindow", "green min:   ", nullptr));
-        minGreenLabel->setText(QCoreApplication::translate("histogramWindow", "0", nullptr));
-        label_4->setText(QCoreApplication::translate("histogramWindow", "green max:   ", nullptr));
-        maxGreenLabel->setText(QCoreApplication::translate("histogramWindow", "255", nullptr));
-        label->setText(QCoreApplication::translate("histogramWindow", "intensity min:", nullptr));
-        minLabel->setText(QCoreApplication::translate("histogramWindow", "0", nullptr));
-        label_2->setText(QCoreApplication::translate("histogramWindow", "intensity max:", nullptr));
-        maxLabel->setText(QCoreApplication::translate("histogramWindow", "255", nullptr));
         label_5->setText(QCoreApplication::translate("histogramWindow", "blue min:     ", nullptr));
         minBlueLabel->setText(QCoreApplication::translate("histogramWindow", "0", nullptr));
         label_7->setText(QCoreApplication::translate("histogramWindow", "blue max:     ", nullptr));
         maxBlueLabel->setText(QCoreApplication::translate("histogramWindow", "255", nullptr));
+        label->setText(QCoreApplication::translate("histogramWindow", "intensity min:", nullptr));
+        minLabel->setText(QCoreApplication::translate("histogramWindow", "0", nullptr));
+        label_2->setText(QCoreApplication::translate("histogramWindow", "intensity max:", nullptr));
+        maxLabel->setText(QCoreApplication::translate("histogramWindow", "255", nullptr));
+        label_3->setText(QCoreApplication::translate("histogramWindow", "green min:   ", nullptr));
+        minGreenLabel->setText(QCoreApplication::translate("histogramWindow", "0", nullptr));
+        label_4->setText(QCoreApplication::translate("histogramWindow", "green max:   ", nullptr));
+        maxGreenLabel->setText(QCoreApplication::translate("histogramWindow", "255", nullptr));
+        checkBoxChannelLock->setText(QCoreApplication::translate("histogramWindow", "Channel lock", nullptr));
+        checkBoxDarkMode->setText(QCoreApplication::translate("histogramWindow", "Dark Mode", nullptr));
+        checkBoxCumulative->setText(QCoreApplication::translate("histogramWindow", "Cumulative Histogram", nullptr));
+        applyButton->setText(QCoreApplication::translate("histogramWindow", "Scale", nullptr));
+        pushButton->setText(QCoreApplication::translate("histogramWindow", "Apply Threshold (ISODATA)", nullptr));
     } // retranslateUi
 
 };

@@ -314,6 +314,9 @@ void ImageViewer::on_actionHistogram_triggered()
 	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
 	HistogramWindow* histogramWindow = new HistogramWindow(this);
 	connect(histogramWindow, SIGNAL(sigStretch()), ip, SLOT(on_stretch()));
+	connect(histogramWindow, SIGNAL(sigGrayscale()), ip, SLOT(on_histogramGrayscale()));
+	connect(ip, SIGNAL(sigGrayscaled()), histogramWindow, SLOT(ActionIsodataCompute()));
+	connect(histogramWindow, SIGNAL(sigThreshold()), ip, SLOT(on_singleThreshold()));
 
 	ViewerWidget* w = getCurrentViewerWidget();
 	histogramWindow->setImage(w->getImage());

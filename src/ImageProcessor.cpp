@@ -68,6 +68,33 @@ void ImageProcessor::on_stretch()
 	_view_w->update();
 }
 
+void ImageProcessor::on_histogramGrayscale()
+{
+	grayscale();
+	emit sigGrayscaled();
+}
+
+void ImageProcessor::on_singleThreshold()
+{
+	HistogramWindow* hw = static_cast<HistogramWindow*>(sender());
+	int threshold = hw->threshold();
+
+	uchar* data = _view_w->getData();
+	int height = _view_w->getImgHeight();
+	int width = _view_w->getImgWidth();
+	int row = _view_w->getImage()->bytesPerLine();
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			uchar val = (data[i * row + j] > threshold ? 255 : 0);
+			_view_w->setPixel(_view_w->getImage(), j, i, static_cast<uchar>(val));
+		}
+	}
+	_view_w->update();
+	hw->setImage(_view_w->getImage());
+	hw->updateHistogram();
+}
+
 bool ImageProcessor::clearImage()
 {
 	_view_w->clear();

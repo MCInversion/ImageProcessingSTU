@@ -19,15 +19,23 @@ public:
 
 	QImage* _targetImage = nullptr;
 	QImage* _histogramPlot = nullptr;
+
+	int threshold();
+	void updateHistogram();
 public slots:
 	void plotHistogram(bool plotMinmax = false);
 	void ActionStretch();
 	void ActionApply();
+	void ActionIsodata();
+	void ActionIsodataCompute();
+
 	void ActionDarkMode();
 	void ActionCumulativeHist();
 	void ActionLockChannels();
 signals:
 	float sigStretch();
+	void sigGrayscale();
+	int sigThreshold();
 protected:
 	void resizeEvent(QResizeEvent* event);
 private:
@@ -53,11 +61,15 @@ private:
 
 	unsigned int _max_value = 1000;
 
+	// threshold
+	int _threshold = 125;
+
 	// flags
 	bool _grayscale = false;
 	bool _channelsLocked = true;
 	bool _darkMode = true;
 	bool _plotCumulative = false;
+	bool _cumulativeComputed = false;
 
 	// colors
 	QColor _bgColor = QColor(11, 45, 77);
@@ -77,6 +89,16 @@ private:
 	void getIntensityBounds(float percentile1 = 0.0f, float percentile2 = 1.0f);
 	void contrastStretch();
 	void getCumulativeSums();
+
+	// thresholds
+	int getIsodataThresholdRED();
+	int getIsodataThresholdGREEN();
+	int getIsodataThresholdBLUE();
+
+	// stats
+	int pixelMeanRED(int iMin, int iMax);
+	int pixelMeanGREEN(int iMin, int iMax);
+	int pixelMeanBLUE(int iMin, int iMax);
 
 	QImage getResized(QImage* image, const QSize& newSize, bool keepAspectRatio);
 
