@@ -61,6 +61,15 @@ void ImageProcessor::bernsenThresholdAccepted()
 	clearMasks();
 }
 
+void ImageProcessor::multiBlurAccepted()
+{
+	MultiBlurDialog* multiBlur = static_cast<MultiBlurDialog*>(sender());
+
+	int nSteps = multiBlur->getSteps();
+
+	printf("multiBlur with %d steps\n", nSteps);
+}
+
 // update viewer image after histogram stretch
 void ImageProcessor::on_stretch()
 {

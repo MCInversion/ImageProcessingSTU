@@ -39,6 +39,8 @@ public:
     QAction *actionBlur;
     QAction *actionThreshold;
     QAction *actionGrayscale;
+    QAction *actionThreshold_Isodata;
+    QAction *actionMulti_Blur_test;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget;
@@ -74,6 +76,7 @@ public:
         actionHistogram->setObjectName(QString::fromUtf8("actionHistogram"));
         actionUndo = new QAction(ImageViewerClass);
         actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
+        actionUndo->setEnabled(false);
         actionRedo = new QAction(ImageViewerClass);
         actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
         actionRedo->setEnabled(false);
@@ -83,6 +86,10 @@ public:
         actionThreshold->setObjectName(QString::fromUtf8("actionThreshold"));
         actionGrayscale = new QAction(ImageViewerClass);
         actionGrayscale->setObjectName(QString::fromUtf8("actionGrayscale"));
+        actionThreshold_Isodata = new QAction(ImageViewerClass);
+        actionThreshold_Isodata->setObjectName(QString::fromUtf8("actionThreshold_Isodata"));
+        actionMulti_Blur_test = new QAction(ImageViewerClass);
+        actionMulti_Blur_test->setObjectName(QString::fromUtf8("actionMulti_Blur_test"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -133,6 +140,8 @@ public:
         menuImage->addAction(actionMirror_Extend_test);
         menuImage->addAction(actionBlur);
         menuImage->addAction(actionThreshold);
+        menuImage->addAction(actionThreshold_Isodata);
+        menuImage->addAction(actionMulti_Blur_test);
         menuTools->addAction(actionHistogram);
         menuEdit->addAction(actionUndo);
         menuEdit->addAction(actionRedo);
@@ -158,6 +167,8 @@ public:
         actionBlur->setText(QCoreApplication::translate("ImageViewerClass", "Blur", nullptr));
         actionThreshold->setText(QCoreApplication::translate("ImageViewerClass", "Threshold (Bernsen)", nullptr));
         actionGrayscale->setText(QCoreApplication::translate("ImageViewerClass", "Grayscale", nullptr));
+        actionThreshold_Isodata->setText(QCoreApplication::translate("ImageViewerClass", "Threshold (Isodata)", nullptr));
+        actionMulti_Blur_test->setText(QCoreApplication::translate("ImageViewerClass", "Multi-Blur (test)", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));
         menuTools->setTitle(QCoreApplication::translate("ImageViewerClass", "Tools", nullptr));

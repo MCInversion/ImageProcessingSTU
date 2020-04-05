@@ -1,14 +1,5 @@
 ﻿  Automatic MOC and UIC for target ImageViewer
-  mocs_compilation.cpp
-  HistogramWindow.cpp
   ImageProcessor.cpp
-  ImageViewer.cpp
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(40,28): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(49,28): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(50,32): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(51,30): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(543,9): warning C4101: 'j': unreferenced local variable
-  main.cpp
   ImageViewer.vcxproj -> D:\VS_Projects\ImageViewerIP\build\Debug\ImageViewer.exe
   Win deploy qt
   D:\VS_Projects\ImageViewerIP\build\Debug\ImageViewer.exe 64 bit, debug executable

@@ -48,6 +48,16 @@ endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd
+^D:\VS_PROJECTS\IMAGEVIEWERIP\SRC\MULTIBLURDIALOG.UI
+setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_MultiBlurDialog.h D:/VS_Projects/ImageViewerIP/src/MultiBlurDialog.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
 ^D:\VS_PROJECTS\IMAGEVIEWERIP\SRC\NEWIMGDIALOG.UI
 setlocal
 D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_NewImgDialog.h D:/VS_Projects/ImageViewerIP/src/NewImgDialog.ui

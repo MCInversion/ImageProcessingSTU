@@ -11,6 +11,7 @@
 #include "BlurDialog.h"
 #include "BernsenThresholdDialog.h"
 #include "ImageProcessor.h"
+#include "MultiBlurDialog.h"
 
 class ImageViewer : public QMainWindow
 {
@@ -73,4 +74,7 @@ private slots:
 	void on_actionHistogram_triggered();
 	void on_actionBlur_triggered();
 	void on_actionThreshold_triggered();
+	void on_actionThreshold_Isodata_triggered();
+
+	void on_actionMulti_Blur_test_triggered();
 };

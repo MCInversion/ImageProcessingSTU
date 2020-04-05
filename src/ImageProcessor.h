@@ -11,6 +11,7 @@
 #include "HistogramWindow.h"
 #include "BlurDialog.h"
 #include "BernsenThresholdDialog.h"
+#include "MultiBlurDialog.h"
 
 class ImageProcessor : public QObject
 {
@@ -29,6 +30,7 @@ public slots:
 	void mirrorExtendAccepted();
 	void blurAccepted();
 	void bernsenThresholdAccepted();
+	void multiBlurAccepted();
 
 	//Histogram slots
 	void on_stretch();

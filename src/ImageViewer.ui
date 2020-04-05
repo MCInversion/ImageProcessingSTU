@@ -60,6 +60,8 @@
     <addaction name="actionMirror_Extend_test"/>
     <addaction name="actionBlur"/>
     <addaction name="actionThreshold"/>
+    <addaction name="actionThreshold_Isodata"/>
+    <addaction name="actionMulti_Blur_test"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -132,6 +134,9 @@
    </property>
   </action>
   <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -157,6 +162,16 @@
   <action name="actionGrayscale">
    <property name="text">
     <string>Grayscale</string>
+   </property>
+  </action>
+  <action name="actionThreshold_Isodata">
+   <property name="text">
+    <string>Threshold (Isodata)</string>
+   </property>
+  </action>
+  <action name="actionMulti_Blur_test">
+   <property name="text">
+    <string>Multi-Blur (test)</string>
    </property>
   </action>
  </widget>

@@ -38,6 +38,11 @@
 			"UVLADIE3JM/moc_MirrorExtendDialog.cpp"
 		],
 		[
+			"D:/VS_Projects/ImageViewerIP/src/MultiBlurDialog.h",
+			"MU",
+			"UVLADIE3JM/moc_MultiBlurDialog.cpp"
+		],
+		[
 			"D:/VS_Projects/ImageViewerIP/src/NewImageDialog.h",
 			"MU",
 			"UVLADIE3JM/moc_NewImageDialog.cpp"
@@ -88,6 +93,7 @@
 		"D:/VS_Projects/ImageViewerIP/build/ui_HistogramWindow.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_MirrorExtendDialog.h",
+		"D:/VS_Projects/ImageViewerIP/build/ui_MultiBlurDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_NewImgDialog.h"
 	],
 	"MULTI_CONFIG" : true,
@@ -113,6 +119,7 @@
 		[ "D:/VS_Projects/ImageViewerIP/src/ImageProcessor.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/ImageViewer.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.cpp", "MU" ],
+		[ "D:/VS_Projects/ImageViewerIP/src/MultiBlurDialog.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/ViewerWidget.cpp", "MU" ],
 		[ "D:/VS_Projects/ImageViewerIP/src/main.cpp", "MU" ]
 	],
@@ -125,12 +132,14 @@
 		"D:/VS_Projects/ImageViewerIP/build/ui_HistogramWindow.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_MirrorExtendDialog.h",
+		"D:/VS_Projects/ImageViewerIP/build/ui_MultiBlurDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_NewImgDialog.h",
 		"D:/VS_Projects/ImageViewerIP/src/BernsenThresholdDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/BlurDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/HistogramWindow.ui",
 		"D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui",
 		"D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.ui",
+		"D:/VS_Projects/ImageViewerIP/src/MultiBlurDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/NewImgDialog.ui"
 	],
 	"UIC_UI_FILES" : [],

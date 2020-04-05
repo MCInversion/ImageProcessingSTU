@@ -353,3 +353,42 @@ void ImageViewer::on_actionThreshold_triggered()
 	connect(bernsenThresholdDialog, SIGNAL(accepted()), ip, SLOT(bernsenThresholdAccepted()));
 	bernsenThresholdDialog->exec();
 }
+
+void ImageViewer::on_actionThreshold_Isodata_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	HistogramWindow* histogramWindow = new HistogramWindow(this);
+	connect(histogramWindow, SIGNAL(sigStretch()), ip, SLOT(on_stretch()));
+	connect(histogramWindow, SIGNAL(sigGrayscale()), ip, SLOT(on_histogramGrayscale()));
+	connect(ip, SIGNAL(sigGrayscaled()), histogramWindow, SLOT(ActionIsodataCompute()));
+	connect(histogramWindow, SIGNAL(sigThreshold()), ip, SLOT(on_singleThreshold()));
+
+	ViewerWidget* w = getCurrentViewerWidget();
+	histogramWindow->setImage(w->getImage());
+	histogramWindow->plotHistogram();
+	histogramWindow->show();
+
+	ip->on_histogramGrayscale();
+}
+
+void ImageViewer::on_actionMulti_Blur_test_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	MultiBlurDialog* multiBlur = new MultiBlurDialog(this);
+	connect(multiBlur, SIGNAL(accepted()), ip, SLOT(multiBlurAccepted()));
+	multiBlur->exec();
+}
