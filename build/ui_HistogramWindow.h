@@ -224,10 +224,10 @@ public:
         retranslateUi(histogramWindow);
         QObject::connect(maxSlider, SIGNAL(valueChanged(int)), histogramWindow, SLOT(ActionStretch()));
         QObject::connect(minSlider, SIGNAL(valueChanged(int)), histogramWindow, SLOT(ActionStretch()));
-        QObject::connect(minGreenSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
-        QObject::connect(maxGreenSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
-        QObject::connect(maxBlueSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
-        QObject::connect(minBlueSlider, SIGNAL(sliderMoved(int)), histogramWindow, SLOT(ActionStretch()));
+        QObject::connect(minGreenSlider, SIGNAL(valueChanged(int)), histogramWindow, SLOT(ActionStretch()));
+        QObject::connect(maxGreenSlider, SIGNAL(valueChanged(int)), histogramWindow, SLOT(ActionStretch()));
+        QObject::connect(maxBlueSlider, SIGNAL(valueChanged(int)), histogramWindow, SLOT(ActionStretch()));
+        QObject::connect(minBlueSlider, SIGNAL(valueChanged(int)), histogramWindow, SLOT(ActionStretch()));
         QObject::connect(checkBoxChannelLock, SIGNAL(clicked(bool)), histogramWindow, SLOT(ActionLockChannels()));
         QObject::connect(applyButton, SIGNAL(clicked()), histogramWindow, SLOT(ActionApply()));
         QObject::connect(checkBoxDarkMode, SIGNAL(clicked(bool)), histogramWindow, SLOT(ActionDarkMode()));

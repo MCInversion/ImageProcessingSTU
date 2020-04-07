@@ -30,6 +30,12 @@ private:
 	ViewerWidget* getViewerWidget(int tabId);
 	ViewerWidget* getCurrentViewerWidget();
 
+	// time ctrls
+	void hideTimeControls();
+	void enableTimeControls();
+	void setUpTimeControls(int nSteps);
+	void setTimeLabel(int id);
+
 	// Event filters
 	bool eventFilter(QObject* obj, QEvent* event);
 
@@ -77,4 +83,7 @@ private slots:
 	void on_actionThreshold_Isodata_triggered();
 
 	void on_actionMulti_Blur_test_triggered();
+	void on_multiBlurControls();
+	void ActionTimeSlider();
+	void ActionTabChanged();
 };

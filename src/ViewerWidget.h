@@ -1,7 +1,7 @@
 #pragma once
 #include <QtWidgets>
 
-class ViewerWidget :public QWidget {
+class ViewerWidget : public QWidget {
 	Q_OBJECT
 
 public:
@@ -15,6 +15,11 @@ public:
 	void setPixel(QImage * img, int x, int y, uchar val);
 	void setPixel(QImage * img, int x, int y, double val);
 	void setPixel(QImage * img, int x, int y, double valR, double valG, double valB, const double valA = 1.);
+
+	// Multi-image functions
+	void allocateImages(int n);
+	bool setImageAt(const QImage& img, int i);
+	void clearImages();
 
 	//Draw functions
 	void freeDraw(const QPoint& end, const QPen& pen);
@@ -38,6 +43,11 @@ public:
 	inline bool getFreeDrawActivated() { return freeDrawActivated; }
 
 	inline uchar* getData() { return data; }
+
+	std::vector<QImage> imgArray = {};
+	int imgId = 0;
+
+	// inline int getImgArraySize() { return imgArray.size(); }
 private:
 	QPointer<QTab> tab;
 	QString name = "";

@@ -16,9 +16,12 @@
 class ImageProcessor : public QObject
 {
 	Q_OBJECT
+
 public:
 	ImageProcessor(ViewerWidget* viewer);
 	~ImageProcessor();
+
+	int nSteps;
 
 	// Image functions
 	bool clearImage();
@@ -63,6 +66,7 @@ private:
 	void clearMasks();
 signals:
 	void sigGrayscaled();
+	void multiImageComplete();
 };
 
 #endif

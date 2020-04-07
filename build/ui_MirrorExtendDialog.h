@@ -23,27 +23,27 @@ class Ui_DialogMirrorExtend
 {
 public:
     QGridLayout *gridLayout;
-    QPushButton *okButton;
     QPushButton *cancelButton;
-    QSpinBox *spinBoxExtendPixels;
     QLabel *label;
+    QSpinBox *spinBoxExtendPixels;
+    QPushButton *okButton;
 
     void setupUi(QDialog *DialogMirrorExtend)
     {
         if (DialogMirrorExtend->objectName().isEmpty())
             DialogMirrorExtend->setObjectName(QString::fromUtf8("DialogMirrorExtend"));
-        DialogMirrorExtend->resize(400, 103);
+        DialogMirrorExtend->resize(400, 112);
         gridLayout = new QGridLayout(DialogMirrorExtend);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        okButton = new QPushButton(DialogMirrorExtend);
-        okButton->setObjectName(QString::fromUtf8("okButton"));
-
-        gridLayout->addWidget(okButton, 1, 0, 1, 1);
-
         cancelButton = new QPushButton(DialogMirrorExtend);
         cancelButton->setObjectName(QString::fromUtf8("cancelButton"));
 
         gridLayout->addWidget(cancelButton, 1, 1, 1, 1);
+
+        label = new QLabel(DialogMirrorExtend);
+        label->setObjectName(QString::fromUtf8("label"));
+
+        gridLayout->addWidget(label, 0, 1, 1, 1);
 
         spinBoxExtendPixels = new QSpinBox(DialogMirrorExtend);
         spinBoxExtendPixels->setObjectName(QString::fromUtf8("spinBoxExtendPixels"));
@@ -52,10 +52,10 @@ public:
 
         gridLayout->addWidget(spinBoxExtendPixels, 0, 0, 1, 1);
 
-        label = new QLabel(DialogMirrorExtend);
-        label->setObjectName(QString::fromUtf8("label"));
+        okButton = new QPushButton(DialogMirrorExtend);
+        okButton->setObjectName(QString::fromUtf8("okButton"));
 
-        gridLayout->addWidget(label, 0, 1, 1, 1);
+        gridLayout->addWidget(okButton, 1, 0, 1, 1);
 
 
         retranslateUi(DialogMirrorExtend);
@@ -68,9 +68,9 @@ public:
     void retranslateUi(QDialog *DialogMirrorExtend)
     {
         DialogMirrorExtend->setWindowTitle(QCoreApplication::translate("DialogMirrorExtend", "Mirror Extend", nullptr));
-        okButton->setText(QCoreApplication::translate("DialogMirrorExtend", "OK", nullptr));
         cancelButton->setText(QCoreApplication::translate("DialogMirrorExtend", "Cancel", nullptr));
         label->setText(QCoreApplication::translate("DialogMirrorExtend", "px", nullptr));
+        okButton->setText(QCoreApplication::translate("DialogMirrorExtend", "OK", nullptr));
     } // retranslateUi
 
 };

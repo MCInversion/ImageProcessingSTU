@@ -12,10 +12,14 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
@@ -42,8 +46,12 @@ public:
     QAction *actionThreshold_Isodata;
     QAction *actionMulti_Blur_test;
     QWidget *centralWidget;
-    QHBoxLayout *horizontalLayout;
+    QGridLayout *gridLayout;
     QTabWidget *tabWidget;
+    QFrame *timeFrame;
+    QHBoxLayout *horizontalLayout;
+    QSlider *timeSlider;
+    QLabel *timeLabel;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuImage;
@@ -56,7 +64,7 @@ public:
     {
         if (ImageViewerClass->objectName().isEmpty())
             ImageViewerClass->setObjectName(QString::fromUtf8("ImageViewerClass"));
-        ImageViewerClass->resize(818, 617);
+        ImageViewerClass->resize(945, 718);
         actionNew = new QAction(ImageViewerClass);
         actionNew->setObjectName(QString::fromUtf8("actionNew"));
         actionOpen = new QAction(ImageViewerClass);
@@ -92,22 +100,46 @@ public:
         actionMulti_Blur_test->setObjectName(QString::fromUtf8("actionMulti_Blur_test"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
-        horizontalLayout = new QHBoxLayout(centralWidget);
-        horizontalLayout->setSpacing(6);
-        horizontalLayout->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        gridLayout = new QGridLayout(centralWidget);
+        gridLayout->setSpacing(6);
+        gridLayout->setContentsMargins(11, 11, 11, 11);
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
         tabWidget->setDocumentMode(false);
         tabWidget->setTabsClosable(true);
         tabWidget->setMovable(true);
 
-        horizontalLayout->addWidget(tabWidget);
+        gridLayout->addWidget(tabWidget, 1, 0, 1, 1);
+
+        timeFrame = new QFrame(centralWidget);
+        timeFrame->setObjectName(QString::fromUtf8("timeFrame"));
+        timeFrame->setFrameShape(QFrame::StyledPanel);
+        timeFrame->setFrameShadow(QFrame::Raised);
+        horizontalLayout = new QHBoxLayout(timeFrame);
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        timeSlider = new QSlider(timeFrame);
+        timeSlider->setObjectName(QString::fromUtf8("timeSlider"));
+        timeSlider->setEnabled(true);
+        timeSlider->setOrientation(Qt::Horizontal);
+
+        horizontalLayout->addWidget(timeSlider);
+
+        timeLabel = new QLabel(timeFrame);
+        timeLabel->setObjectName(QString::fromUtf8("timeLabel"));
+        timeLabel->setEnabled(true);
+
+        horizontalLayout->addWidget(timeLabel);
+
+
+        gridLayout->addWidget(timeFrame, 2, 0, 1, 1);
 
         ImageViewerClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(ImageViewerClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 818, 26));
+        menuBar->setGeometry(QRect(0, 0, 945, 26));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         menuImage = new QMenu(menuBar);
@@ -147,6 +179,7 @@ public:
         menuEdit->addAction(actionRedo);
 
         retranslateUi(ImageViewerClass);
+        QObject::connect(timeSlider, SIGNAL(valueChanged(int)), ImageViewerClass, SLOT(ActionTimeSlider()));
 
         QMetaObject::connectSlotsByName(ImageViewerClass);
     } // setupUi
@@ -169,6 +202,7 @@ public:
         actionGrayscale->setText(QCoreApplication::translate("ImageViewerClass", "Grayscale", nullptr));
         actionThreshold_Isodata->setText(QCoreApplication::translate("ImageViewerClass", "Threshold (Isodata)", nullptr));
         actionMulti_Blur_test->setText(QCoreApplication::translate("ImageViewerClass", "Multi-Blur (test)", nullptr));
+        timeLabel->setText(QCoreApplication::translate("ImageViewerClass", "t = 0", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));
         menuTools->setTitle(QCoreApplication::translate("ImageViewerClass", "Tools", nullptr));

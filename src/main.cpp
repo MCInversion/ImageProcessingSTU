@@ -13,12 +13,15 @@
 // - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
 // - Bernsen threshold
 // - Isodata threshold
+// - image sequence (slider)
+// - enable/disable slider upon changing tabs
 
 // WIP:
 //
-// - image sequence (slider)
+// - Explicit scheme solver for heat eqn
 
 // TODO:
+// - Implicit SOR solver for heqt eqn
 // - UndoRedo (?)
 // - background processing thread (major problem with viewerWidget - the processing thread of the image processor cannot write to it)
 // - active img <--> widgets communication/update

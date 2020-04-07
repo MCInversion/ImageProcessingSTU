@@ -26,6 +26,25 @@ void ViewerWidget::resizeWidget(QSize size)
 	this->setMaximumSize(size);
 }
 
+void ViewerWidget::allocateImages(int n)
+{
+	imgArray = std::vector<QImage>(n);
+}
+
+bool ViewerWidget::setImageAt(const QImage& img, int i)
+{
+	if (i >= imgArray.size()) {
+		return false;
+	}
+	imgArray[i] = QImage(img);
+	return true;
+}
+
+void ViewerWidget::clearImages()
+{
+	imgArray.clear();
+}
+
 //Image functions
 bool ViewerWidget::setImage(const QImage& inputImg)
 {

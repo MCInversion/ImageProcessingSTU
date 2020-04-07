@@ -4,6 +4,8 @@ ImageViewer::ImageViewer(QWidget* parent)
 	: QMainWindow(parent), ui(new Ui::ImageViewerClass)
 {
 	ui->setupUi(this);
+	hideTimeControls();
+	connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(ActionTabChanged()));
 }
 
 //ViewerWidget functions
@@ -16,9 +18,35 @@ ViewerWidget* ImageViewer::getViewerWidget(int tabId)
 	}
 	return nullptr;
 }
+
 ViewerWidget* ImageViewer::getCurrentViewerWidget()
 {
 	return getViewerWidget(ui->tabWidget->currentIndex());
+}
+
+void ImageViewer::hideTimeControls()
+{
+	ui->timeSlider->hide();
+	ui->timeLabel->hide();
+}
+
+void ImageViewer::enableTimeControls()
+{
+	ui->timeSlider->show();
+	ui->timeLabel->show();
+}
+
+void ImageViewer::setUpTimeControls(int nSteps)
+{
+	enableTimeControls();
+	ui->timeSlider->setRange(0, nSteps);
+	ui->timeSlider->setValue(nSteps);
+	setTimeLabel(nSteps);
+}
+
+void ImageViewer::setTimeLabel(int id)
+{
+	ui->timeLabel->setText("t = " + QString::number(id));
 }
 
 // Event filters
@@ -390,5 +418,39 @@ void ImageViewer::on_actionMulti_Blur_test_triggered()
 	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
 	MultiBlurDialog* multiBlur = new MultiBlurDialog(this);
 	connect(multiBlur, SIGNAL(accepted()), ip, SLOT(multiBlurAccepted()));
+	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
 	multiBlur->exec();
+}
+
+void ImageViewer::on_multiBlurControls()
+{
+	ImageProcessor* ip = static_cast<ImageProcessor*>(sender());
+	enableTimeControls();
+	setUpTimeControls(ip->nSteps);
+}
+
+void ImageViewer::ActionTimeSlider()
+{
+	int sliderId = ui->timeSlider->value();
+	setTimeLabel(sliderId);
+	ViewerWidget* w = getCurrentViewerWidget();
+	w->imgId = sliderId;
+	w->setImage(w->imgArray[sliderId]);
+	w->update();
+}
+
+void ImageViewer::ActionTabChanged()
+{
+	QTabWidget* tw = static_cast<QTabWidget*>(sender());
+	int id = tw->currentIndex();
+	ViewerWidget* vW = getViewerWidget(id);
+	if (vW->imgArray.size() > 0) {
+		setUpTimeControls(vW->imgArray.size() - 1);
+		ui->timeSlider->setValue(vW->imgId);
+		setTimeLabel(vW->imgId);
+		vW->setImage(vW->imgArray[vW->imgId]);
+	}
+	else {
+		hideTimeControls();
+	}
 }

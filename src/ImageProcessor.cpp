@@ -65,9 +65,31 @@ void ImageProcessor::multiBlurAccepted()
 {
 	MultiBlurDialog* multiBlur = static_cast<MultiBlurDialog*>(sender());
 
-	int nSteps = multiBlur->getSteps();
+	nSteps = multiBlur->getSteps();
+	int radius = multiBlur->getRadius();
 
 	printf("multiBlur with %d steps\n", nSteps);
+	
+	_view_w->clearImages();
+	_view_w->allocateImages(nSteps + 1);
+
+	getGaussianKernel(radius);
+
+	for (int i = 0; i <= nSteps; i++) {
+		QImage img = QImage(*_view_w->getImage());
+		_view_w->setImageAt(img, i);
+		QImage extended = QImage(img);
+		_view_w->setImage(extended);
+		mirrorExtendImageBy(radius);
+		blurImage(radius);
+		printf("step %d blurred\n", i);
+	}
+	_view_w->setImageAt(QImage(*_view_w->getImage()), nSteps + 1);
+	_view_w->imgId = nSteps;
+	_view_w->setImage(_view_w->imgArray[nSteps]);
+	clearMasks();
+
+	emit multiImageComplete();
 }
 
 // update viewer image after histogram stretch

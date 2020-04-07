@@ -7,24 +7,24 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>103</height>
+    <height>112</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Mirror Extend</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
-    <widget class="QPushButton" name="okButton">
-     <property name="text">
-      <string>OK</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QPushButton" name="cancelButton">
      <property name="text">
       <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>px</string>
      </property>
     </widget>
    </item>
@@ -38,10 +38,10 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="label">
+   <item row="1" column="0">
+    <widget class="QPushButton" name="okButton">
      <property name="text">
-      <string>px</string>
+      <string>OK</string>
      </property>
     </widget>
    </item>

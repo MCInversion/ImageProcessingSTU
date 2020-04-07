@@ -24,44 +24,58 @@ class Ui_multiBlurDIalog
 public:
     QGridLayout *gridLayout;
     QPushButton *cancelButton;
-    QPushButton *okButton;
-    QSpinBox *spinBox;
-    QLabel *label;
+    QSpinBox *stepsSpinBox;
     QLabel *label_2;
+    QPushButton *okButton;
+    QLabel *label;
+    QLabel *label_3;
+    QSpinBox *radiusSpinBox;
 
     void setupUi(QDialog *multiBlurDIalog)
     {
         if (multiBlurDIalog->objectName().isEmpty())
             multiBlurDIalog->setObjectName(QString::fromUtf8("multiBlurDIalog"));
-        multiBlurDIalog->resize(400, 109);
+        multiBlurDIalog->resize(345, 135);
         gridLayout = new QGridLayout(multiBlurDIalog);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         cancelButton = new QPushButton(multiBlurDIalog);
         cancelButton->setObjectName(QString::fromUtf8("cancelButton"));
 
-        gridLayout->addWidget(cancelButton, 2, 1, 1, 1);
+        gridLayout->addWidget(cancelButton, 3, 1, 1, 1);
+
+        stepsSpinBox = new QSpinBox(multiBlurDIalog);
+        stepsSpinBox->setObjectName(QString::fromUtf8("stepsSpinBox"));
+        stepsSpinBox->setMinimum(1);
+        stepsSpinBox->setValue(5);
+
+        gridLayout->addWidget(stepsSpinBox, 1, 1, 1, 1);
+
+        label_2 = new QLabel(multiBlurDIalog);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        gridLayout->addWidget(label_2, 0, 0, 1, 2);
 
         okButton = new QPushButton(multiBlurDIalog);
         okButton->setObjectName(QString::fromUtf8("okButton"));
 
-        gridLayout->addWidget(okButton, 2, 0, 1, 1);
-
-        spinBox = new QSpinBox(multiBlurDIalog);
-        spinBox->setObjectName(QString::fromUtf8("spinBox"));
-        spinBox->setMinimum(1);
-        spinBox->setValue(5);
-
-        gridLayout->addWidget(spinBox, 1, 1, 1, 1);
+        gridLayout->addWidget(okButton, 3, 0, 1, 1);
 
         label = new QLabel(multiBlurDIalog);
         label->setObjectName(QString::fromUtf8("label"));
 
         gridLayout->addWidget(label, 1, 0, 1, 1);
 
-        label_2 = new QLabel(multiBlurDIalog);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_3 = new QLabel(multiBlurDIalog);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
 
-        gridLayout->addWidget(label_2, 0, 0, 1, 2);
+        gridLayout->addWidget(label_3, 2, 0, 1, 1);
+
+        radiusSpinBox = new QSpinBox(multiBlurDIalog);
+        radiusSpinBox->setObjectName(QString::fromUtf8("radiusSpinBox"));
+        radiusSpinBox->setMinimum(1);
+        radiusSpinBox->setValue(3);
+
+        gridLayout->addWidget(radiusSpinBox, 2, 1, 1, 1);
 
 
         retranslateUi(multiBlurDIalog);
@@ -75,9 +89,10 @@ public:
     {
         multiBlurDIalog->setWindowTitle(QCoreApplication::translate("multiBlurDIalog", "Multi-Blur", nullptr));
         cancelButton->setText(QCoreApplication::translate("multiBlurDIalog", "Cancel", nullptr));
+        label_2->setText(QCoreApplication::translate("multiBlurDIalog", "> generates a sequence of progressively blurred images", nullptr));
         okButton->setText(QCoreApplication::translate("multiBlurDIalog", "OK", nullptr));
         label->setText(QCoreApplication::translate("multiBlurDIalog", "steps:", nullptr));
-        label_2->setText(QCoreApplication::translate("multiBlurDIalog", "> generates a sequence of progressively blurred images", nullptr));
+        label_3->setText(QCoreApplication::translate("multiBlurDIalog", "radius:", nullptr));
     } // retranslateUi
 
 };

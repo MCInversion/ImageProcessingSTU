@@ -14,7 +14,8 @@ public:
 	{
 		multiBlurDialogUi->setupUi(this);
 	}
-	int getSteps() { return multiBlurDialogUi->spinBox->value(); }
+	int getSteps() { return multiBlurDialogUi->stepsSpinBox->value(); }
+	int getRadius() { return multiBlurDialogUi->radiusSpinBox->value(); }
 private:
 	Ui::multiBlurDIalog* multiBlurDialogUi;
 };

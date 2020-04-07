@@ -269,7 +269,7 @@
   </connection>
   <connection>
    <sender>minGreenSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>histogramWindow</receiver>
    <slot>ActionStretch()</slot>
    <hints>
@@ -285,7 +285,7 @@
   </connection>
   <connection>
    <sender>maxGreenSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>histogramWindow</receiver>
    <slot>ActionStretch()</slot>
    <hints>
@@ -301,7 +301,7 @@
   </connection>
   <connection>
    <sender>maxBlueSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>histogramWindow</receiver>
    <slot>ActionStretch()</slot>
    <hints>
@@ -317,7 +317,7 @@
   </connection>
   <connection>
    <sender>minBlueSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>histogramWindow</receiver>
    <slot>ActionStretch()</slot>
    <hints>
