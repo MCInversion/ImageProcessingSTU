@@ -445,7 +445,8 @@ void ImageViewer::ActionTabChanged()
 	int id = tw->currentIndex();
 	ViewerWidget* vW = getViewerWidget(id);
 	if (vW->imgArray.size() > 0) {
-		setUpTimeControls(vW->imgArray.size() - 1);
+		enableTimeControls();
+		ui->timeSlider->setRange(0, vW->imgArray.size() - 1);
 		ui->timeSlider->setValue(vW->imgId);
 		setTimeLabel(vW->imgId);
 		vW->setImage(vW->imgArray[vW->imgId]);
@@ -453,4 +454,8 @@ void ImageViewer::ActionTabChanged()
 	else {
 		hideTimeControls();
 	}
+}
+
+void ImageViewer::on_actionHeat_Equation_triggered()
+{
 }

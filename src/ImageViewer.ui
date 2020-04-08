@@ -91,9 +91,12 @@
     <addaction name="separator"/>
     <addaction name="actionMirror_Extend_test"/>
     <addaction name="actionBlur"/>
+    <addaction name="separator"/>
     <addaction name="actionThreshold"/>
     <addaction name="actionThreshold_Isodata"/>
+    <addaction name="separator"/>
     <addaction name="actionMulti_Blur_test"/>
+    <addaction name="actionHeat_Equation"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -204,6 +207,11 @@
   <action name="actionMulti_Blur_test">
    <property name="text">
     <string>Multi-Blur (test)</string>
+   </property>
+  </action>
+  <action name="actionHeat_Equation">
+   <property name="text">
+    <string>Heat Equation</string>
    </property>
   </action>
  </widget>

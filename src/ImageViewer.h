@@ -5,13 +5,9 @@
 #include <QtWidgets/QMainWindow>
 #include "../build/ui_ImageViewer.h"
 #include "ViewerWidget.h"
-#include "NewImageDialog.h"
-#include "MirrorExtendDialog.h"
+#include "Dialogs.h"
 #include "HistogramWindow.h"
-#include "BlurDialog.h"
-#include "BernsenThresholdDialog.h"
 #include "ImageProcessor.h"
-#include "MultiBlurDialog.h"
 
 class ImageViewer : public QMainWindow
 {
@@ -86,4 +82,6 @@ private slots:
 	void on_multiBlurControls();
 	void ActionTimeSlider();
 	void ActionTabChanged();
+
+	void on_actionHeat_Equation_triggered();
 };

@@ -6,12 +6,8 @@
 #include <qimage.h>
 #include <QtCore/QObject>
 #include "ViewerWidget.h"
-#include "NewImageDialog.h"
-#include "MirrorExtendDialog.h"
+#include "Dialogs.h"
 #include "HistogramWindow.h"
-#include "BlurDialog.h"
-#include "BernsenThresholdDialog.h"
-#include "MultiBlurDialog.h"
 
 class ImageProcessor : public QObject
 {

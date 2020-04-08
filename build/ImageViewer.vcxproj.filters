@@ -4,12 +4,6 @@
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\BernsenThresholdDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -19,16 +13,13 @@
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\MultiBlurDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Dialogs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -37,6 +28,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_BlurDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_HeatEquationDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_HistogramWindow.h">
@@ -48,13 +42,13 @@
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MirrorExtendDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MultiBlurDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\BernsenThresholdDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.h">
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\Dialogs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.h">
@@ -66,25 +60,14 @@
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\MultiBlurDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\NewImageDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ViewerWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui_MultiBlurDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\BernsenThresholdDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\BlurDialog.ui" />
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\HeatEquationDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\MirrorExtendDialog.ui" />

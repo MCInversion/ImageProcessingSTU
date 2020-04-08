@@ -45,6 +45,7 @@ public:
     QAction *actionGrayscale;
     QAction *actionThreshold_Isodata;
     QAction *actionMulti_Blur_test;
+    QAction *actionHeat_Equation;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QTabWidget *tabWidget;
@@ -98,6 +99,8 @@ public:
         actionThreshold_Isodata->setObjectName(QString::fromUtf8("actionThreshold_Isodata"));
         actionMulti_Blur_test = new QAction(ImageViewerClass);
         actionMulti_Blur_test->setObjectName(QString::fromUtf8("actionMulti_Blur_test"));
+        actionHeat_Equation = new QAction(ImageViewerClass);
+        actionHeat_Equation->setObjectName(QString::fromUtf8("actionHeat_Equation"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -171,9 +174,12 @@ public:
         menuImage->addSeparator();
         menuImage->addAction(actionMirror_Extend_test);
         menuImage->addAction(actionBlur);
+        menuImage->addSeparator();
         menuImage->addAction(actionThreshold);
         menuImage->addAction(actionThreshold_Isodata);
+        menuImage->addSeparator();
         menuImage->addAction(actionMulti_Blur_test);
+        menuImage->addAction(actionHeat_Equation);
         menuTools->addAction(actionHistogram);
         menuEdit->addAction(actionUndo);
         menuEdit->addAction(actionRedo);
@@ -202,6 +208,7 @@ public:
         actionGrayscale->setText(QCoreApplication::translate("ImageViewerClass", "Grayscale", nullptr));
         actionThreshold_Isodata->setText(QCoreApplication::translate("ImageViewerClass", "Threshold (Isodata)", nullptr));
         actionMulti_Blur_test->setText(QCoreApplication::translate("ImageViewerClass", "Multi-Blur (test)", nullptr));
+        actionHeat_Equation->setText(QCoreApplication::translate("ImageViewerClass", "Heat Equation", nullptr));
         timeLabel->setText(QCoreApplication::translate("ImageViewerClass", "t = 0", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));

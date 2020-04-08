@@ -32,6 +32,7 @@
 // - the ViewerWidget implementation makes it very inconvenient to perform any background computation in a separate thread
 
 // Solved issues:
+// - unifying dialog classes into a single header still requires a .cpp file for auto MOC
 // - Q_OBJECT in MirrorExtendDialog/HistogramWindow cannot be present (lnk 2001 error otherwise)
 //	 both issues => regenerate build via CMake (Q_OBJECT macro necessary for signals & slots inside new QWindow)
 // - after multiband histogram scaling mirror extend switches colors
