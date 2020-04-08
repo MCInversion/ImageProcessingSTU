@@ -11,12 +11,12 @@ D:/VS_Projects/ImageViewerIP/src/HistogramWindow.cpp
 D:/VS_Projects/ImageViewerIP/src/ImageViewer.h
  mmc:Q_OBJECT
  uic:../build/ui_ImageViewer.h
-D:/VS_Projects/ImageViewerIP/src/NewImageDialog.h
- mmc:Q_OBJECT
- uic:../build/ui_NewImgDialog.h
 D:/VS_Projects/ImageViewerIP/src/MirrorExtendDialog.h
  mmc:Q_OBJECT
  uic:../build/ui_MirrorExtendDialog.h
+D:/VS_Projects/ImageViewerIP/src/NewImageDialog.h
+ mmc:Q_OBJECT
+ uic:../build/ui_NewImgDialog.h
 D:/VS_Projects/ImageViewerIP/src/ViewerWidget.h
  mmc:Q_OBJECT
 D:/VS_Projects/ImageViewerIP/src/BlurDialog.cpp

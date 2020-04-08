@@ -15,13 +15,13 @@
 // - Isodata threshold
 // - image sequence (slider)
 // - enable/disable slider upon changing tabs
+// - Explicit scheme solver for heat eqn
 
 // WIP:
 //
-// - Explicit scheme solver for heat eqn
+// - Implicit SOR solver for heqt eqn
 
 // TODO:
-// - Implicit SOR solver for heqt eqn
 // - UndoRedo (?)
 // - background processing thread (major problem with viewerWidget - the processing thread of the image processor cannot write to it)
 // - active img <--> widgets communication/update

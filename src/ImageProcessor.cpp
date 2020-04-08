@@ -470,11 +470,14 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 
 	for (int x = 0; x < diffusedImg.width(); x++) {
 		for (int y = 0; y < diffusedImg.height(); y++) {
+			// current pixel:
 			int xPos = x + 1, yPos = y + 1;
+			// neighboring pixels:
 			int xNorth = xPos, yNorth = y;
 			int xSouth = xPos, ySouth = yPos + 1;
 			int xWest = x, yWest = yPos;
 			int xEast = xPos + 1, yEast = yPos;
+			// ------
 			if (depth == 8) {
 				float val = diagCoeff * data[yPos * row + xPos] +
 					coeff * (data[yNorth * row + xNorth] + data[ySouth * row + xSouth] + data[yWest * row + xWest] + data[yEast * row + xEast]);
@@ -522,27 +525,137 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 bool ImageProcessor::implicitHeatEquation(float timeStep)
 {
 	uchar* data = _view_w->getData();
-	int height = _view_w->getImgHeight();
-	int width = _view_w->getImgWidth();
+
+	int heightTotal = _view_w->getImgHeight();
+	int widthTotal = _view_w->getImgWidth();
+
+	int height = heightTotal - 2;
+	int width = widthTotal - 2;
+
 	int row = _view_w->getImage()->bytesPerLine();
 	int depth = _view_w->getImage()->depth();
 
-	QImage blurredImg = QImage(QSize(width - 2, height - 2), _view_w->getImage()->format());
-	blurredImg.fill(QColor(0, 0, 0));
+	int dataSize = _view_w->getImage()->sizeInBytes();
 
+	// old and new img data (old and new iter)
+	uchar* newData = new uchar[dataSize];
+	uchar* oldData = new uchar[dataSize];
+	uchar* rhsData = new uchar[dataSize];
+	for (int i = 0; i < dataSize; i++) {
+		newData[i] = data[i]; oldData[i] = data[i]; rhsData[i] = data[i];
+	}
+
+	// SOR params:
+	double omega = 1.5, tol = 1e-4, res = 100.;
+	// SPD matrix coeffs:
+	double diagCoeff = 1.0 + 4.0 * (double)timeStep;
+	double coeff = -(double)timeStep;
+
+	QImage::Format format = _view_w->getImage()->format();
+	QImage diffusedImg = QImage(QSize(width, height), format); // solution
+	diffusedImg.fill(QColor(0, 0, 0));
+
+	int iter = 0, maxIter = 1, pos, N = width * height, NTot = widthTotal * heightTotal;
+
+	do {
+		iter++;
+		printf("SOR iter %d: \n", iter);
+		
+		if (depth == 8) {
+
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					// current pixel:
+					int xPos = x + 1, yPos = y + 1;
+					pos = yPos * row + xPos;
+					// neighboring pixels:
+					int xNorth = xPos, yNorth = y;
+					int xSouth = xPos, ySouth = yPos + 1;
+					int xWest = x, yWest = yPos;
+					int xEast = xPos + 1, yEast = yPos;
+
+					double sumOld = 0.0;
+					double sumNew = 0.0;
+
+					/*
+					if (x == 0 && y == 364) {
+						printf("here\n");
+					}*/
+
+					if (pos != 0) {
+						// use new iter data
+						sumNew += coeff * (
+							(double)newData[yNorth * row + xNorth] + (double)newData[ySouth * row + xSouth] +
+							(double)newData[yWest * row + xWest] + (double)newData[yEast * row + xEast]);
+					}
+					if (pos != (width - 1) * (height - 1)) {
+						// use old iter data
+						sumOld += coeff * (
+							(double)oldData[yNorth * row + xNorth] + (double)oldData[ySouth * row + xSouth] +
+							(double)oldData[yWest * row + xWest] + (double)oldData[yEast * row + xEast]);
+					}
+
+					double val = (omega / diagCoeff) * ((double)rhsData[pos] + sumNew + sumOld) + (1.0 - omega) * (double)oldData[pos];
+					newData[pos] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val)), 0));
+				}
+			}
+	
+			// extend
+			/**/
+			newData[0] = newData[row + 1]; // top left corner
+			for (int x = 0; x < width; x++) newData[x + 1] = newData[row + 1]; // top edge
+			newData[row - 1] = newData[2 * row - 2]; // top right corner
+			for (int y = 0; y < height; y++) newData[(y + 1) * row] = newData[(y + 1) * row + 1]; // left edge
+			for (int y = 0; y < height; y++) newData[(y + 1) * row + width] = newData[(y + 1) * row + width - 1]; // right edge
+			newData[(height + 1) * row] = newData[height * row + 1]; // bottom left corner
+			for (int x = 0; x < width; x++) newData[(height + 1) * row + x + 1] = newData[height * row + x + 1]; // bottom edge
+			newData[(height + 1) * (width + 1)] = newData[height * width]; // bottom right corner
+
+			
+			// compute residuum
+			res = 0.0;
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					// current pixel:
+					int xPos = x + 1, yPos = y + 1;
+					pos = yPos * row + xPos;
+					// neighboring pixels:
+					int xNorth = xPos, yNorth = y;
+					int xSouth = xPos, ySouth = yPos + 1;
+					int xWest = x, yWest = yPos;
+					int xEast = xPos + 1, yEast = yPos;
+
+					// (A * x(old) - b)_i
+					double sum = diagCoeff * (double)newData[pos] +
+						coeff * ((double)newData[yNorth * row + xNorth] + (double)newData[ySouth * row + xSouth] +
+						(double)newData[yWest * row + xWest] + (double)newData[yEast * row + xEast]) -
+						(double)rhsData[pos];
+
+					res += sum * sum;
+				}
+			}
+			// not counting extended pixels, since they do not change
+			res = sqrt(res);			
+		}
+
+		printf("res = %lf\n", res);
+
+		// copy:  xold = xnew
+		for (int i = 0; i < dataSize; i++) oldData[i] = newData[i];
+
+	} while ((iter < maxIter) && (res > tol));
+
+	// write result
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			int xPos = x + 1, yPos = y + 1;
-			if (depth == 8) {
-				//_view_w->setPixel(&blurredImg, x, y, static_cast<uchar>(kernelSumGS(data, row, xPos, yPos, radius)));
-			}
-			else {
-
-			}
+			_view_w->setPixel(&diffusedImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)newData[yPos * row + xPos]), 0)));
 		}
 	}
 
-	_view_w->setImage(blurredImg);
+	delete[] oldData; delete[] newData;	delete[] rhsData;
+
+	_view_w->setImage(diffusedImg);
 	_view_w->update();
 	return true;
 }
