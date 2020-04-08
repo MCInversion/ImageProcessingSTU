@@ -92,6 +92,38 @@ void ImageProcessor::multiBlurAccepted()
 	emit multiImageComplete();
 }
 
+void ImageProcessor::heatEquationAccepted()
+{
+	HeatEquationDialog* heqDialog = static_cast<HeatEquationDialog*>(sender());
+	float timeStep = heqDialog->getTimeStep();
+	int scheme = heqDialog->getScheme();
+	nSteps = heqDialog->getNSteps();
+
+	_view_w->clearImages();
+	_view_w->allocateImages(nSteps + 1);
+
+	for (int i = 0; i <= nSteps; i++) {
+		QImage img = QImage(*_view_w->getImage());
+		_view_w->setImageAt(img, i);
+		QImage extended = QImage(img);
+		_view_w->setImage(extended);
+		mirrorExtendImageBy(1); // extend by 1 for zero Neumann B.C.
+
+		if (scheme == 0) {
+			explicitHeatEquation(timeStep);
+		}
+		else {
+			implicitHeatEquation(timeStep);
+		}
+		printf("heatEquation step %d complete\n", i);
+	}
+	_view_w->setImageAt(QImage(*_view_w->getImage()), nSteps + 1);
+	_view_w->imgId = nSteps;
+	_view_w->setImage(_view_w->imgArray[nSteps]);
+
+	emit multiImageComplete();
+}
+
 // update viewer image after histogram stretch
 void ImageProcessor::on_stretch()
 {
@@ -418,6 +450,99 @@ bool ImageProcessor::bernsenThreshold(int radius, int minContrast, int bgType)
 	}
 
 	_view_w->setImage(binaryImg);
+	_view_w->update();
+	return true;
+}
+
+bool ImageProcessor::explicitHeatEquation(float timeStep)
+{
+	uchar* data = _view_w->getData();
+	int height = _view_w->getImgHeight();
+	int width = _view_w->getImgWidth();
+	int row = _view_w->getImage()->bytesPerLine();
+	int depth = _view_w->getImage()->depth();
+
+	float diagCoeff = 1.0f - 4.0f * timeStep;
+	float coeff = timeStep;
+
+	QImage diffusedImg = QImage(QSize(width - 2, height - 2), _view_w->getImage()->format());
+	diffusedImg.fill(QColor(0, 0, 0));
+
+	for (int x = 0; x < diffusedImg.width(); x++) {
+		for (int y = 0; y < diffusedImg.height(); y++) {
+			int xPos = x + 1, yPos = y + 1;
+			int xNorth = xPos, yNorth = y;
+			int xSouth = xPos, ySouth = yPos + 1;
+			int xWest = x, yWest = yPos;
+			int xEast = xPos + 1, yEast = yPos;
+			if (depth == 8) {
+				float val = diagCoeff * data[yPos * row + xPos] +
+					coeff * (data[yNorth * row + xNorth] + data[ySouth * row + xSouth] + data[yWest * row + xWest] + data[yEast * row + xEast]);
+				_view_w->setPixel(&diffusedImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)std::round(val)), 0)));
+			}
+			else {
+				uchar r = static_cast<uchar>(data[yPos * row + xPos * 4]);
+				uchar rN = static_cast<uchar>(data[yNorth * row + xNorth * 4]);
+				uchar rS = static_cast<uchar>(data[ySouth * row + xSouth * 4]);
+				uchar rW = static_cast<uchar>(data[yWest * row + xWest * 4]);
+				uchar rE = static_cast<uchar>(data[yEast * row + xEast * 4]);
+
+				float valRed = diagCoeff * r + coeff * (rN + rS + rW + rE);
+
+				uchar g = static_cast<uchar>(data[yPos * row + xPos * 4 + 1]);
+				uchar gN = static_cast<uchar>(data[yNorth * row + xNorth * 4 + 1]);
+				uchar gS = static_cast<uchar>(data[ySouth * row + xSouth * 4 + 1]);
+				uchar gW = static_cast<uchar>(data[yWest * row + xWest * 4 + 1]);
+				uchar gE = static_cast<uchar>(data[yEast * row + xEast * 4 + 1]);
+
+				float valGreen = diagCoeff * g + coeff * (gN + gS + gW + gE);
+
+				uchar b = static_cast<uchar>(data[yPos * row + xPos * 4 + 2]);
+				uchar bN = static_cast<uchar>(data[yNorth * row + xNorth * 4 + 2]);
+				uchar bS = static_cast<uchar>(data[ySouth * row + xSouth * 4 + 2]);
+				uchar bW = static_cast<uchar>(data[yWest * row + xWest * 4 + 2]);
+				uchar bE = static_cast<uchar>(data[yEast * row + xEast * 4 + 2]);
+
+				float valBlue = diagCoeff * b + coeff * (bN + bS + bW + bE);
+
+				_view_w->setPixel(&diffusedImg, x, y, 
+					static_cast<uchar>(std::max(std::min(255, (int)std::round(valRed)), 0)),
+					static_cast<uchar>(std::max(std::min(255, (int)std::round(valGreen)), 0)),
+					static_cast<uchar>(std::max(std::min(255, (int)std::round(valBlue)), 0))
+				);
+			}
+		}
+	}
+
+	_view_w->setImage(diffusedImg);
+	_view_w->update();
+	return true;
+}
+
+bool ImageProcessor::implicitHeatEquation(float timeStep)
+{
+	uchar* data = _view_w->getData();
+	int height = _view_w->getImgHeight();
+	int width = _view_w->getImgWidth();
+	int row = _view_w->getImage()->bytesPerLine();
+	int depth = _view_w->getImage()->depth();
+
+	QImage blurredImg = QImage(QSize(width - 2, height - 2), _view_w->getImage()->format());
+	blurredImg.fill(QColor(0, 0, 0));
+
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			int xPos = x + 1, yPos = y + 1;
+			if (depth == 8) {
+				//_view_w->setPixel(&blurredImg, x, y, static_cast<uchar>(kernelSumGS(data, row, xPos, yPos, radius)));
+			}
+			else {
+
+			}
+		}
+	}
+
+	_view_w->setImage(blurredImg);
 	_view_w->update();
 	return true;
 }

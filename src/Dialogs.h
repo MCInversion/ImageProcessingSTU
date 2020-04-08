@@ -50,12 +50,27 @@ class HeatEquationDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	HeatEquationDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent)
+	HeatEquationDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent), heatEquationDialogUi(new Ui::heatEquationDialog)
 	{
 		heatEquationDialogUi->setupUi(this);
 	}
+	int getNSteps() { return heatEquationDialogUi->nStepsSpinBox->value(); }
+	double getTimeStep() { return heatEquationDialogUi->timeStepSpinBox->value(); }
+	int getScheme() { return heatEquationDialogUi->schemeComboBox->currentIndex(); }
 private:
 	Ui::heatEquationDialog* heatEquationDialogUi;
+private slots:
+	void bindTimeStep() {
+		bool explicitScheme = heatEquationDialogUi->schemeComboBox->currentIndex() == 0;
+		bool overrideTimeStep = heatEquationDialogUi->overrideCheckBox->isChecked();
+		double tauMax = (!explicitScheme || overrideTimeStep ? 99. : 0.25);
+		double tau = heatEquationDialogUi->timeStepSpinBox->value();
+		heatEquationDialogUi->timeStepSpinBox->setRange(0.01, tauMax);
+		heatEquationDialogUi->timeStepSpinBox->setValue(std::fminf(tau, tauMax));
+	}
+	void overrideTimeStep() {
+		bindTimeStep();
+	}
 };
 
 

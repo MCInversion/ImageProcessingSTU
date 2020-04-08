@@ -30,6 +30,7 @@ public slots:
 	void blurAccepted();
 	void bernsenThresholdAccepted();
 	void multiBlurAccepted();
+	void heatEquationAccepted();
 
 	//Histogram slots
 	void on_stretch();
@@ -50,6 +51,8 @@ private:
 
 	bool blurImage(int radius);
 	bool bernsenThreshold(int radius, int minContrast, int bgType);
+	bool explicitHeatEquation(float timeStep);
+	bool implicitHeatEquation(float timeStep);
 
 	void getGaussianKernel(int radius, bool print = false);
 	void getAveragingKernel(int radius, bool print = false);

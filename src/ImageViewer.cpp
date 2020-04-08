@@ -458,4 +458,16 @@ void ImageViewer::ActionTabChanged()
 
 void ImageViewer::on_actionHeat_Equation_triggered()
 {
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	HeatEquationDialog* heqDialog = new HeatEquationDialog(this);
+	connect(heqDialog, SIGNAL(accepted()), ip, SLOT(heatEquationAccepted()));
+	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
+	heqDialog->exec();
 }
