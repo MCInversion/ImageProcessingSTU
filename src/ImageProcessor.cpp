@@ -127,7 +127,6 @@ void ImageProcessor::heatEquationAccepted()
 // update viewer image after histogram stretch
 void ImageProcessor::on_stretch()
 {
-	_view_w->setDataPtr();
 	_view_w->update();
 }
 
@@ -555,7 +554,7 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 	QImage diffusedImg = QImage(QSize(width, height), format); // solution
 	diffusedImg.fill(QColor(0, 0, 0));
 
-	int iter = 0, maxIter = 20, N = width * height, NTot = widthTotal * heightTotal;
+	int iter = 0, maxIter = 10;
 
 	do {
 		iter++;
@@ -622,10 +621,10 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 				int yPos = (y == 0 ? 1 : (y == heightTotal - 1 ? height : y));
 
 				if (depth == 8) {
-					oldData[y * row + x] = oldData[yPos * row + xPos];
+					oldData[y * row + x] = newData[yPos * row + xPos];
 				}
 				else {
-					for (int j = 0; j < 3; j++) oldData[y * row + x * 4 + j] = oldData[yPos * row + xPos * 4 + j];
+					for (int j = 0; j < 3; j++) oldData[y * row + x * 4 + j] = newData[yPos * row + xPos * 4 + j];
 				}				
 			}
 		}
@@ -645,10 +644,10 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 					int xEast = xPos + 1, yEast = yPos;
 
 					// (A * x(old) - b)_i
-					double sum = diagCoeff * (double)newData[pos] +
-						coeff * ((double)newData[yNorth * row + xNorth] + (double)newData[ySouth * row + xSouth] +
-						(double)newData[yWest * row + xWest] + (double)newData[yEast * row + xEast]) -
-							(double)rhsData[pos];
+					double sum = diagCoeff * (double)oldData[pos] +
+						coeff * ((double)oldData[yNorth * row + xNorth] + (double)oldData[ySouth * row + xSouth] +
+								 (double)oldData[yWest * row + xWest] + (double)oldData[yEast * row + xEast]) -
+						(double)rhsData[pos];
 					res += sum * sum;
 				}
 			}
@@ -672,17 +671,19 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 					int xEast = xPos + 1, yEast = yPos;
 
 					// (A * x(old) - b)_i
-					double sum_red = diagCoeff * (double)newData[pos_red] +
-						coeff * ((double)newData[yNorth * row + xNorth * 4] + (double)newData[ySouth * row + xSouth * 4] +
-						(double)newData[yWest * row + xWest * 4] + (double)newData[yEast * row + xEast * 4]) -
+					double sum_red = diagCoeff * (double)oldData[pos_red] +
+						coeff * ((double)oldData[yNorth * row + xNorth * 4] + (double)oldData[ySouth * row + xSouth * 4] +
+						(double)oldData[yWest * row + xWest * 4] + (double)oldData[yEast * row + xEast * 4]) -
 							(double)rhsData[pos_red];
-					double sum_green = diagCoeff * (double)newData[pos_green] +
-						coeff * ((double)newData[yNorth * row + xNorth * 4 + 1] + (double)newData[ySouth * row + xSouth * 4 + 1] +
-						(double)newData[yWest * row + xWest * 4 + 1] + (double)newData[yEast * row + xEast * 4 + 1]) -
+
+					double sum_green = diagCoeff * (double)oldData[pos_green] +
+						coeff * ((double)oldData[yNorth * row + xNorth * 4 + 1] + (double)oldData[ySouth * row + xSouth * 4 + 1] +
+						(double)oldData[yWest * row + xWest * 4 + 1] + (double)oldData[yEast * row + xEast * 4 + 1]) -
 							(double)rhsData[pos_green];
-					double sum_blue = diagCoeff * (double)newData[pos_blue] +
-						coeff * ((double)newData[yNorth * row + xNorth * 4 + 2] + (double)newData[ySouth * row + xSouth * 4 + 2] +
-						(double)newData[yWest * row + xWest * 4 + 2] + (double)newData[yEast * row + xEast * 4 + 2]) -
+
+					double sum_blue = diagCoeff * (double)oldData[pos_blue] +
+						coeff * ((double)oldData[yNorth * row + xNorth * 4 + 2] + (double)oldData[ySouth * row + xSouth * 4 + 2] +
+						(double)oldData[yWest * row + xWest * 4 + 2] + (double)oldData[yEast * row + xEast * 4 + 2]) -
 							(double)rhsData[pos_blue];
 
 					res_red += sum_red * sum_red;

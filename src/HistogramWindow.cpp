@@ -10,7 +10,7 @@ HistogramWindow::~HistogramWindow()
 {
 
 	delete _histogramPlot;
-	delete _targetImage;
+	//delete _targetImage;
 	delete _scene;
 }
 

@@ -1,0 +1,10 @@
+^D:\VS_PROJECTS\IMAGEVIEWERIP\BUILD\CMAKEFILES\6E625548883F29825D34A19B893D20F4\GENERATE.STAMP.RULE
+setlocal
+D:\Cmake\bin\cmake.exe -SD:/VS_Projects/ImageViewerIP -BD:/VS_Projects/ImageViewerIP/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/VS_Projects/ImageViewerIP/build/ImageViewer.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
