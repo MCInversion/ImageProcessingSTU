@@ -16,8 +16,8 @@ ViewerWidget::ViewerWidget(QString viewerName, QSize imgSize, QWidget* parent)
 }
 ViewerWidget::~ViewerWidget()
 {
-	//delete img;
-	//delete painter;
+	painter->end();
+	delete img;
 }
 void ViewerWidget::resizeWidget(QSize size)
 {
@@ -48,11 +48,10 @@ void ViewerWidget::clearImages()
 //Image functions
 bool ViewerWidget::setImage(const QImage& inputImg)
 {
-	/*
 	if (img != nullptr) {
+		painter->end();
 		delete img;
 	}
-	*/
 	img = new QImage(inputImg);
 	if (!img) {
 		return false;

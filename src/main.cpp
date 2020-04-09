@@ -11,10 +11,12 @@
 // - applying extend on stretched image breaks it down (bad data ptr)
 // - add gaussian kernel matrix function paremetrized by t = sigma^2 / 2 (dialog with spin box)
 // - ImageProcessor: filter with an NxN mask (arbitrary normalized matrix kernel)
+
 // - Bernsen threshold
 // - Isodata threshold
 // - image sequence (slider)
 // - enable/disable slider upon changing tabs
+// - unify dialog classes in a single header
 // - Explicit scheme solver for heat eqn
 
 // WIP:
