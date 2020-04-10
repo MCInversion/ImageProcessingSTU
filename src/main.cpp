@@ -18,10 +18,11 @@
 // - enable/disable slider upon changing tabs
 // - unify dialog classes in a single header
 // - Explicit scheme solver for heat eqn
+// - Implicit SOR solver for heat eqn
 
 // WIP:
 //
-// - Implicit SOR solver for heqt eqn
+// - mean value test for heat eqn
 
 // TODO:
 // - UndoRedo (?)
@@ -29,6 +30,7 @@
 // - active img <--> widgets communication/update
 
 // issues:
+// - problems with freeing QImage memory as well
 // - cannot delete QPainter ptr, why?
 // - repeated multi-channel stretching results in large variation in histogram values (possibly a feature)
 // - the ViewerWidget implementation makes it very inconvenient to perform any background computation in a separate thread

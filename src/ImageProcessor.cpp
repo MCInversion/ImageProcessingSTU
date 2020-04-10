@@ -467,6 +467,7 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 	QImage diffusedImg = QImage(QSize(width - 2, height - 2), _view_w->getImage()->format());
 	diffusedImg.fill(QColor(0, 0, 0));
 
+	float mean = 0.0f, mean_red = 0.0f, mean_green = 0.0f, mean_blue = 0.0f;
 	for (int x = 0; x < diffusedImg.width(); x++) {
 		for (int y = 0; y < diffusedImg.height(); y++) {
 			// current pixel:
@@ -480,6 +481,7 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 			if (depth == 8) {
 				float val = diagCoeff * data[yPos * row + xPos] +
 					coeff * (data[yNorth * row + xNorth] + data[ySouth * row + xSouth] + data[yWest * row + xWest] + data[yEast * row + xEast]);
+				mean += val;
 				_view_w->setPixel(&diffusedImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)std::round(val)), 0)));
 			}
 			else {
@@ -490,6 +492,7 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 				uchar rE = static_cast<uchar>(data[yEast * row + xEast * 4]);
 
 				float valRed = diagCoeff * r + coeff * (rN + rS + rW + rE);
+				mean_red += valRed;
 
 				uchar g = static_cast<uchar>(data[yPos * row + xPos * 4 + 1]);
 				uchar gN = static_cast<uchar>(data[yNorth * row + xNorth * 4 + 1]);
@@ -498,6 +501,7 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 				uchar gE = static_cast<uchar>(data[yEast * row + xEast * 4 + 1]);
 
 				float valGreen = diagCoeff * g + coeff * (gN + gS + gW + gE);
+				mean_green += valGreen;
 
 				uchar b = static_cast<uchar>(data[yPos * row + xPos * 4 + 2]);
 				uchar bN = static_cast<uchar>(data[yNorth * row + xNorth * 4 + 2]);
@@ -506,6 +510,7 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 				uchar bE = static_cast<uchar>(data[yEast * row + xEast * 4 + 2]);
 
 				float valBlue = diagCoeff * b + coeff * (bN + bS + bW + bE);
+				mean_blue += valBlue;
 
 				_view_w->setPixel(&diffusedImg, x, y, 
 					static_cast<uchar>(std::max(std::min(255, (int)std::round(valRed)), 0)),
@@ -514,6 +519,16 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 				);
 			}
 		}
+	}
+	if (depth == 8) {
+		mean /= (width * height);
+		printf("u_mean = %f\n", mean);
+	}
+	else {
+		mean_red /= (width * height);
+		mean_green /= (width * height);
+		mean_blue /= (width * height);
+		printf("u_mean(RGB) = (%f, %f, %f)\n", mean_red, mean_green, mean_blue);
 	}
 
 	_view_w->setImage(diffusedImg);
@@ -615,6 +630,7 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 		}
 
 		// copy extended
+		double mean = 0.0, mean_red = 0.0, mean_green = 0.0, mean_blue = 0.0;
 		for (int x = 0; x < widthTotal; x++) {
 			for (int y = 0; y < heightTotal; y++) {
 				int xPos = (x == 0 ? 1 : (x == widthTotal - 1 ? width : x));
@@ -622,11 +638,25 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 
 				if (depth == 8) {
 					oldData[y * row + x] = newData[yPos * row + xPos];
+					mean += (double)newData[yPos * row + xPos];
 				}
 				else {
 					for (int j = 0; j < 3; j++) oldData[y * row + x * 4 + j] = newData[yPos * row + xPos * 4 + j];
+					mean_red += (double)newData[yPos * row + xPos * 4];
+					mean_green += (double)newData[yPos * row + xPos * 4 + 1];
+					mean_blue += (double)newData[yPos * row + xPos * 4 + 2];
 				}				
 			}
+		}
+		if (depth == 8) {
+			mean /= (widthTotal * heightTotal);
+			printf("u_mean = %lf\n", mean);
+		}
+		else {
+			mean_red /= (widthTotal * heightTotal);
+			mean_green /= (widthTotal * heightTotal);
+			mean_blue /= (widthTotal * heightTotal);
+			printf("u_mean(RGB) = (%lf, %lf, %lf)\n", mean_red, mean_green, mean_blue);
 		}
 
 		// compute residuum
