@@ -536,7 +536,7 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 	return true;
 }
 
-bool ImageProcessor::implicitHeatEquation(float timeStep)
+bool ImageProcessor::implicitHeatEquation(float timeStep, bool printMean, bool printIter)
 {
 	uchar* data = _view_w->getData();
 
@@ -552,11 +552,10 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 	int dataSize = _view_w->getImage()->sizeInBytes();
 
 	// old and new img data (old and new iter)
-	uchar* newData = new uchar[dataSize];
-	uchar* oldData = new uchar[dataSize];
+	uchar* uData = new uchar[dataSize];
 	uchar* rhsData = new uchar[dataSize];
 	for (int i = 0; i < dataSize; i++) {
-		newData[i] = 0; oldData[i] = rhsData[i] = data[i];
+		uData[i] = 0; rhsData[i] = data[i];
 	}
 
 	// SOR params:
@@ -569,14 +568,14 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 	QImage diffusedImg = QImage(QSize(width, height), format); // solution
 	diffusedImg.fill(QColor(0, 0, 0));
 
-	int iter = 0, maxIter = 10;
+	int iter = 0, maxIter = 2000;
 
 	do {
 		iter++;
-		printf("SOR iter %d: \n", iter);
+		if (printIter) printf("SOR iter %d: ", iter);
 		
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
 				// current pixel:
 				int xPos = x + 1, yPos = y + 1;
 				// neighboring pixels:
@@ -587,83 +586,76 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 
 				if (depth == 8) {
 					int pos = yPos * row + xPos;
-					double sumN1 = coeff * (x > 0 && y > 0 ?
-						(double)newData[yNorth * row + xNorth] + (double)newData[yWest * row + xWest] :
-						(double)oldData[yNorth * row + xNorth] + (double)oldData[yWest * row + xWest]
-					);
-					double sumN2 = coeff * ((double)oldData[ySouth * row + xSouth] + (double)oldData[yEast * row + xEast]);
+					
+					// update a single array
+					double sumN1 = coeff * ((double)uData[yNorth * row + xNorth] + (double)uData[yWest * row + xWest]);
+					double sumN2 = coeff * ((double)uData[ySouth * row + xSouth] + (double)uData[yEast * row + xEast]);
 
-					double val = (omega / diagCoeff) * ((double)rhsData[pos] - sumN1 - sumN2) + (1.0 - omega) * (double)oldData[pos];
-					newData[pos] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val)), 0));
+					double val = (omega / diagCoeff) * ((double)rhsData[pos] - sumN1 - sumN2) + (1.0 - omega) * (double)uData[pos];
+					uData[pos] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val)), 0));
 				}
 				else {
 					int pos_red = yPos * row + xPos * 4;
 					int pos_green = yPos * row + xPos * 4 + 1;
 					int pos_blue = yPos * row + xPos * 4 + 2;
 
-					double sumN1_red = coeff * (x > 0 && y > 0 ?
-						(double)newData[yNorth * row + xNorth * 4] + (double)newData[yWest * row + xWest * 4] :
-						(double)oldData[yNorth * row + xNorth * 4] + (double)oldData[yWest * row + xWest * 4]
-					);
-					double sumN1_green = coeff * (x > 0 && y > 0 ?
-						(double)newData[yNorth * row + xNorth * 4 + 1] + (double)newData[yWest * row + xWest * 4 + 1] :
-						(double)oldData[yNorth * row + xNorth * 4 + 1] + (double)oldData[yWest * row + xWest * 4 + 1]
-					);
-					double sumN1_blue = coeff * (x > 0 && y > 0 ?
-						(double)newData[yNorth * row + xNorth * 4 + 2] + (double)newData[yWest * row + xWest * 4 + 2] :
-						(double)oldData[yNorth * row + xNorth * 4 + 2] + (double)oldData[yWest * row + xWest * 4 + 2]
-					);
+					double sumN1_red = coeff * ((double)uData[yNorth * row + xNorth * 4] + (double)uData[yWest * row + xWest * 4]);
+					double sumN1_green = coeff * ((double)uData[yNorth * row + xNorth * 4 + 1] + (double)uData[yWest * row + xWest * 4 + 1]);
+					double sumN1_blue = coeff * ((double)uData[yNorth * row + xNorth * 4 + 2] + (double)uData[yWest * row + xWest * 4 + 2]);
 
-					double sumN2_red = coeff * ((double)oldData[ySouth * row + xSouth * 4] + (double)oldData[yEast * row + xEast * 4]);
-					double sumN2_green = coeff * ((double)oldData[ySouth * row + xSouth * 4 + 1] + (double)oldData[yEast * row + xEast * 4 + 1]);
-					double sumN2_blue = coeff * ((double)oldData[ySouth * row + xSouth * 4 + 2] + (double)oldData[yEast * row + xEast * 4 + 2]);
+					double sumN2_red = coeff * ((double)uData[ySouth * row + xSouth * 4] + (double)uData[yEast * row + xEast * 4]);
+					double sumN2_green = coeff * ((double)uData[ySouth * row + xSouth * 4 + 1] + (double)uData[yEast * row + xEast * 4 + 1]);
+					double sumN2_blue = coeff * ((double)uData[ySouth * row + xSouth * 4 + 2] + (double)uData[yEast * row + xEast * 4 + 2]);
 
-					double val_red = (omega / diagCoeff) * ((double)rhsData[pos_red] - sumN1_red - sumN2_red) + (1.0 - omega) * (double)oldData[pos_red];
-					double val_green = (omega / diagCoeff) * ((double)rhsData[pos_green] - sumN1_green - sumN2_green) + (1.0 - omega) * (double)oldData[pos_green];
-					double val_blue = (omega / diagCoeff) * ((double)rhsData[pos_blue] - sumN1_blue - sumN2_blue) + (1.0 - omega) * (double)oldData[pos_blue];
+					double val_red = (omega / diagCoeff) * ((double)rhsData[pos_red] - sumN1_red - sumN2_red) + (1.0 - omega) * (double)uData[pos_red];
+					double val_green = (omega / diagCoeff) * ((double)rhsData[pos_green] - sumN1_green - sumN2_green) + (1.0 - omega) * (double)uData[pos_green];
+					double val_blue = (omega / diagCoeff) * ((double)rhsData[pos_blue] - sumN1_blue - sumN2_blue) + (1.0 - omega) * (double)uData[pos_blue];
 
-					newData[pos_red] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val_red)), 0));
-					newData[pos_green] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val_green)), 0));
-					newData[pos_blue] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val_blue)), 0));
+					uData[pos_red] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val_red)), 0));
+					uData[pos_green] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val_green)), 0));
+					uData[pos_blue] = static_cast<uchar>(std::max(std::min(255, (int)std::round(val_blue)), 0));
 				}
 			}
 		}
 
 		// copy extended
 		double mean = 0.0, mean_red = 0.0, mean_green = 0.0, mean_blue = 0.0;
-		for (int x = 0; x < widthTotal; x++) {
-			for (int y = 0; y < heightTotal; y++) {
+		for (int y = 0; y < heightTotal; y++) {
+			for (int x = 0; x < widthTotal; x++) {
 				int xPos = (x == 0 ? 1 : (x == widthTotal - 1 ? width : x));
 				int yPos = (y == 0 ? 1 : (y == heightTotal - 1 ? height : y));
 
 				if (depth == 8) {
-					oldData[y * row + x] = newData[yPos * row + xPos];
-					mean += (double)newData[yPos * row + xPos];
+					/*if ((x == 0 || x == widthTotal - 1) || (y == 0 || y == heightTotal - 1)) {
+						printf("boundaryPx(%d,%d) = %d\n", x, y, (int)uData[yPos * row + xPos]);
+					}*/
+					uData[y * row + x] = uData[yPos * row + xPos];
+					mean += (double)uData[yPos * row + xPos];
 				}
 				else {
-					for (int j = 0; j < 3; j++) oldData[y * row + x * 4 + j] = newData[yPos * row + xPos * 4 + j];
-					mean_red += (double)newData[yPos * row + xPos * 4];
-					mean_green += (double)newData[yPos * row + xPos * 4 + 1];
-					mean_blue += (double)newData[yPos * row + xPos * 4 + 2];
+					for (int j = 0; j < 3; j++) uData[y * row + x * 4 + j] = uData[yPos * row + xPos * 4 + j];
+					mean_red += (double)uData[yPos * row + xPos * 4];
+					mean_green += (double)uData[yPos * row + xPos * 4 + 1];
+					mean_blue += (double)uData[yPos * row + xPos * 4 + 2];
 				}				
 			}
 		}
-		if (depth == 8) {
+		if (printMean && depth == 8) {
 			mean /= (widthTotal * heightTotal);
-			printf("u_mean = %lf\n", mean);
+			printf("u_mean = %lf, ", mean);
 		}
-		else {
+		else if (printMean) {
 			mean_red /= (widthTotal * heightTotal);
 			mean_green /= (widthTotal * heightTotal);
 			mean_blue /= (widthTotal * heightTotal);
-			printf("u_mean(RGB) = (%lf, %lf, %lf)\n", mean_red, mean_green, mean_blue);
+			printf("u_mean(RGB) = (%lf, %lf, %lf),", mean_red, mean_green, mean_blue);
 		}
 
 		// compute residuum
 		if (depth == 8) {
 			res = 0.0;
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
 					// current pixel:
 					int xPos = x + 1, yPos = y + 1;
 					int pos = yPos * row + xPos;
@@ -674,21 +666,21 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 					int xEast = xPos + 1, yEast = yPos;
 
 					// (A * x(old) - b)_i
-					double sum = diagCoeff * (double)oldData[pos] +
-						coeff * ((double)oldData[yNorth * row + xNorth] + (double)oldData[ySouth * row + xSouth] +
-								 (double)oldData[yWest * row + xWest] + (double)oldData[yEast * row + xEast]) -
+					double sum = diagCoeff * (double)uData[pos] +
+						coeff * ((double)uData[yNorth * row + xNorth] + (double)uData[ySouth * row + xSouth] +
+								 (double)uData[yWest * row + xWest] + (double)uData[yEast * row + xEast]) -
 						(double)rhsData[pos];
 					res += sum * sum;
 				}
 			}
 			// not counting extended pixels, since they do not change
 			res = sqrt(res);
-			printf("res = %lf\n", res);
+			if (printIter) printf("res = %lf\n", res);
 		}
 		else {
-			res_red = res_green = res_blue = 0.0;
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			res_red = 0.0; res_green = 0.0; res_blue = 0.0;
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
 					// current pixel:
 					int xPos = x + 1, yPos = y + 1;
 					int pos_red = yPos * row + xPos * 4;
@@ -701,19 +693,19 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 					int xEast = xPos + 1, yEast = yPos;
 
 					// (A * x(old) - b)_i
-					double sum_red = diagCoeff * (double)oldData[pos_red] +
-						coeff * ((double)oldData[yNorth * row + xNorth * 4] + (double)oldData[ySouth * row + xSouth * 4] +
-						(double)oldData[yWest * row + xWest * 4] + (double)oldData[yEast * row + xEast * 4]) -
+					double sum_red = diagCoeff * (double)uData[pos_red] +
+						coeff * ((double)uData[yNorth * row + xNorth * 4] + (double)uData[ySouth * row + xSouth * 4] +
+						         (double)uData[yWest * row + xWest * 4] + (double)uData[yEast * row + xEast * 4]) -
 							(double)rhsData[pos_red];
 
-					double sum_green = diagCoeff * (double)oldData[pos_green] +
-						coeff * ((double)oldData[yNorth * row + xNorth * 4 + 1] + (double)oldData[ySouth * row + xSouth * 4 + 1] +
-						(double)oldData[yWest * row + xWest * 4 + 1] + (double)oldData[yEast * row + xEast * 4 + 1]) -
+					double sum_green = diagCoeff * (double)uData[pos_green] +
+						coeff * ((double)uData[yNorth * row + xNorth * 4 + 1] + (double)uData[ySouth * row + xSouth * 4 + 1] +
+								 (double)uData[yWest * row + xWest * 4 + 1] + (double)uData[yEast * row + xEast * 4 + 1]) -
 							(double)rhsData[pos_green];
 
-					double sum_blue = diagCoeff * (double)oldData[pos_blue] +
-						coeff * ((double)oldData[yNorth * row + xNorth * 4 + 2] + (double)oldData[ySouth * row + xSouth * 4 + 2] +
-						(double)oldData[yWest * row + xWest * 4 + 2] + (double)oldData[yEast * row + xEast * 4 + 2]) -
+					double sum_blue = diagCoeff * (double)uData[pos_blue] +
+						coeff * ((double)uData[yNorth * row + xNorth * 4 + 2] + (double)uData[ySouth * row + xSouth * 4 + 2] +
+								 (double)uData[yWest * row + xWest * 4 + 2] + (double)uData[yEast * row + xEast * 4 + 2]) -
 							(double)rhsData[pos_blue];
 
 					res_red += sum_red * sum_red;
@@ -730,18 +722,18 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 	} while ((iter < maxIter) && (res > tol));
 
 	// write result
-	for (int x = 0; x < width; x++) {
-		for (int y = 0; y < height; y++) {
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
 			int xPos = x + 1, yPos = y + 1;
 
 			if (depth == 8) {
 				int pos = yPos * row + xPos;
-				_view_w->setPixel(&diffusedImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)newData[pos]), 0)));
+				_view_w->setPixel(&diffusedImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)uData[pos]), 0)));
 			}
 			else {
-				uchar r = static_cast<uchar>(newData[yPos * row + xPos * 4]);
-				uchar g = static_cast<uchar>(newData[yPos * row + xPos * 4 + 1]);
-				uchar b = static_cast<uchar>(newData[yPos * row + xPos * 4 + 2]);
+				uchar r = static_cast<uchar>(uData[yPos * row + xPos * 4]);
+				uchar g = static_cast<uchar>(uData[yPos * row + xPos * 4 + 1]);
+				uchar b = static_cast<uchar>(uData[yPos * row + xPos * 4 + 2]);
 
 				_view_w->setPixel(&diffusedImg, x, y, r, g, b);
 			}
@@ -749,7 +741,7 @@ bool ImageProcessor::implicitHeatEquation(float timeStep)
 		}
 	}
 
-	delete[] oldData; delete[] newData;	delete[] rhsData;
+	delete[] uData; delete[] rhsData;
 
 	_view_w->setImage(diffusedImg);
 	_view_w->update();
