@@ -19,10 +19,10 @@
 // - unify dialog classes in a single header
 // - Explicit scheme solver for heat eqn
 // - Implicit SOR solver for heat eqn
+// - mean value test for heat eqn
 
 // WIP:
 //
-// - mean value test for heat eqn
 
 // TODO:
 // - UndoRedo (?)

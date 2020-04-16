@@ -52,7 +52,7 @@ private:
 	bool blurImage(int radius);
 	bool bernsenThreshold(int radius, int minContrast, int bgType);
 	bool explicitHeatEquation(float timeStep);
-	bool implicitHeatEquation(float timeStep, bool printMean = true, bool printIter = true);
+	bool implicitHeatEquation(float timeStep, double* rhsData, bool printMean = true, bool printIter = true);
 
 	void getGaussianKernel(int radius, bool print = false);
 	void getAveragingKernel(int radius, bool print = false);

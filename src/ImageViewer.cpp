@@ -444,15 +444,17 @@ void ImageViewer::ActionTabChanged()
 	QTabWidget* tw = static_cast<QTabWidget*>(sender());
 	int id = tw->currentIndex();
 	ViewerWidget* vW = getViewerWidget(id);
-	if (vW->imgArray.size() > 0) {
-		enableTimeControls();
-		ui->timeSlider->setRange(0, vW->imgArray.size() - 1);
-		ui->timeSlider->setValue(vW->imgId);
-		setTimeLabel(vW->imgId);
-		vW->setImage(vW->imgArray[vW->imgId]);
-	}
-	else {
-		hideTimeControls();
+	if (vW) {
+		if (vW->imgArray.size() > 0) {
+			enableTimeControls();
+			ui->timeSlider->setRange(0, vW->imgArray.size() - 1);
+			ui->timeSlider->setValue(vW->imgId);
+			setTimeLabel(vW->imgId);
+			vW->setImage(vW->imgArray[vW->imgId]);
+		}
+		else {
+			hideTimeControls();
+		}
 	}
 }
 

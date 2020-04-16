@@ -17,7 +17,7 @@ ViewerWidget::ViewerWidget(QString viewerName, QSize imgSize, QWidget* parent)
 
 ViewerWidget::~ViewerWidget()
 {
-	//painter->end();
+	painter->end();
 	delete img;
 }
 
