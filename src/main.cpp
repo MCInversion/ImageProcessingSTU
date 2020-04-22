@@ -25,6 +25,9 @@
 //
 
 // TODO:
+// - Perona-Malik basic
+// - Perona-Malik regularized
+//
 // - UndoRedo (?)
 // - background processing thread (major problem with viewerWidget - the processing thread of the image processor cannot write to it)
 // - active img <--> widgets communication/update

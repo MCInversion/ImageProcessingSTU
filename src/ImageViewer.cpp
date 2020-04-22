@@ -473,3 +473,19 @@ void ImageViewer::on_actionHeat_Equation_triggered()
 	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
 	heqDialog->exec();
 }
+
+void ImageViewer::on_actionPerona_Malik_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	PeronaMalikDialog* pmDialog = new PeronaMalikDialog(this);
+	connect(pmDialog, SIGNAL(accepted()), ip, SLOT(peronaMalikAccepted()));
+	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
+	pmDialog->exec();
+}

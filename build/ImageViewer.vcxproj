@@ -832,6 +832,62 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\PeronaMalikDialog.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating ui_PeronaMalikDialog.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_PeronaMalikDialog.h D:/VS_Projects/ImageViewerIP/src/PeronaMalikDialog.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\VS_Projects\ImageViewerIP\build\ui_PeronaMalikDialog.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating ui_PeronaMalikDialog.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_PeronaMalikDialog.h D:/VS_Projects/ImageViewerIP/src/PeronaMalikDialog.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\VS_Projects\ImageViewerIP\build\ui_PeronaMalikDialog.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generating ui_PeronaMalikDialog.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_PeronaMalikDialog.h D:/VS_Projects/ImageViewerIP/src/PeronaMalikDialog.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\VS_Projects\ImageViewerIP\build\ui_PeronaMalikDialog.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generating ui_PeronaMalikDialog.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+D:\Qt\5.13.2\msvc2017_64\bin\uic.exe -o D:/VS_Projects/ImageViewerIP/build/ui_PeronaMalikDialog.h D:/VS_Projects/ImageViewerIP/src/PeronaMalikDialog.ui
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\VS_Projects\ImageViewerIP\build\ui_PeronaMalikDialog.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\CMakeLists.txt">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/VS_Projects/ImageViewerIP/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
@@ -888,8 +944,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Dialogs.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\build\ImageViewer_autogen\mocs_compilation.cpp" />
+    <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\Dialogs.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.cpp" />
     <ClCompile Include="D:\VS_Projects\ImageViewerIP\src\ImageViewer.cpp" />
@@ -903,6 +959,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MirrorExtendDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_MultiBlurDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_NewImgDialog.h" />
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_PeronaMalikDialog.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\Dialogs.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\HistogramWindow.h" />
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\ImageProcessor.h" />

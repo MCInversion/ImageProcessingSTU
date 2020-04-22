@@ -31,6 +31,7 @@ public slots:
 	void bernsenThresholdAccepted();
 	void multiBlurAccepted();
 	void heatEquationAccepted();
+	void peronaMalikAccepted();
 
 	//Histogram slots
 	void on_stretch();

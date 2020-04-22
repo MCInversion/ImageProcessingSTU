@@ -97,6 +97,7 @@
     <addaction name="separator"/>
     <addaction name="actionMulti_Blur_test"/>
     <addaction name="actionHeat_Equation"/>
+    <addaction name="actionPerona_Malik"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -212,6 +213,11 @@
   <action name="actionHeat_Equation">
    <property name="text">
     <string>Heat Equation</string>
+   </property>
+  </action>
+  <action name="actionPerona_Malik">
+   <property name="text">
+    <string>Perona-Malik</string>
    </property>
   </action>
  </widget>

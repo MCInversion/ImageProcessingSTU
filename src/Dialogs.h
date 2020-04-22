@@ -10,6 +10,7 @@
 #include "../build/ui_MirrorExtendDialog.h"
 #include "../build/ui_MultiBlurDialog.h"
 #include "../build/ui_NewImgDialog.h"
+#include "../build/ui_PeronaMalikDialog.h"
 
 class BernsenThresholdDialog : public QDialog
 {
@@ -118,6 +119,34 @@ public:
 	QString getName() { return newImgUi->lineEdit->text(); }
 private:
 	Ui::DialogNewImg* newImgUi;
+};
+
+class PeronaMalikDialog : public QDialog
+{
+	Q_OBJECT
+
+public:
+	PeronaMalikDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent), peronaMalikDialogUi(new Ui::peronaMalikDialog)
+	{
+		peronaMalikDialogUi->setupUi(this);
+	};
+	int getNSteps() { return peronaMalikDialogUi->nStepsSpinBox->value(); }
+	double getTimeStep() { return peronaMalikDialogUi->timeStepSpinBox->value(); }
+	int getScheme() { return peronaMalikDialogUi->schemeComboBox->currentIndex(); }
+private:
+	Ui::peronaMalikDialog* peronaMalikDialogUi;
+private slots:
+	void bindTimeStep() {
+		bool explicitScheme = peronaMalikDialogUi->schemeComboBox->currentIndex() == 0;
+		bool overrideTimeStep = peronaMalikDialogUi->overrideCheckBox->isChecked();
+		double tauMax = (!explicitScheme || overrideTimeStep ? 99. : 0.25);
+		double tau = peronaMalikDialogUi->timeStepSpinBox->value();
+		peronaMalikDialogUi->timeStepSpinBox->setRange(0.01, tauMax);
+		peronaMalikDialogUi->timeStepSpinBox->setValue(std::fminf(tau, tauMax));
+	}
+	void overrideTimeStep() {
+		bindTimeStep();
+	}
 };
 
 #endif

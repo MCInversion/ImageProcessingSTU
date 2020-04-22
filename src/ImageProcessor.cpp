@@ -148,6 +148,10 @@ void ImageProcessor::heatEquationAccepted()
 	emit multiImageComplete();
 }
 
+void ImageProcessor::peronaMalikAccepted()
+{
+}
+
 // update viewer image after histogram stretch
 void ImageProcessor::on_stretch()
 {

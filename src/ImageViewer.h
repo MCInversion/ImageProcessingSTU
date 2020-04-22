@@ -84,4 +84,5 @@ private slots:
 	void ActionTabChanged();
 
 	void on_actionHeat_Equation_triggered();
+	void on_actionPerona_Malik_triggered();
 };

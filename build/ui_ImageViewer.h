@@ -46,6 +46,7 @@ public:
     QAction *actionThreshold_Isodata;
     QAction *actionMulti_Blur_test;
     QAction *actionHeat_Equation;
+    QAction *actionPerona_Malik;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QTabWidget *tabWidget;
@@ -101,6 +102,8 @@ public:
         actionMulti_Blur_test->setObjectName(QString::fromUtf8("actionMulti_Blur_test"));
         actionHeat_Equation = new QAction(ImageViewerClass);
         actionHeat_Equation->setObjectName(QString::fromUtf8("actionHeat_Equation"));
+        actionPerona_Malik = new QAction(ImageViewerClass);
+        actionPerona_Malik->setObjectName(QString::fromUtf8("actionPerona_Malik"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -180,6 +183,7 @@ public:
         menuImage->addSeparator();
         menuImage->addAction(actionMulti_Blur_test);
         menuImage->addAction(actionHeat_Equation);
+        menuImage->addAction(actionPerona_Malik);
         menuTools->addAction(actionHistogram);
         menuEdit->addAction(actionUndo);
         menuEdit->addAction(actionRedo);
@@ -209,6 +213,7 @@ public:
         actionThreshold_Isodata->setText(QCoreApplication::translate("ImageViewerClass", "Threshold (Isodata)", nullptr));
         actionMulti_Blur_test->setText(QCoreApplication::translate("ImageViewerClass", "Multi-Blur (test)", nullptr));
         actionHeat_Equation->setText(QCoreApplication::translate("ImageViewerClass", "Heat Equation", nullptr));
+        actionPerona_Malik->setText(QCoreApplication::translate("ImageViewerClass", "Perona-Malik", nullptr));
         timeLabel->setText(QCoreApplication::translate("ImageViewerClass", "t = 0", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));
