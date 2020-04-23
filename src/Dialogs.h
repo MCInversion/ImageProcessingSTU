@@ -133,15 +133,16 @@ public:
 	int getNSteps() { return peronaMalikDialogUi->nStepsSpinBox->value(); }
 	double getTimeStep() { return peronaMalikDialogUi->timeStepSpinBox->value(); }
 	int getScheme() { return peronaMalikDialogUi->schemeComboBox->currentIndex(); }
+	double getKCoeff() { return peronaMalikDialogUi->kParamSpinBox->value(); }
 private:
 	Ui::peronaMalikDialog* peronaMalikDialogUi;
 private slots:
 	void bindTimeStep() {
 		bool explicitScheme = peronaMalikDialogUi->schemeComboBox->currentIndex() == 0;
 		bool overrideTimeStep = peronaMalikDialogUi->overrideCheckBox->isChecked();
-		double tauMax = (!explicitScheme || overrideTimeStep ? 99. : 0.25);
+		double tauMax = (!explicitScheme || overrideTimeStep ? 10. : 0.25);
 		double tau = peronaMalikDialogUi->timeStepSpinBox->value();
-		peronaMalikDialogUi->timeStepSpinBox->setRange(0.01, tauMax);
+		peronaMalikDialogUi->timeStepSpinBox->setRange(0.001, tauMax);
 		peronaMalikDialogUi->timeStepSpinBox->setValue(std::fminf(tau, tauMax));
 	}
 	void overrideTimeStep() {

@@ -42,7 +42,7 @@ public:
     {
         if (peronaMalikDialog->objectName().isEmpty())
             peronaMalikDialog->setObjectName(QString::fromUtf8("peronaMalikDialog"));
-        peronaMalikDialog->resize(400, 205);
+        peronaMalikDialog->resize(400, 211);
         gridLayout = new QGridLayout(peronaMalikDialog);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         label_2 = new QLabel(peronaMalikDialog);
@@ -65,7 +65,7 @@ public:
         timeStepSpinBox->setMinimum(0.010000000000000);
         timeStepSpinBox->setSingleStep(0.010000000000000);
         timeStepSpinBox->setStepType(QAbstractSpinBox::AdaptiveDecimalStepType);
-        timeStepSpinBox->setValue(0.100000000000000);
+        timeStepSpinBox->setValue(0.200000000000000);
 
         gridLayout->addWidget(timeStepSpinBox, 2, 1, 1, 1);
 
@@ -73,7 +73,7 @@ public:
         nStepsSpinBox->setObjectName(QString::fromUtf8("nStepsSpinBox"));
         nStepsSpinBox->setMinimum(1);
         nStepsSpinBox->setMaximum(200);
-        nStepsSpinBox->setValue(5);
+        nStepsSpinBox->setValue(10);
 
         gridLayout->addWidget(nStepsSpinBox, 1, 1, 1, 1);
 
@@ -94,9 +94,10 @@ public:
 
         kParamSpinBox = new QDoubleSpinBox(peronaMalikDialog);
         kParamSpinBox->setObjectName(QString::fromUtf8("kParamSpinBox"));
-        kParamSpinBox->setMinimum(0.010000000000000);
-        kParamSpinBox->setSingleStep(0.010000000000000);
-        kParamSpinBox->setValue(1.000000000000000);
+        kParamSpinBox->setMinimum(0.000000000000000);
+        kParamSpinBox->setMaximum(1.000000000000000);
+        kParamSpinBox->setSingleStep(0.001000000000000);
+        kParamSpinBox->setValue(0.010000000000000);
 
         gridLayout->addWidget(kParamSpinBox, 3, 1, 1, 1);
 

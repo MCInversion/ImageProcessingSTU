@@ -1,25 +1,5 @@
 ﻿  Automatic MOC and UIC for target ImageViewer
-  Generating ui_BernsenThresholdDialog.h
-  Generating ui_BlurDialog.h
-  Generating ui_HeatEquationDialog.h
-  Generating ui_HistogramWindow.h
-  Generating ui_ImageViewer.h
-  Generating ui_MirrorExtendDialog.h
-  Generating ui_MultiBlurDialog.h
-  Generating ui_NewImgDialog.h
-  Building Custom Rule D:/VS_Projects/ImageViewerIP/CMakeLists.txt
-  Dialogs.cpp
-  mocs_compilation.cpp
-  HistogramWindow.cpp
   ImageProcessor.cpp
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(40,28): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(49,28): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(50,32): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(51,30): warning C4018: '>': signed/unsigned mismatch
-D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(543,9): warning C4101: 'j': unreferenced local variable
-  ImageViewer.cpp
-  ViewerWidget.cpp
-  main.cpp
   ImageViewer.vcxproj -> D:\VS_Projects\ImageViewerIP\build\Release\ImageViewer.exe
   Win deploy qt
   D:\VS_Projects\ImageViewerIP\build\Release\ImageViewer.exe 64 bit, release executable
@@ -28,32 +8,27 @@ D:\VS_Projects\ImageViewerIP\src\HistogramWindow.cpp(543,9): warning C4101: 'j':
   All dependencies   : Qt5Core Qt5Gui Qt5Widgets
   To be deployed     : Qt5Core Qt5Gui Qt5Svg Qt5Widgets
 EXEC : warning : Cannot find Visual Studio installation directory, VCINSTALLDIR is not set.
-  Updating Qt5Core.dll.
-  Updating Qt5Gui.dll.
-  Updating Qt5Svg.dll.
-  Updating Qt5Widgets.dll.
-  Updating libGLESV2.dll.
-  Updating libEGL.dll.
-  Updating D3Dcompiler_47.dll.
-  Updating opengl32sw.dll.
+  Qt5Core.dll is up to date.
+  Qt5Gui.dll is up to date.
+  Qt5Svg.dll is up to date.
+  Qt5Widgets.dll is up to date.
+  libGLESV2.dll is up to date.
+  libEGL.dll is up to date.
+  D3Dcompiler_47.dll is up to date.
+  opengl32sw.dll is up to date.
   Patching Qt5Core.dll...
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Release/iconengines.
-  Updating qsvgicon.dll.
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Release/imageformats.
-  Updating qgif.dll.
-  Updating qicns.dll.
-  Updating qico.dll.
-  Updating qjpeg.dll.
-  Updating qsvg.dll.
-  Updating qtga.dll.
-  Updating qtiff.dll.
-  Updating qwbmp.dll.
-  Updating qwebp.dll.
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Release/platforms.
-  Updating qwindows.dll.
-  Creating directory D:/VS_Projects/ImageViewerIP/build/Release/styles.
-  Updating qwindowsvistastyle.dll.
-  Creating D:\VS_Projects\ImageViewerIP\build\Release\translations...
+  qsvgicon.dll is up to date.
+  qgif.dll is up to date.
+  qicns.dll is up to date.
+  qico.dll is up to date.
+  qjpeg.dll is up to date.
+  qsvg.dll is up to date.
+  qtga.dll is up to date.
+  qtiff.dll is up to date.
+  qwbmp.dll is up to date.
+  qwebp.dll is up to date.
+  qwindows.dll is up to date.
+  qwindowsvistastyle.dll is up to date.
   Creating qt_ar.qm...
   Creating qt_bg.qm...
   Creating qt_ca.qm...

@@ -9,6 +9,7 @@ D:/VS_Projects/ImageViewerIP/src/Dialogs.h
  uic:../build/ui_MirrorExtendDialog.h
  uic:../build/ui_MultiBlurDialog.h
  uic:../build/ui_NewImgDialog.h
+ uic:../build/ui_PeronaMalikDialog.h
 D:/VS_Projects/ImageViewerIP/src/HistogramWindow.h
  mmc:Q_OBJECT
  uic:../build/ui_HistogramWindow.h
