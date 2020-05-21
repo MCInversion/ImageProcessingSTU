@@ -5,6 +5,7 @@ D:/VS_Projects/ImageViewerIP/src/Dialogs.h
  mmc:Q_OBJECT
  uic:../build/ui_BernsenThresholdDialog.h
  uic:../build/ui_BlurDialog.h
+ uic:../build/ui_CurvatureFilterDialog.h
  uic:../build/ui_HeatEquationDialog.h
  uic:../build/ui_MirrorExtendDialog.h
  uic:../build/ui_MultiBlurDialog.h

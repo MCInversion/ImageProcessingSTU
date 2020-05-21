@@ -110,7 +110,7 @@
      </item>
      <item>
       <property name="text">
-       <string>regularized (semi-implicit)</string>
+       <string>semi-implicit</string>
       </property>
      </item>
     </widget>

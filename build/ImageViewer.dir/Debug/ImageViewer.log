@@ -1,8 +1,5 @@
 ﻿  Automatic MOC and UIC for target ImageViewer
-  mocs_compilation.cpp
   ImageProcessor.cpp
-  ImageViewer.cpp
-  main.cpp
   ImageViewer.vcxproj -> D:\VS_Projects\ImageViewerIP\build\Debug\ImageViewer.exe
   Win deploy qt
   D:\VS_Projects\ImageViewerIP\build\Debug\ImageViewer.exe 64 bit, debug executable

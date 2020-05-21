@@ -11,6 +11,7 @@
 #include "../build/ui_MultiBlurDialog.h"
 #include "../build/ui_NewImgDialog.h"
 #include "../build/ui_PeronaMalikDialog.h"
+#include "../build/ui_CurvatureFilterDialog.h"
 
 class BernsenThresholdDialog : public QDialog
 {
@@ -148,6 +149,24 @@ private slots:
 	void overrideTimeStep() {
 		bindTimeStep();
 	}
+};
+
+
+class CurvatureFilterDialog : public QDialog
+{
+	Q_OBJECT
+public:
+	CurvatureFilterDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent), curvatureFilterDialogUi(new Ui::curvatureFilterDialog)
+	{
+		curvatureFilterDialogUi->setupUi(this);
+	};
+	int getNSteps() { return curvatureFilterDialogUi->nStepsSpinBox->value(); }
+	double getTimeStep() { return curvatureFilterDialogUi->timeStepSpinBox->value(); }
+	int getScheme() { return curvatureFilterDialogUi->flowTypeComboBox->currentIndex(); }
+	double getKCoeff() { return curvatureFilterDialogUi->diffParamSpinBox->value(); }
+	double getEpsilon() { return pow(1.0, -1.0 * curvatureFilterDialogUi->epsilonSpinBox->value()); }
+private:
+	Ui::curvatureFilterDialog* curvatureFilterDialogUi;
 };
 
 #endif

@@ -111,6 +111,18 @@ void ViewerWidget::setPixel(QImage* img, int x, int y, double valR, double valG,
 	}
 }
 
+ImageParams ViewerWidget::getImageParams()
+{
+	return ImageParams(
+		img->height(),
+		img->width(),
+		img->depth(),
+		img->bytesPerLine(),
+		img->format(),
+		img->sizeInBytes()
+	);
+}
+
 //Draw functions
 void ViewerWidget::freeDraw(const QPoint& end, const QPen& pen)
 {

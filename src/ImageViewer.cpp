@@ -489,3 +489,19 @@ void ImageViewer::on_actionPerona_Malik_triggered()
 	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
 	pmDialog->exec();
 }
+
+void ImageViewer::on_actionCurvature_Filter_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	CurvatureFilterDialog* cfDialog = new CurvatureFilterDialog(this);
+	connect(cfDialog, SIGNAL(accepted()), ip, SLOT(curvatureFlowAccepted()));
+	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
+	cfDialog->exec();
+}

@@ -98,6 +98,7 @@
     <addaction name="actionMulti_Blur_test"/>
     <addaction name="actionHeat_Equation"/>
     <addaction name="actionPerona_Malik"/>
+    <addaction name="actionCurvature_Filter"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -218,6 +219,11 @@
   <action name="actionPerona_Malik">
    <property name="text">
     <string>Perona-Malik</string>
+   </property>
+  </action>
+  <action name="actionCurvature_Filter">
+   <property name="text">
+    <string>Curvature Filter</string>
    </property>
   </action>
  </widget>

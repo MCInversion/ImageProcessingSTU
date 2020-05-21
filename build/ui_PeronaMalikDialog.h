@@ -133,7 +133,7 @@ public:
         cancelButton->setText(QCoreApplication::translate("peronaMalikDialog", "Cancel", nullptr));
         label_3->setText(QCoreApplication::translate("peronaMalikDialog", "time step:", nullptr));
         schemeComboBox->setItemText(0, QCoreApplication::translate("peronaMalikDialog", "explicit", nullptr));
-        schemeComboBox->setItemText(1, QCoreApplication::translate("peronaMalikDialog", "regularized (semi-implicit)", nullptr));
+        schemeComboBox->setItemText(1, QCoreApplication::translate("peronaMalikDialog", "semi-implicit", nullptr));
 
         overrideCheckBox->setText(QCoreApplication::translate("peronaMalikDialog", "override time step", nullptr));
     } // retranslateUi

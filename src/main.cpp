@@ -20,13 +20,17 @@
 // - Explicit scheme solver for heat eqn
 // - Implicit SOR solver for heat eqn
 // - mean value test for heat eqn
+//
+// - Perona-Malik basic
+// - Perona-Malik regularized
+// - use smoothed gradients for s = |grad Gsigma * u| into g(s) = 1 / (1 + K s^2)
+// - check if all image dimensions are correct
 
 // WIP:
 //
 
 // TODO:
-// - Perona-Malik basic
-// - Perona-Malik regularized
+//
 //
 // - UndoRedo (?)
 // - background processing thread (major problem with viewerWidget - the processing thread of the image processor cannot write to it)

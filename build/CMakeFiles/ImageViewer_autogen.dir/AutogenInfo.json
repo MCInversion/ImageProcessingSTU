@@ -70,6 +70,7 @@
 	[
 		"D:/VS_Projects/ImageViewerIP/build/ui_BernsenThresholdDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_BlurDialog.h",
+		"D:/VS_Projects/ImageViewerIP/build/ui_CurvatureFilterDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_HeatEquationDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_HistogramWindow.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h",
@@ -108,6 +109,7 @@
 	[
 		"D:/VS_Projects/ImageViewerIP/build/ui_BernsenThresholdDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_BlurDialog.h",
+		"D:/VS_Projects/ImageViewerIP/build/ui_CurvatureFilterDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_HeatEquationDialog.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_HistogramWindow.h",
 		"D:/VS_Projects/ImageViewerIP/build/ui_ImageViewer.h",
@@ -117,6 +119,7 @@
 		"D:/VS_Projects/ImageViewerIP/build/ui_PeronaMalikDialog.h",
 		"D:/VS_Projects/ImageViewerIP/src/BernsenThresholdDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/BlurDialog.ui",
+		"D:/VS_Projects/ImageViewerIP/src/CurvatureFilterDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/HeatEquationDialog.ui",
 		"D:/VS_Projects/ImageViewerIP/src/HistogramWindow.ui",
 		"D:/VS_Projects/ImageViewerIP/src/ImageViewer.ui",

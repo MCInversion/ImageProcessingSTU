@@ -85,4 +85,5 @@ private slots:
 
 	void on_actionHeat_Equation_triggered();
 	void on_actionPerona_Malik_triggered();
+	void on_actionCurvature_Filter_triggered();
 };

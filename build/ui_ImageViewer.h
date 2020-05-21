@@ -47,6 +47,7 @@ public:
     QAction *actionMulti_Blur_test;
     QAction *actionHeat_Equation;
     QAction *actionPerona_Malik;
+    QAction *actionCurvature_Filter;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QTabWidget *tabWidget;
@@ -104,6 +105,8 @@ public:
         actionHeat_Equation->setObjectName(QString::fromUtf8("actionHeat_Equation"));
         actionPerona_Malik = new QAction(ImageViewerClass);
         actionPerona_Malik->setObjectName(QString::fromUtf8("actionPerona_Malik"));
+        actionCurvature_Filter = new QAction(ImageViewerClass);
+        actionCurvature_Filter->setObjectName(QString::fromUtf8("actionCurvature_Filter"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -184,6 +187,7 @@ public:
         menuImage->addAction(actionMulti_Blur_test);
         menuImage->addAction(actionHeat_Equation);
         menuImage->addAction(actionPerona_Malik);
+        menuImage->addAction(actionCurvature_Filter);
         menuTools->addAction(actionHistogram);
         menuEdit->addAction(actionUndo);
         menuEdit->addAction(actionRedo);
@@ -214,6 +218,7 @@ public:
         actionMulti_Blur_test->setText(QCoreApplication::translate("ImageViewerClass", "Multi-Blur (test)", nullptr));
         actionHeat_Equation->setText(QCoreApplication::translate("ImageViewerClass", "Heat Equation", nullptr));
         actionPerona_Malik->setText(QCoreApplication::translate("ImageViewerClass", "Perona-Malik", nullptr));
+        actionCurvature_Filter->setText(QCoreApplication::translate("ImageViewerClass", "Curvature Filter", nullptr));
         timeLabel->setText(QCoreApplication::translate("ImageViewerClass", "t = 0", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));

@@ -95,7 +95,7 @@ void ImageProcessor::multiBlurAccepted()
 void ImageProcessor::heatEquationAccepted()
 {
 	HeatEquationDialog* heqDialog = static_cast<HeatEquationDialog*>(sender());
-	float timeStep = heqDialog->getTimeStep();
+	double timeStep = heqDialog->getTimeStep();
 	int scheme = heqDialog->getScheme();
 	nSteps = heqDialog->getNSteps();
 
@@ -110,39 +110,32 @@ void ImageProcessor::heatEquationAccepted()
 	_view_w->setImage(extended);
 	mirrorExtendImageBy(1);
 
+	ImageParams params = _view_w->getImageParams();
+	int dataSize = params.dataSize;
+	uchar* data = _view_w->getData();
+
+	double* uData = new double[dataSize]; // raw img data for each step
+	for (int i = 0; i < dataSize; i++) 	uData[i] = (double)data[i];
+
 	double* rhsData;
 	if (scheme > 0) {
-		// save double px values from previous time step
-		int dataSize = _view_w->getImage()->sizeInBytes();
-		uchar* data = _view_w->getData();
 		rhsData = new double[dataSize];
-		for (int i = 0; i < dataSize; i++) rhsData[i] = (double)data[i];
+		for (int i = 0; i < dataSize; i++) rhsData[i] = uData[i];
 	}
 
 	for (int i = 1; i <= nSteps; i++) {
 		printf("<=== heatEquation step %d...\n", i);
 		if (scheme == 0) {
-			explicitHeatEquation(timeStep);
+			explicitHeatEquation(timeStep, uData, &params);
 		}
 		else {
-			implicitHeatEquation(timeStep, rhsData);
+			implicitHeatEquation(timeStep, uData, rhsData, &params);
 		}
+		writeDataToImageAndUpdate(uData, &params, i);
 		printf("=== heatEquation step %d complete ===>\n", i);
-
-		QImage img = QImage(*_view_w->getImage());
-		_view_w->setImageAt(img, i);
-		QImage extended = QImage(img);
-		_view_w->setImage(extended);
-		mirrorExtendImageBy(1); // extend by 1 for zero Neumann B.C.
-
-		if (scheme > 0 && i < nSteps) {
-			// save double px values
-			int dataSize = _view_w->getImage()->sizeInBytes();
-			uchar* data = _view_w->getData();
-			for (int i = 0; i < dataSize; i++) rhsData[i] = (double)data[i];
-		}
 	}
 
+	delete[] uData;
 	if (scheme > 0)	delete[] rhsData;
 
 	emit multiImageComplete();
@@ -151,9 +144,9 @@ void ImageProcessor::heatEquationAccepted()
 void ImageProcessor::peronaMalikAccepted()
 {
 	PeronaMalikDialog* pmDialog = static_cast<PeronaMalikDialog*>(sender());
-	float timeStep = pmDialog->getTimeStep();
+	double timeStep = pmDialog->getTimeStep();
 	int scheme = pmDialog->getScheme();
-	float K_coeff = pmDialog->getKCoeff();
+	double K_coeff = pmDialog->getKCoeff();
 	nSteps = pmDialog->getNSteps();
 
 	// time step array prep:
@@ -167,42 +160,118 @@ void ImageProcessor::peronaMalikAccepted()
 	_view_w->setImage(extended);
 	mirrorExtendImageBy(1);
 
-
-	const int dataSize = _view_w->getImage()->sizeInBytes();
+	ImageParams params = _view_w->getImageParams();
+	const int dataSize = params.dataSize;
 	uchar* data = _view_w->getData();
-	double* uData = new double[dataSize];
-	for (int i = 0; i < dataSize; i++) uData[i] = (double)data[i];
+	double* uData = new double[dataSize]; // raw img data for each step
+	double* uSigmaData = new double[dataSize]; // pre-smoothed data
+	for (int i = 0; i < dataSize; i++) {
+		uData[i] = (double)data[i]; uSigmaData[i] = uData[i];
+	}
 	double* rhsData;
 	if (scheme > 0) {	// save double px values from previous time step
 		rhsData = new double[dataSize];
-		for (int i = 0; i < dataSize; i++) rhsData[i] = (double)data[i];
+		for (int i = 0; i < dataSize; i++) rhsData[i] = uData[i];
 	}
 
 	for (int i = 1; i <= nSteps; i++) {
 		printf("<=== Perona-Malik Equation step %d...\n", i);
 		if (scheme == 0) {
-			explicitPeronaMalik(timeStep, K_coeff, uData);
+			printf("... heat step: \n");
+			explicitHeatEquation(timeStep, uSigmaData, &params);
+			printf("... heat step complete. Perona-Malik step: \n");
+			explicitPeronaMalik(timeStep, K_coeff, uData, uSigmaData, &params);
+			printf("... Perona-Malik step complete\n");
 		}
 		else {
-			implicitPeronaMalik(timeStep, K_coeff, uData, rhsData);
+			printf("... heat step: \n");
+			implicitHeatEquation(std::min(timeStep, 0.1), uSigmaData, rhsData, &params, false, false);
+			// explicitHeatEquation(timeStep, uSigmaData, &params);
+			printf("... heat step complete. Perona-Malik step: \n");
+			size_t nGs = (params.width - 2) * (params.height - 2) * (params.depth == 8 ? 1 : 3);
+			std::vector<EdgeDiffusionCoeffs> G(nGs);
+			computeAllEdgeDiffusionCoeffs(uData, uSigmaData, &params, &G, K_coeff);
+			semiImplicitPeronaMalik(timeStep, K_coeff, uData, rhsData, &G, &params);
+			printf("... Perona-Malik step complete\n");
 		}
+		writeDataToImageAndUpdate(uData, &params, i);
 		printf("=== Perona-Malik Equation step %d complete ===>\n", i);
-
-		QImage img = QImage(*_view_w->getImage());
-		_view_w->setImageAt(img, i);
-		QImage extended = QImage(img);
-		_view_w->setImage(extended);
-		mirrorExtendImageBy(1); // extend by 1 for zero Neumann B.C.
-
-		data = _view_w->getData();
-		if (scheme > 0 && i < nSteps) {
-			// save double px values
-			for (int i = 0; i < dataSize; i++) rhsData[i] = (double)data[i];
-		}
-		if (i < nSteps) for (int i = 0; i < dataSize; i++) uData[i] = (double)data[i];
 	}
 
 	if (scheme > 0)	delete[] rhsData;
+	delete[] uData;
+
+	emit multiImageComplete();
+}
+
+void ImageProcessor::curvatureFlowAccepted()
+{
+	CurvatureFilterDialog* cfDialog = static_cast<CurvatureFilterDialog*>(sender());
+	double timeStep = cfDialog->getTimeStep();
+	int scheme = cfDialog->getScheme();
+	double K_coeff = cfDialog->getKCoeff();
+	double epsilon = cfDialog->getEpsilon();
+	nSteps = cfDialog->getNSteps();
+
+	// time step array prep:
+	_view_w->clearImages();
+	_view_w->allocateImages(nSteps + 1);
+
+	// mirror extend first img
+	QImage img = QImage(*_view_w->getImage());
+	_view_w->setImageAt(img, 0);
+	QImage extended = QImage(img);
+	_view_w->setImage(extended);
+	mirrorExtendImageBy(1);
+
+	ImageParams params = _view_w->getImageParams();
+	const int dataSize = params.dataSize;
+	uchar* data = _view_w->getData();
+	double* uData = new double[dataSize]; // raw img data for each step
+	double* uSigmaData = new double[dataSize]; // pre-smoothed data (GMCF)
+	double* rhsData = new double[dataSize];
+	for (int i = 0; i < dataSize; i++) {
+		uData[i] = (double)data[i];
+		uSigmaData[i] = uData[i];
+		rhsData[i] = uData[i];
+	}
+
+	for (int i = 1; i <= nSteps; i++) {
+		printf("<=== %s Mean Curvature Flow step %d...\n", (scheme > 0 ? "Geodesic" : ""), i);
+
+		size_t nGs = (params.width - 2) * (params.height - 2) * (params.depth == 8 ? 1 : 3);
+		if (scheme == 0) {
+			printf("... MCF step: \n");
+
+			std::vector<EdgeDiffusionCoeffs> grads(nGs);
+			computeAllEdgeRegularizedGradientCoeffs(uData, &params, &grads, epsilon);
+
+			meanCurvatureFlow(timeStep, uData, rhsData, &grads, &params);
+
+			printf("... MCF step complete\n");
+		}
+		else {
+			printf("... heat step: \n");
+			implicitHeatEquation(std::min(timeStep, 0.1), uSigmaData, rhsData, &params, false, false);
+			// explicitHeatEquation(timeStep, uSigmaData, &params);
+			printf("... heat step complete. GMCF step: \n");
+
+			std::vector<EdgeDiffusionCoeffs> grads(nGs);
+			std::vector<EdgeDiffusionCoeffs> gCoeffs(nGs);
+
+			computeAllEdgeRegularizedGradientCoeffs(uData, &params, &grads, epsilon);
+			computeAllEdgeDiffusionCoeffs(uData, uSigmaData, &params, &gCoeffs, K_coeff);
+
+			geodesicMeanCurvatureFlow(timeStep, K_coeff, uData, rhsData, &gCoeffs, &grads, &params);
+
+			printf("... GMCF step complete\n");
+		}
+		writeDataToImageAndUpdate(uData, &params, i);
+		printf("=== %s Mean Curvature Flow step %d complete ===>\n", (scheme > 0 ? "Geodesic" : ""), i);
+	}
+
+	delete[] rhsData;
+	delete[] uSigmaData;
 	delete[] uData;
 
 	emit multiImageComplete();
@@ -393,6 +462,31 @@ bool ImageProcessor::mirrorExtendImageBy(int nPixels)
 	return true;
 }
 
+void ImageProcessor::writeDataToImageAndUpdate(double* uData, ImageParams* params, int i)
+{
+	QImage newImg = QImage(QSize(params->width - 2, params->height - 2), params->format);
+	newImg.fill(QColor(0, 0, 0));
+
+	for (int y = 0; y < params->height - 2; y++) {
+		for (int x = 0; x < params->width - 2; x++) {
+			// current pixel:
+			int xPos = x + 1, yPos = y + 1;
+			if (params->depth == 8) {
+				_view_w->setPixel(&newImg, x, y, uData[yPos * params->row + xPos] / 255.);
+			} else {
+				_view_w->setPixel(&newImg, x, y,
+					uData[yPos * params->row + 4 * xPos] / 255.,
+					uData[yPos * params->row + 4 * xPos + 1] / 255.,
+					uData[yPos * params->row + 4 * xPos + 2] / 255.
+				);
+			}
+		}
+	}
+	_view_w->setImageAt(newImg, i);
+	_view_w->setImage(newImg);
+	_view_w->update();
+}
+
 uchar ImageProcessor::kernelSumGS(uchar* img, int row, int x, int y, int r)
 {
 	float sum = 0.0f;
@@ -537,23 +631,21 @@ bool ImageProcessor::bernsenThreshold(int radius, int minContrast, int bgType)
 	return true;
 }
 
-bool ImageProcessor::explicitHeatEquation(float timeStep)
+bool ImageProcessor::explicitHeatEquation(double timeStep, double* uData, ImageParams* params)
 {
-	uchar* data = _view_w->getData();
-	int height = _view_w->getImgHeight();
-	int width = _view_w->getImgWidth();
-	int row = _view_w->getImage()->bytesPerLine();
-	int depth = _view_w->getImage()->depth();
+	int height = params->height;
+	int width = params->width;
+	int row = params->row;
+	int depth = params->depth;
 
-	float diagCoeff = 1.0f - 4.0f * timeStep;
-	float coeff = timeStep;
+	double diagCoeff = 1.0f - 4.0f * timeStep;
+	double coeff = timeStep;
 
-	QImage diffusedImg = QImage(QSize(width - 2, height - 2), _view_w->getImage()->format());
-	diffusedImg.fill(QColor(0, 0, 0));
+	double* newData = new double[params->dataSize];
 
-	float mean = 0.0f, mean_red = 0.0f, mean_green = 0.0f, mean_blue = 0.0f;
-	for (int x = 0; x < diffusedImg.width(); x++) {
-		for (int y = 0; y < diffusedImg.height(); y++) {
+	double mean = 0.0, mean_red = 0.0, mean_green = 0.0, mean_blue = 0.0;
+	for (int x = 0; x < width - 2; x++) {
+		for (int y = 0; y < height - 2; y++) {
 			// current pixel:
 			int xPos = x + 1, yPos = y + 1;
 			// neighboring pixels:
@@ -563,44 +655,56 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 			int xEast = xPos + 1, yEast = yPos;
 			// ------
 			if (depth == 8) {
-				float val = diagCoeff * data[yPos * row + xPos] +
-					coeff * (data[yNorth * row + xNorth] + data[ySouth * row + xSouth] + data[yWest * row + xWest] + data[yEast * row + xEast]);
-				mean += val;
-				_view_w->setPixel(&diffusedImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)std::round(val)), 0)));
+				double val = diagCoeff * uData[yPos * row + xPos] +
+					coeff * (uData[yNorth * row + xNorth] + uData[ySouth * row + xSouth] + uData[yWest * row + xWest] + uData[yEast * row + xEast]);
+				newData[yPos * row + xPos] = val;
 			}
 			else {
-				uchar r = static_cast<uchar>(data[yPos * row + xPos * 4]);
-				uchar rN = static_cast<uchar>(data[yNorth * row + xNorth * 4]);
-				uchar rS = static_cast<uchar>(data[ySouth * row + xSouth * 4]);
-				uchar rW = static_cast<uchar>(data[yWest * row + xWest * 4]);
-				uchar rE = static_cast<uchar>(data[yEast * row + xEast * 4]);
+				double r = uData[yPos * row + xPos * 4];
+				double rN = uData[yNorth * row + xNorth * 4];
+				double rS = uData[ySouth * row + xSouth * 4];
+				double rW = uData[yWest * row + xWest * 4];
+				double rE = uData[yEast * row + xEast * 4];
 
-				float valRed = diagCoeff * r + coeff * (rN + rS + rW + rE);
-				mean_red += valRed;
+				double valRed = diagCoeff * r + coeff * (rN + rS + rW + rE);
+				newData[yPos * row + xPos * 4] = valRed;
 
-				uchar g = static_cast<uchar>(data[yPos * row + xPos * 4 + 1]);
-				uchar gN = static_cast<uchar>(data[yNorth * row + xNorth * 4 + 1]);
-				uchar gS = static_cast<uchar>(data[ySouth * row + xSouth * 4 + 1]);
-				uchar gW = static_cast<uchar>(data[yWest * row + xWest * 4 + 1]);
-				uchar gE = static_cast<uchar>(data[yEast * row + xEast * 4 + 1]);
+				double g = uData[yPos * row + xPos * 4 + 1];
+				double gN = uData[yNorth * row + xNorth * 4 + 1];
+				double gS = uData[ySouth * row + xSouth * 4 + 1];
+				double gW = uData[yWest * row + xWest * 4 + 1];
+				double gE = uData[yEast * row + xEast * 4 + 1];
 
-				float valGreen = diagCoeff * g + coeff * (gN + gS + gW + gE);
-				mean_green += valGreen;
+				double valGreen = diagCoeff * g + coeff * (gN + gS + gW + gE);
+				newData[yPos * row + xPos * 4 + 1] = valGreen;
 
-				uchar b = static_cast<uchar>(data[yPos * row + xPos * 4 + 2]);
-				uchar bN = static_cast<uchar>(data[yNorth * row + xNorth * 4 + 2]);
-				uchar bS = static_cast<uchar>(data[ySouth * row + xSouth * 4 + 2]);
-				uchar bW = static_cast<uchar>(data[yWest * row + xWest * 4 + 2]);
-				uchar bE = static_cast<uchar>(data[yEast * row + xEast * 4 + 2]);
+				double b = uData[yPos * row + xPos * 4 + 2];
+				double bN = uData[yNorth * row + xNorth * 4 + 2];
+				double bS = uData[ySouth * row + xSouth * 4 + 2];
+				double bW = uData[yWest * row + xWest * 4 + 2];
+				double bE = uData[yEast * row + xEast * 4 + 2];
 
-				float valBlue = diagCoeff * b + coeff * (bN + bS + bW + bE);
-				mean_blue += valBlue;
+				double valBlue = diagCoeff * b + coeff * (bN + bS + bW + bE);
+				newData[yPos * row + xPos * 4 + 2] = valBlue;
+			}
+		}
+	}
 
-				_view_w->setPixel(&diffusedImg, x, y, 
-					static_cast<uchar>(std::max(std::min(255, (int)std::round(valRed)), 0)),
-					static_cast<uchar>(std::max(std::min(255, (int)std::round(valGreen)), 0)),
-					static_cast<uchar>(std::max(std::min(255, (int)std::round(valBlue)), 0))
-				);
+	// copy extended & compute mean
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			int xPos = (x == 0 ? 1 : (x == width - 1 ? width - 2 : x));
+			int yPos = (y == 0 ? 1 : (y == height- 1 ? height - 2 : y));
+
+			if (depth == 8) {
+				uData[y * row + x] = newData[yPos * row + xPos];
+				mean += newData[yPos * row + xPos];
+			}
+			else {
+				for (int j = 0; j < 3; j++) uData[y * row + x * 4 + j] = newData[yPos * row + xPos * 4 + j];
+				mean_red += uData[yPos * row + xPos * 4];
+				mean_green += uData[yPos * row + xPos * 4 + 1];
+				mean_blue += uData[yPos * row + xPos * 4 + 2];
 			}
 		}
 	}
@@ -615,204 +719,152 @@ bool ImageProcessor::explicitHeatEquation(float timeStep)
 		printf("u_mean(RGB) = (%f, %f, %f)\n", mean_red, mean_green, mean_blue);
 	}
 
-	_view_w->setImage(diffusedImg);
-	_view_w->update();
+	delete[] newData;
+
 	return true;
 }
 
-bool ImageProcessor::implicitHeatEquation(float timeStep, double* rhsData, bool printMean, bool printIter)
+bool ImageProcessor::implicitHeatEquation(double timeStep, double* uData, double* rhsData, ImageParams* params, bool printMean, bool printIter)
 {
-	uchar* data = _view_w->getData();
+	int height = params->height;
+	int width = params->width;
 
-	int heightTotal = _view_w->getImgHeight();
-	int widthTotal = _view_w->getImgWidth();
+	int row = params->row;
+	int depth = params->depth;
 
-	int height = heightTotal - 2;
-	int width = widthTotal - 2;
-
-	int row = _view_w->getImage()->bytesPerLine();
-	int depth = _view_w->getImage()->depth();
-
-	int dataSize = _view_w->getImage()->sizeInBytes();
+	int dataSize = params->dataSize;
 
 	// old and new img data (old and new iter)
-	double* uData = new double[dataSize];
-	for (int i = 0; i < dataSize; i++) uData[i] = 0.0;
+	double* iterData = new double[dataSize];
+	for (int i = 0; i < dataSize; i++) iterData[i] = 0.0;
 
 	// SOR params:
 	double omega = 1.5, tol = 1e-4;
 	// SPD matrix coeffs:
-	double diagCoeff = 1.0 + 4.0 * (double)timeStep;
-	double coeff = -(double)timeStep;
-
-	QImage::Format format = _view_w->getImage()->format();
-	QImage diffusedImg = QImage(QSize(width, height), format); // solution
-	diffusedImg.fill(QColor(0, 0, 0));
+	double diagCoeff = 1.0 + 4.0 * timeStep;
+	double coeff = -timeStep;
 
 	int iter = 0, maxIter = 100;
 
-	ImageParams imPar(height, width, depth, row);
 	IterParams itPar(timeStep, diagCoeff, coeff, omega, printMean, printIter);
 
 	do {
 		iter++;
 		if (printIter) printf("SOR iter %d: ", iter);		
-		doSORIter(&imPar, &itPar, uData, rhsData);
+		doSORIter(params, &itPar, uData, rhsData);
 
 	} while ((iter < maxIter) && (itPar.res > tol));
 
-	// write result
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			int xPos = x + 1, yPos = y + 1;
-
-			if (depth == 8) {
-				int pos = yPos * row + xPos;
-				_view_w->setPixel(&diffusedImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[pos])), 0)));
-			}
-			else {
-				uchar r = static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[yPos * row + xPos * 4])), 0));
-				uchar g = static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[yPos * row + xPos * 4 + 1])), 0));
-				uchar b = static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[yPos * row + xPos * 4 + 2])), 0));
-
-				_view_w->setPixel(&diffusedImg, x, y, r, g, b);
-			}			
-		}
-	}
-
 	// rhsOld = dataNew
 	for (int i = 0; i < dataSize; i++) rhsData[i] = uData[i];
-
-	delete[] uData;
-
-	_view_w->setImage(diffusedImg);
-	_view_w->update();
 	return true;
 }
 
-bool ImageProcessor::explicitPeronaMalik(float timeStep, double K_coeff, double* data)
+bool ImageProcessor::explicitPeronaMalik(double timeStep, double K_coeff, double* uData, double* uSigmaData, ImageParams* params)
 {
-	int height = _view_w->getImgHeight();
-	int width = _view_w->getImgWidth();
-	int row = _view_w->getImage()->bytesPerLine();
-	int depth = _view_w->getImage()->depth();
+	int height = params->height;
+	int width = params->width;
+	int row = params->row;
+	int depth = params->depth;
 
-	float diagCoeff;
-	float coeff = timeStep;
+	double diagCoeff;
+	double coeff = timeStep;
 	double* dataNeighbors = new double[9];
+	double* smoothedDataNeighbors = new double[9];
 
-	QImage filteredImg = QImage(QSize(width - 2, height - 2), _view_w->getImage()->format());
-	filteredImg.fill(QColor(0, 0, 0));
+	double* newData = new double[params->dataSize];
 
-	float mean = 0.0f, mean_red = 0.0f, mean_green = 0.0f, mean_blue = 0.0f;
-	for (int x = 0; x < filteredImg.width(); x++) {
-		for (int y = 0; y < filteredImg.height(); y++) {
+	for (int y = 0; y < height - 2; y++) {
+		for (int x = 0; x < width - 2; x++) {
 			// current pixel:
 			int xPos = x + 1, yPos = y + 1;
-			// neighboring pixels:
+			// neighboring pixel coords:
 			int xNorth = xPos, yNorth = y;
 			int xSouth = xPos, ySouth = yPos + 1;
 			int xWest = x, yWest = yPos;
 			int xEast = xPos + 1, yEast = yPos;
 			// ------
 			if (depth == 8) {
-				dataNeighbors[0] = data[yNorth * row + xWest]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xPos]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast]; // northeast
-				dataNeighbors[3] = data[yPos * row + xWest]; // west
-				dataNeighbors[4] = data[yPos * row + xPos]; // mid
-				dataNeighbors[5] = data[yPos * row + xEast]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xPos]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row);
 
-				WeightedGrads grads = getWeightedGradsAt(dataNeighbors, K_coeff);
-				diagCoeff = 1.0 - timeStep * grads.sum();
+				EdgeDiffusionCoeffs G = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
+				diagCoeff = 1.0 - timeStep * G.sum();
 
-				float val = diagCoeff * data[yPos * row + xPos] +
+				double val = diagCoeff * uData[yPos * row + xPos] +
 					coeff * sumNeighborPixels(
-						data[yNorth * row + xNorth], data[yWest * row + xWest],
-						data[ySouth * row + xSouth], data[yEast * row + xEast], &grads);
-				mean += val;
-				_view_w->setPixel(&filteredImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)std::round(val)), 0)));
+						uData[yNorth * row + xNorth], uData[yWest * row + xWest],
+						uData[ySouth * row + xSouth], uData[yEast * row + xEast], &G);
+				newData[yPos * row + xPos] = val;
 			}
 			else {
 				// ======== RED CHANNEL =======================================
-				dataNeighbors[0] = data[yNorth * row + xWest * 4]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xNorth * 4]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast * 4]; // northeast
-				dataNeighbors[3] = data[yWest * row + xWest * 4]; // west
-				dataNeighbors[4] = data[yPos * row + xPos * 4]; // mid
-				dataNeighbors[5] = data[yEast * row + xEast * 4]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest * 4]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xSouth * 4]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast * 4]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 0);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row, 0);
 
-				WeightedGrads grads = getWeightedGradsAt(dataNeighbors, K_coeff);
-				diagCoeff = 1.0 - timeStep * grads.sum();
+				EdgeDiffusionCoeffs G = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
+				diagCoeff = 1.0 - timeStep * G.sum();
 
-				double r = data[yPos * row + xPos * 4];
-				double rN = data[yNorth * row + xNorth * 4];
-				double rS = data[ySouth * row + xSouth * 4];
-				double rW = data[yWest * row + xWest * 4];
-				double rE = data[yEast * row + xEast * 4];
+				double r = uData[yPos * row + xPos * 4];
+				double rN = uData[yNorth * row + xNorth * 4];
+				double rS = uData[ySouth * row + xSouth * 4];
+				double rW = uData[yWest * row + xWest * 4];
+				double rE = uData[yEast * row + xEast * 4];
 
-				double valRed = diagCoeff * r + coeff * sumNeighborPixels(rN, rW, rS, rE, &grads);
-				mean_red += valRed;
+				double valRed = diagCoeff * r + coeff * sumNeighborPixels(rN, rW, rS, rE, &G);
+				newData[yPos * row + xPos * 4] = valRed;
 
 				// ======== GREEN CHANNEL =======================================
-				dataNeighbors[0] = data[yNorth * row + xWest * 4 + 1]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xNorth * 4 + 1]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast * 4 + 1]; // northeast
-				dataNeighbors[3] = data[yWest * row + xWest * 4 + 1]; // west
-				dataNeighbors[4] = data[yPos * row + xPos * 4 + 1]; // mid
-				dataNeighbors[5] = data[yEast * row + xEast * 4 + 1]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest * 4 + 1]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xSouth * 4 + 1]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast * 4 + 1]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 1);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row, 1);
 
-				grads = getWeightedGradsAt(dataNeighbors, K_coeff);
-				diagCoeff = 1.0 - timeStep * grads.sum();
+				G = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
+				diagCoeff = 1.0 - timeStep * G.sum();
 
-				double g = data[yPos * row + xPos * 4 + 1];
-				double gN = data[yNorth * row + xNorth * 4 + 1];
-				double gS = data[ySouth * row + xSouth * 4 + 1];
-				double gW = data[yWest * row + xWest * 4 + 1];
-				double gE = data[yEast * row + xEast * 4 + 1];
+				double g = uData[yPos * row + xPos * 4 + 1];
+				double gN = uData[yNorth * row + xNorth * 4 + 1];
+				double gS = uData[ySouth * row + xSouth * 4 + 1];
+				double gW = uData[yWest * row + xWest * 4 + 1];
+				double gE = uData[yEast * row + xEast * 4 + 1];
 
-				double valGreen = diagCoeff * g + coeff * sumNeighborPixels(gN, gW, gS, gE, &grads);
-				mean_green += valGreen;
+				double valGreen = diagCoeff * g + coeff * sumNeighborPixels(gN, gW, gS, gE, &G);
+				newData[yPos * row + xPos * 4 + 1] = valGreen;
 
 				// ======== BLUE CHANNEL =======================================
-				dataNeighbors[0] = data[yNorth * row + xWest * 4 + 2]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xNorth * 4 + 2]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast * 4 + 2]; // northeast
-				dataNeighbors[3] = data[yWest * row + xWest * 4 + 2]; // west
-				dataNeighbors[4] = data[yPos * row + xPos * 4 + 2]; // mid
-				dataNeighbors[5] = data[yEast * row + xEast * 4 + 2]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest * 4 + 2]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xSouth * 4 + 2]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast * 4 + 2]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 2);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row, 2);
 
-				grads = getWeightedGradsAt(dataNeighbors, K_coeff);
-				diagCoeff = 1.0 - timeStep * grads.sum();
+				G = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
+				diagCoeff = 1.0 - timeStep * G.sum();
 
-				double b = data[yPos * row + xPos * 4 + 2];
-				double bN = data[yNorth * row + xNorth * 4 + 2];
-				double bS = data[ySouth * row + xSouth * 4 + 2];
-				double bW = data[yWest * row + xWest * 4 + 2];
-				double bE = data[yEast * row + xEast * 4 + 2];
+				double b = uData[yPos * row + xPos * 4 + 2];
+				double bN = uData[yNorth * row + xNorth * 4 + 2];
+				double bS = uData[ySouth * row + xSouth * 4 + 2];
+				double bW = uData[yWest * row + xWest * 4 + 2];
+				double bE = uData[yEast * row + xEast * 4 + 2];
 
-				double valBlue = diagCoeff * b + coeff * sumNeighborPixels(bN, bW, bS, bE, &grads);
-				mean_blue += valBlue;
-
+				double valBlue = diagCoeff * b + coeff * sumNeighborPixels(bN, bW, bS, bE, &G);
+				newData[yPos * row + xPos * 4 + 2] = valBlue;
 				// ==============================================================
+			}
+		}
+	}
+	// copy extended & compute mean
+	double mean = 0.0, mean_red = 0.0, mean_green = 0.0, mean_blue = 0.0;
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			int xPos = (x == 0 ? 1 : (x == width - 1 ? width - 2 : x));
+			int yPos = (y == 0 ? 1 : (y == height - 1 ? height - 2 : y));
 
-				_view_w->setPixel(&filteredImg, x, y,
-					static_cast<uchar>(std::max(std::min(255, (int)std::round(valRed)), 0)),
-					static_cast<uchar>(std::max(std::min(255, (int)std::round(valGreen)), 0)),
-					static_cast<uchar>(std::max(std::min(255, (int)std::round(valBlue)), 0))
-				);
+			if (depth == 8) {
+				uData[y * row + x] = newData[yPos * row + xPos];
+				mean += newData[yPos * row + xPos];
+			}
+			else {
+				for (int j = 0; j < 3; j++) uData[y * row + x * 4 + j] = newData[yPos * row + xPos * 4 + j];
+				mean_red += newData[yPos * row + xPos * 4];
+				mean_green += newData[yPos * row + xPos * 4 + 1];
+				mean_blue += newData[yPos * row + xPos * 4 + 2];
 			}
 		}
 	}
@@ -826,44 +878,33 @@ bool ImageProcessor::explicitPeronaMalik(float timeStep, double K_coeff, double*
 		mean_blue /= (width * height);
 		printf("u_mean(RGB) = (%f, %f, %f)\n", mean_red, mean_green, mean_blue);
 	}
-
-	_view_w->setImage(filteredImg);
-	_view_w->update();
-
+	delete[] newData;
+	delete[] smoothedDataNeighbors;
 	delete[] dataNeighbors;
 
 	return true;
 }
 
-bool ImageProcessor::implicitPeronaMalik(float timeStep, double K_coeff, double* uData, double* rhsData, bool printMean, bool printIter)
+bool ImageProcessor::semiImplicitPeronaMalik(
+	double timeStep, double K_coeff, double* uData, double* rhsData, std::vector<EdgeDiffusionCoeffs>* G,
+	ImageParams* params, bool printMean, bool printIter)
 {
-	int heightTotal = _view_w->getImgHeight();
-	int widthTotal = _view_w->getImgWidth();
+	int height = params->height;
+	int width = params->width;
 
-	int height = heightTotal - 2;
-	int width = widthTotal - 2;
+	int row = params->row;
+	int depth = params->depth;
 
-	int row = _view_w->getImage()->bytesPerLine();
-	int depth = _view_w->getImage()->depth();
-
-	int dataSize = _view_w->getImage()->sizeInBytes();
+	int dataSize = params->dataSize;
 
 	// SOR params:
 	double omega = 1.5, tol = 1e-4;
 	// SPD matrix coeffs:
-	double diagCoeff = 1.0 + 4.0 * (double)timeStep;
-	double coeff = -(double)timeStep;
-
-	QImage::Format format = _view_w->getImage()->format();
-	QImage filteredImg = QImage(QSize(width, height), format); // solution
-	filteredImg.fill(QColor(0, 0, 0));
-
-	size_t nGrads = width * height * (depth == 8 ? 1 : 3);
-	std::vector<WeightedGrads> grads(nGrads);
+	double diagCoeff = 1.0 + 4.0 * timeStep;
+	double coeff = -timeStep;
 
 	int iter = 0, maxIter = 100;
 
-	ImageParams imPar(height, width, depth, row);
 	IterParams itPar(timeStep, diagCoeff, coeff, omega, printMean, printIter, K_coeff);
 
 	/*
@@ -877,8 +918,7 @@ bool ImageProcessor::implicitPeronaMalik(float timeStep, double K_coeff, double*
 	do {
 		iter++;
 		if (printIter) printf("SOR iter %d: ", iter);
-		computeDataGrads(uData, &imPar, &grads, K_coeff);
-		doSORIter(&imPar, &itPar, uData, rhsData, &grads);
+		doSORIter(params, &itPar, uData, rhsData, G);
 
 	} while ((iter < maxIter) && (itPar.res > tol));
 
@@ -887,32 +927,87 @@ bool ImageProcessor::implicitPeronaMalik(float timeStep, double K_coeff, double*
 	outValsGreen.close();
 	outValsBlue.close();*/
 
-	// write result
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			int xPos = x + 1, yPos = y + 1;
-
-			if (depth == 8) {
-				int pos = yPos * row + xPos;
-				_view_w->setPixel(&filteredImg, x, y, static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[pos])), 0)));
-			}
-			else {
-				uchar r = static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[yPos * row + xPos * 4])), 0));
-				uchar g = static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[yPos * row + xPos * 4 + 1])), 0));
-				uchar b = static_cast<uchar>(std::max(std::min(255, (int)std::round(uData[yPos * row + xPos * 4 + 2])), 0));
-
-				_view_w->setPixel(&filteredImg, x, y, r, g, b);
-			}
-		}
+	// rhsOld = dataNew
+	for (int i = 0; i < dataSize; i++) {
+		rhsData[i] = uData[i];
 	}
+	return true;
+}
+
+bool ImageProcessor::meanCurvatureFlow(
+	double timeStep, double* uData, double* rhsData,
+	std::vector<EdgeDiffusionCoeffs>* G, ImageParams* params,
+	bool printMean, bool printIter)
+{
+	int height = params->height;
+	int width = params->width;
+
+	int row = params->row;
+	int depth = params->depth;
+
+	int dataSize = params->dataSize;
+
+	// SOR params:
+	double omega = 1.5, tol = 1e-3;
+	// SPD matrix coeffs:
+	double diagCoeff = 1.0 + 4.0 * timeStep;
+	double coeff = -timeStep;
+
+	int iter = 0, maxIter = 100;
+
+	IterParams itPar(timeStep, diagCoeff, coeff, omega, printMean, printIter, 0.0);
+
+	do {
+		iter++;
+		printf("SOR iter %d: ", iter);
+		doSORIter(params, &itPar, uData, rhsData, nullptr, G);
+
+	} while ((iter < maxIter) && (itPar.res > tol));
+
 
 	// rhsOld = dataNew
 	for (int i = 0; i < dataSize; i++) {
 		rhsData[i] = uData[i];
 	}
+	return true;
 
-	_view_w->setImage(filteredImg);
-	_view_w->update();
+	return false;
+}
+
+bool ImageProcessor::geodesicMeanCurvatureFlow(
+	double timeStep, double K_coeff, double* uData, double* rhsData,
+	std::vector<EdgeDiffusionCoeffs>* gCoeffs, std::vector<EdgeDiffusionCoeffs>* grads,
+	ImageParams* params, bool printMean, bool printIter)
+{
+	int height = params->height;
+	int width = params->width;
+
+	int row = params->row;
+	int depth = params->depth;
+
+	int dataSize = params->dataSize;
+
+	// SOR params:
+	double omega = 1.5, tol = 1e-3;
+	// SPD matrix coeffs:
+	double diagCoeff = 1.0 + 4.0 * timeStep;
+	double coeff = -timeStep;
+
+	int iter = 0, maxIter = 100;
+
+	IterParams itPar(timeStep, diagCoeff, coeff, omega, printMean, printIter, K_coeff);
+
+	do {
+		iter++;
+		printf("SOR iter %d: ", iter);
+		doSORIter(params, &itPar, uData, rhsData, gCoeffs, grads);
+
+	} while ((iter < maxIter) && (itPar.res > tol));
+
+	// rhsOld = dataNew
+	for (int i = 0; i < dataSize; i++) {
+		rhsData[i] = uData[i];
+	}
 	return true;
 }
 
@@ -1013,50 +1108,152 @@ void ImageProcessor::getCircularKernel(int radius, bool print)
 	}
 }
 
-WeightedGrads ImageProcessor::getWeightedGradsAt(double* dataNeighbors, double K_coeff)
+EdgeDiffusionCoeffs ImageProcessor::getEdgeDiffusionWeights(double* dataNeighbors, double* smoothedDataNeighbors, double K_coeff)
 {
-	WeightedGrads grads;
+	EdgeDiffusionCoeffs g;
 
 	double dataNorthWest = dataNeighbors[0], dataNorth = dataNeighbors[1], dataNorthEast = dataNeighbors[2];
 	double dataWest = dataNeighbors[3], dataMid = dataNeighbors[4], dataEast = dataNeighbors[5];
 	double dataSouthWest = dataNeighbors[6], dataSouth = dataNeighbors[7], dataSouthEast = dataNeighbors[8];
 
-	double gradX, gradY, normSq;
+	double dataSigmaNorthWest = smoothedDataNeighbors[0], dataSigmaNorth = smoothedDataNeighbors[1], dataSigmaNorthEast = smoothedDataNeighbors[2];
+	double dataSigmaWest = smoothedDataNeighbors[3], dataSigmaMid = smoothedDataNeighbors[4], dataSigmaEast = smoothedDataNeighbors[5];
+	double dataSigmaSouthWest = smoothedDataNeighbors[6], dataSigmaSouth = smoothedDataNeighbors[7], dataSigmaSouthEast = smoothedDataNeighbors[8];
 
-	gradX = ((dataNorthWest - dataNorthEast) * 0.5 + (dataWest - dataEast) * 0.5) * 0.5;
-	gradY = dataNorth - dataMid;
-	normSq = gradX * gradX + gradY * gradY;
-	grads.north = 1.0 / (1.0 + K_coeff * normSq);
+	double gX, gY, normSq;
 
-	gradX = dataWest - dataMid;
-	gradY = ((dataSouthWest - dataNorthWest) * 0.5 + (dataSouth - dataNorth) * 0.5) * 0.5;
-	normSq = gradX * gradX + gradY * gradY;
-	grads.west = 1.0 / (1.0 + K_coeff * normSq);
+	// all sigma
+	/*
+	gX = ((dataSigmaNorthEast - dataSigmaNorthWest) * 0.5 + (dataSigmaEast - dataSigmaWest) * 0.5) * 0.5;
+	gY = dataSigmaNorth - dataSigmaMid;
+	normSq = gX * gX + gY * gY;
+	g.north = 1.0 / (1.0 + K_coeff * normSq);
 
-	gradX = dataEast - dataMid;
-	gradY = ((dataNorth - dataSouth) * 0.5 + (dataNorthEast - dataSouthEast) * 0.5) * 0.5;
-	normSq = gradX * gradX + gradY * gradY;
-	grads.east = 1.0 / (1.0 + K_coeff * normSq);
+	gX = dataSigmaMid- dataSigmaWest;
+	gY = ((dataSigmaNorthWest - dataSigmaSouthWest) * 0.5 + (dataSigmaNorth - dataSigmaSouth) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.west = 1.0 / (1.0 + K_coeff * normSq);
 
-	gradX = ((dataSouth - dataNorth) * 0.5 + (dataSouthEast - dataSouthWest) * 0.5) * 0.5;
-	gradY = dataSouth - dataMid;
-	normSq = gradX * gradX + gradY * gradY;
-	grads.south = 1.0 / (1.0 + K_coeff * normSq);
+	gX = dataSigmaEast - dataSigmaMid;
+	gY = ((dataSigmaNorth - dataSigmaSouth) * 0.5 + (dataSigmaNorthEast - dataSigmaSouthEast) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.east = 1.0 / (1.0 + K_coeff * normSq);
 
-	return grads;
+	gX = ((dataSigmaNorth - dataSigmaSouth) * 0.5 + (dataSigmaSouthEast - dataSigmaSouthWest) * 0.5) * 0.5;
+	gY = dataSigmaMid - dataSigmaSouth;
+	normSq = gX * gX + gY * gY;
+	g.south = 1.0 / (1.0 + K_coeff * normSq);*/
+
+	// just forward difference sigma
+	/**/
+	gX = ((dataNorthEast - dataNorthWest) * 0.5 + (dataEast - dataWest) * 0.5) * 0.5;
+	gY = dataSigmaNorth - dataSigmaMid;
+	normSq = gX * gX + gY * gY;
+	g.north = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = dataSigmaMid - dataSigmaWest;
+	gY = ((dataNorthWest - dataSouthWest) * 0.5 + (dataNorth - dataSouth) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.west = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = dataSigmaEast - dataSigmaMid;
+	gY = ((dataNorth - dataSouth) * 0.5 + (dataNorthEast - dataSouthEast) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.east = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = ((dataNorth - dataSouth) * 0.5 + (dataSouthEast - dataSouthWest) * 0.5) * 0.5;
+	gY = dataSigmaMid - dataSigmaSouth;
+	normSq = gX * gX + gY * gY;
+	g.south = 1.0 / (1.0 + K_coeff * normSq);
+
+	// no sigma
+	/*
+	gX = ((dataNorthEast - dataNorthWest) * 0.5 + (dataEast - dataWest) * 0.5) * 0.5;
+	gY = dataNorth - dataMid;
+	normSq = gX * gX + gY * gY;
+	g.north = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = dataMid - dataWest;
+	gY = ((dataNorthWest - dataSouthWest) * 0.5 + (dataNorth - dataSouth) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.west = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = dataEast - dataMid;
+	gY = ((dataNorth - dataSouth) * 0.5 + (dataNorthEast - dataSouthEast) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.east = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = ((dataNorth - dataSouth) * 0.5 + (dataSouthEast - dataSouthWest) * 0.5) * 0.5;
+	gY = dataMid - dataSouth;
+	normSq = gX * gX + gY * gY;
+	g.south = 1.0 / (1.0 + K_coeff * normSq);*/
+
+	// just central difference sigma
+	/*
+	gX = ((dataSigmaNorthEast - dataSigmaNorthWest) * 0.5 + (dataSigmaEast - dataSigmaWest) * 0.5) * 0.5;
+	gY = dataNorth - dataMid;
+	normSq = gX * gX + gY * gY;
+	g.north = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = dataMid - dataWest;
+	gY = ((dataSigmaNorthWest - dataSigmaSouthWest) * 0.5 + (dataSigmaNorth - dataSigmaSouth) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.west = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = dataEast - dataMid;
+	gY = ((dataSigmaNorth - dataSigmaSouth) * 0.5 + (dataSigmaNorthEast - dataSigmaSouthEast) * 0.5) * 0.5;
+	normSq = gX * gX + gY * gY;
+	g.east = 1.0 / (1.0 + K_coeff * normSq);
+
+	gX = ((dataSigmaNorth - dataSigmaSouth) * 0.5 + (dataSigmaSouthEast - dataSigmaSouthWest) * 0.5) * 0.5;
+	gY = dataMid - dataSouth;
+	normSq = gX * gX + gY * gY;
+	g.south = 1.0 / (1.0 + K_coeff * normSq);*/
+
+	return g;
 }
 
-void ImageProcessor::computeDataGrads(double* data, ImageParams* params, std::vector<WeightedGrads>* results, double K_coeff)
+EdgeDiffusionCoeffs ImageProcessor::getRegularizedEdgeGradients(double* dataNeighbors, double epsilon)
+{
+	EdgeDiffusionCoeffs g;
+
+	double dataNorthWest = dataNeighbors[0], dataNorth = dataNeighbors[1], dataNorthEast = dataNeighbors[2];
+	double dataWest = dataNeighbors[3], dataMid = dataNeighbors[4], dataEast = dataNeighbors[5];
+	double dataSouthWest = dataNeighbors[6], dataSouth = dataNeighbors[7], dataSouthEast = dataNeighbors[8];
+
+	double gX, gY;
+
+	gX = ((dataNorthEast - dataNorthWest) * 0.5 + (dataEast - dataWest) * 0.5) * 0.5;
+	gY = dataNorth - dataMid;
+	g.north = sqrt(gX * gX + gY * gY + epsilon);
+
+	gX = dataMid - dataWest;
+	gY = ((dataNorthWest - dataSouthWest) * 0.5 + (dataNorth - dataSouth) * 0.5) * 0.5;
+	g.west = sqrt(gX * gX + gY * gY + epsilon);
+
+	gX = dataEast - dataMid;
+	gY = ((dataNorth - dataSouth) * 0.5 + (dataNorthEast - dataSouthEast) * 0.5) * 0.5;
+	g.east = sqrt(gX * gX + gY * gY + epsilon);
+
+	gX = ((dataNorth - dataSouth) * 0.5 + (dataSouthEast - dataSouthWest) * 0.5) * 0.5;
+	gY = dataMid - dataSouth;
+	g.south = sqrt(gX * gX + gY * gY + epsilon);
+
+	return g;
+}
+
+void ImageProcessor::computeAllEdgeDiffusionCoeffs(double* uData, double* uSigmaData, ImageParams* params, std::vector<EdgeDiffusionCoeffs>* results, double K_coeff)
 {
 	int height = params->height;
 	int width = params->width;
 	int depth = params->depth;
 	int row = params->row;
 	double* dataNeighbors = new double[9];
+	double* smoothedDataNeighbors = new double[9];
 
 	int count = 0;
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
+	for (int y = 0; y < height - 2; y++) {
+		for (int x = 0; x < width - 2; x++) {
 			// current pixel:
 			int xPos = x + 1, yPos = y + 1;
 			// neighboring pixels:
@@ -1066,85 +1263,115 @@ void ImageProcessor::computeDataGrads(double* data, ImageParams* params, std::ve
 			int xEast = xPos + 1, yEast = yPos;
 			// ------
 			if (depth == 8) {
-				dataNeighbors[0] = data[yNorth * row + xWest]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xPos]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast]; // northeast
-				dataNeighbors[3] = data[yPos * row + xWest]; // west
-				dataNeighbors[4] = data[yPos * row + xPos]; // mid
-				dataNeighbors[5] = data[yPos * row + xEast]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xPos]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row);
 
-				results->at(count++) = getWeightedGradsAt(dataNeighbors, K_coeff);
+				results->at(count++) = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
 			}
 			else {
 				// ======== RED CHANNEL =======================================
-				dataNeighbors[0] = data[yNorth * row + xWest * 4]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xNorth * 4]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast * 4]; // northeast
-				dataNeighbors[3] = data[yWest * row + xWest * 4]; // west
-				dataNeighbors[4] = data[yPos * row + xPos * 4]; // mid
-				dataNeighbors[5] = data[yEast * row + xEast * 4]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest * 4]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xSouth * 4]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast * 4]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 0);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row, 0);
 
-				results->at(count++) = getWeightedGradsAt(dataNeighbors, K_coeff);
+				results->at(count++) = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
 
 				// ======== GREEN CHANNEL =======================================
-				dataNeighbors[0] = data[yNorth * row + xWest * 4 + 1]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xNorth * 4 + 1]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast * 4 + 1]; // northeast
-				dataNeighbors[3] = data[yWest * row + xWest * 4 + 1]; // west
-				dataNeighbors[4] = data[yPos * row + xPos * 4 + 1]; // mid
-				dataNeighbors[5] = data[yEast * row + xEast * 4 + 1]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest * 4 + 1]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xSouth * 4 + 1]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast * 4 + 1]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 1);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row, 1);
 
-				results->at(count++) = getWeightedGradsAt(dataNeighbors, K_coeff);
+				results->at(count++) = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
 
 				// ======== BLUE CHANNEL =======================================
-				dataNeighbors[0] = data[yNorth * row + xWest * 4 + 2]; // northwest
-				dataNeighbors[1] = data[yNorth * row + xNorth * 4 + 2]; // north
-				dataNeighbors[2] = data[yNorth * row + xEast * 4 + 2]; // northeast
-				dataNeighbors[3] = data[yWest * row + xWest * 4 + 2]; // west
-				dataNeighbors[4] = data[yPos * row + xPos * 4 + 2]; // mid
-				dataNeighbors[5] = data[yEast * row + xEast * 4 + 2]; // east
-				dataNeighbors[6] = data[ySouth * row + xWest * 4 + 2]; // southwest
-				dataNeighbors[7] = data[ySouth * row + xSouth * 4 + 2]; // south
-				dataNeighbors[8] = data[ySouth * row + xEast * 4 + 2]; // southeast
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 2);
+				getDataNeighbors(smoothedDataNeighbors, uSigmaData, xPos, yPos, row, 2);
 
-				results->at(count++) = getWeightedGradsAt(dataNeighbors, K_coeff);
+				results->at(count++) = getEdgeDiffusionWeights(dataNeighbors, smoothedDataNeighbors, K_coeff);
+			}
+		}
+	}
+	delete[] dataNeighbors; delete[] smoothedDataNeighbors;
+}
+
+void ImageProcessor::computeAllEdgeRegularizedGradientCoeffs(double* uData, ImageParams* params, std::vector<EdgeDiffusionCoeffs>* results, double epsilon)
+{
+	int height = params->height;
+	int width = params->width;
+	int depth = params->depth;
+	int row = params->row;
+	double* dataNeighbors = new double[9];
+
+	int count = 0;
+	for (int y = 0; y < height - 2; y++) {
+		for (int x = 0; x < width - 2; x++) {
+			// current pixel:
+			int xPos = x + 1, yPos = y + 1;
+			// neighboring pixels:
+			int xNorth = xPos, yNorth = y;
+			int xSouth = xPos, ySouth = yPos + 1;
+			int xWest = x, yWest = yPos;
+			int xEast = xPos + 1, yEast = yPos;
+			// ------
+			if (depth == 8) {
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row);
+
+				results->at(count++) = getRegularizedEdgeGradients(dataNeighbors, epsilon);
+			}
+			else {
+				// ======== RED CHANNEL =======================================
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 0);
+
+				results->at(count++) = getRegularizedEdgeGradients(dataNeighbors, epsilon);
+
+				// ======== GREEN CHANNEL =======================================
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 1);
+
+				results->at(count++) = getRegularizedEdgeGradients(dataNeighbors, epsilon);
+
+				// ======== BLUE CHANNEL =======================================
+				getDataNeighbors(dataNeighbors, uData, xPos, yPos, row, 2);
+
+				results->at(count++) = getRegularizedEdgeGradients(dataNeighbors, epsilon);
 			}
 		}
 	}
 	delete[] dataNeighbors;
 }
 
-double ImageProcessor::sumNeighborPixels(double dataNorth, double dataWest, double dataSouth, double dataEast, WeightedGrads* g)
+double ImageProcessor::sumNeighborPixels(
+	double dataNorth, double dataWest, double dataSouth, double dataEast, 
+	EdgeDiffusionCoeffs* g, EdgeDiffusionCoeffs* gradU)
 {
-	if (!g) return (dataNorth + dataWest + dataSouth + dataEast);
+	if (!g && !gradU) return (dataNorth + dataWest + dataSouth + dataEast);
+	if (g && !gradU) return (g->north * dataNorth + g->west * dataWest + g->south * dataSouth + g->east * dataEast);
+	if (!g && gradU) return (
+		(1.0 / gradU->north) * dataNorth + (1.0 / gradU->west) * dataWest +
+		(1.0 / gradU->south) * dataSouth + (1.0 / gradU->east) * dataEast
+	);
 
-	return (g->north * dataNorth + g->west * dataWest + g->south * dataSouth + g->east * dataEast);
+	return (
+		(g->north / gradU->north) * dataNorth + (g->west / gradU->west) * dataWest +
+		(g->south / gradU->south) * dataSouth + (g->east / gradU->east) * dataEast
+	);
 }
 
-void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* uData, double* rhsData, std::vector<WeightedGrads>* grads)
+void ImageProcessor::doSORIter(
+	ImageParams* imgPar, IterParams* itPar, double* uData, double* rhsData, 
+	std::vector<EdgeDiffusionCoeffs>* g, std::vector<EdgeDiffusionCoeffs>* gradU)
 {
 	int height = imgPar->height;
 	int width = imgPar->width;
 	int depth = imgPar->depth;
 	int row = imgPar->row;
 
-	int heightTotal = height + 2, widthTotal = width + 2;
-
 	double coeff = itPar->coeff, diagCoeff = itPar->diagCoeff, omega = itPar->omega;
-	bool useGradients = grads != nullptr;
+	bool useDiffusionCoeffs = g != nullptr;
+	bool useGradients = gradU != nullptr;
+
+	const int posMax = 5;
 
 	int count = 0;
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
+	for (int y = 0; y < height - 2; y++) {
+		for (int x = 0; x < width - 2; x++) {
 			// current pixel:
 			int xPos = x + 1, yPos = y + 1;
 			// neighboring pixels:
@@ -1155,17 +1382,41 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 
 			if (depth == 8) {
 				int pos = yPos * row + xPos;
-				
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(count).sum();
+		
+				// default : implicit heat equation
+				//
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();  
+				}
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
 				double sumNeighbors = coeff * sumNeighborPixels(
 					uData[yNorth * row + xNorth], uData[yWest * row + xWest],
-					uData[ySouth * row + xSouth], uData[yEast * row + xEast], (useGradients ? &grads->at(count) : nullptr));
-				count++;
+					uData[ySouth * row + xSouth], uData[yEast * row + xEast], 
+					(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr));
 
 				double val = (omega / diagCoeff) * (rhsData[pos] - sumNeighbors) + (1.0 - omega) * uData[pos];
+
+				/*
+				if (useGradients && ((x < posMax && y == 0) || (x > width - 3 - posMax && y == height - 3))) {
+					double coeffNorth = coeff * (useDiffusionCoeffs ? g->at(count).north : 1.0) / gradU->at(count).north;
+					double coeffWest = coeff * (useDiffusionCoeffs ? g->at(count).west : 1.0) / gradU->at(count).west;
+					double coeffEast = coeff * (useDiffusionCoeffs ? g->at(count).east : 1.0) / gradU->at(count).east;
+					double coeffSouth = coeff * (useDiffusionCoeffs ? g->at(count).south : 1.0) / gradU->at(count).south;
+					printf("diagCoeff = %lf, coeffNorth = %lf, coeffWest = %lf, coeffEast = %lf, coeffSouth = %lf\n", diagCoeff, coeffNorth, coeffWest, coeffEast, coeffSouth);
+				}*/
+
+				count++;
 				uData[pos] = val;
 			}
 			else {
@@ -1174,33 +1425,69 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 				int pos_blue = yPos * row + xPos * 4 + 2;
 
 				// ============= RED CHANNEL =======================================
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(count).sum();
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();
+				} 
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
 				double sumNeighbors_red = coeff * sumNeighborPixels(
 					uData[yNorth * row + xNorth * 4], uData[yWest * row + xWest * 4],
-					uData[ySouth * row + xSouth * 4], uData[yEast * row + xEast * 4], (useGradients ? &grads->at(count) : nullptr));
+					uData[ySouth * row + xSouth * 4], uData[yEast * row + xEast * 4], 
+					(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr));
 				count++;
 
 				// ============== GREEN CHANNEL ==================================
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(count).sum();
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();
+				}
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
 				double sumNeighbors_green = coeff * sumNeighborPixels(
 					uData[yNorth * row + xNorth * 4 + 1], uData[yWest * row + xWest * 4 + 1],
-					uData[ySouth * row + xSouth * 4 + 1], uData[yEast * row + xEast * 4 + 1], (useGradients ? &grads->at(count) : nullptr));
+					uData[ySouth * row + xSouth * 4 + 1], uData[yEast * row + xEast * 4 + 1], 
+					(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr));
 				count++;
 
 				// ============= BLUE CHANNEL =====================================
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(count).sum();
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();
+				}
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
 				double sumNeighbors_blue = coeff * sumNeighborPixels(
 					uData[yNorth * row + xNorth * 4 + 2], uData[yWest * row + xWest * 4 + 2],
-					uData[ySouth * row + xSouth * 4 + 2], uData[yEast * row + xEast * 4 + 2], (useGradients ? &grads->at(count) : nullptr));
+					uData[ySouth * row + xSouth * 4 + 2], uData[yEast * row + xEast * 4 + 2], 
+					(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr));
 				count++;
 
 				double val_red = (omega / diagCoeff) * (rhsData[pos_red] - sumNeighbors_red) + (1.0 - omega) * uData[pos_red];
@@ -1221,12 +1508,12 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 		}
 	}
 
-	// copy extended
+	// copy extended & compute mean
 	double mean = 0.0, mean_red = 0.0, mean_green = 0.0, mean_blue = 0.0;
-	for (int y = 0; y < heightTotal; y++) {
-		for (int x = 0; x < widthTotal; x++) {
-			int xPos = (x == 0 ? 1 : (x == widthTotal - 1 ? width : x));
-			int yPos = (y == 0 ? 1 : (y == heightTotal - 1 ? height : y));
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			int xPos = (x == 0 ? 1 : (x == width - 1 ? width - 2 : x));
+			int yPos = (y == 0 ? 1 : (y == height - 1 ? height - 2 : y));
 
 			if (depth == 8) {
 				uData[y * row + x] = uData[yPos * row + xPos];
@@ -1241,21 +1528,22 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 		}
 	}
 	if (itPar->printMean && depth == 8) {
-		mean /= (widthTotal * heightTotal);
+		mean /= (width * height);
 		printf("u_mean = %lf, ", mean);
 	}
 	else if (itPar->printMean) {
-		mean_red /= (widthTotal * heightTotal);
-		mean_green /= (widthTotal * heightTotal);
-		mean_blue /= (widthTotal * heightTotal);
+		mean_red /= (width * height);
+		mean_green /= (width * height);
+		mean_blue /= (width * height);
 		printf("u_mean(RGB) = (%lf, %lf, %lf),", mean_red, mean_green, mean_blue);
 	}
 
 	// compute residuum
 	if (depth == 8) {
 		itPar->res = 0.0;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		count = 0;
+		for (int y = 0; y < height - 2; y++) {
+			for (int x = 0; x < width - 2; x++) {
 				// current pixel:
 				int xPos = x + 1, yPos = y + 1;
 				int pos = yPos * row + xPos;
@@ -1265,17 +1553,46 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 				int xWest = x, yWest = yPos;
 				int xEast = xPos + 1, yEast = yPos;
 
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(y * width + x).sum();
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();
+				}
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
+				/*
+				if (x == 0 && y == 0) printf("res:\n");
+				if (useGradients && ((x < posMax && y == 0) || (x > width - 3 - posMax && y == height - 3))) {
+					double coeffNorth = coeff * (useDiffusionCoeffs ? g->at(count).north : 1.0) / gradU->at(count).north;
+					double coeffWest = coeff * (useDiffusionCoeffs ? g->at(count).west : 1.0) / gradU->at(count).west;
+					double coeffEast = coeff * (useDiffusionCoeffs ? g->at(count).east : 1.0) / gradU->at(count).east;
+					double coeffSouth = coeff * (useDiffusionCoeffs ? g->at(count).south : 1.0) / gradU->at(count).south;
+					printf("diagCoeff = %lf, coeffNorth = %lf, coeffWest = %lf, coeffEast = %lf, coeffSouth = %lf\n", diagCoeff, coeffNorth, coeffWest, coeffEast, coeffSouth);
+				}*/
+
 				// (A * u - b)_i
+				/* double uCurrent = uData[pos];
+				double rhsCurrent = rhsData[pos];
+				double neighborSum = sumNeighborPixels(
+					uData[yNorth * row + xNorth], uData[yWest * row + xWest],
+					uData[ySouth * row + xSouth], uData[yEast * row + xEast],
+					(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr)); */
 				double sum = diagCoeff * uData[pos] +
 					coeff * sumNeighborPixels(
 						uData[yNorth * row + xNorth], uData[yWest * row + xWest], 
-						uData[ySouth * row + xSouth], uData[yEast * row + xEast], (useGradients ? &grads->at(y * width + x) : nullptr)) -
+						uData[ySouth * row + xSouth], uData[yEast * row + xEast], 
+						(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr)) -
 					rhsData[pos];
 				itPar->res += sum * sum;
+				count++;
 			}
 		}
 		// not counting extended pixels, since they do not change
@@ -1285,8 +1602,8 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 	else {
 		double res_red = 0.0, res_green = 0.0, res_blue = 0.0;
 		count = 0;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height - 2; y++) {
+			for (int x = 0; x < width - 2; x++) {
 				// current pixel:
 				int xPos = x + 1, yPos = y + 1;
 				int pos_red = yPos * row + xPos * 4;
@@ -1299,39 +1616,75 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 				int xEast = xPos + 1, yEast = yPos;
 
 				// ============= RED CHANNEL =======================================
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(count).sum();
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();
+				}
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
 				// (A * u - b)_i
 				double sum_red = diagCoeff * uData[pos_red] +
 					coeff * sumNeighborPixels(
 						uData[yNorth * row + xNorth * 4], uData[yWest * row + xWest * 4],
-						uData[ySouth * row + xSouth * 4], uData[yEast * row + xEast * 4], (useGradients ? &grads->at(count) : nullptr)) -
+						uData[ySouth * row + xSouth * 4], uData[yEast * row + xEast * 4], 
+						(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr)) -
 					rhsData[pos_red];
 				count++;
 
 				// ============== GREEN CHANNEL ==================================
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(count).sum();
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();
+				}
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
 				double sum_green = diagCoeff * uData[pos_green] +
 					coeff * sumNeighborPixels(
 						uData[yNorth * row + xNorth * 4 + 1], uData[yWest * row + xWest * 4 + 1],
-						uData[ySouth * row + xSouth * 4 + 1], uData[yEast * row + xEast * 4 + 1], (useGradients ? &grads->at(count) : nullptr)) -
+						uData[ySouth * row + xSouth * 4 + 1], uData[yEast * row + xEast * 4 + 1], 
+						(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr)) -
 					rhsData[pos_green];
 				count++;
 
 				// ============= BLUE CHANNEL =====================================
-				if (useGradients) {
-					diagCoeff = 1.0 + itPar->tau * grads->at(count).sum();
+				if (useDiffusionCoeffs && !useGradients) {
+					// semi-implicit Perona Malik
+					diagCoeff = 1.0 + itPar->tau * g->at(count).sum();
+				}
+				else if (useGradients && !useDiffusionCoeffs) {
+					// semi-implicit MCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumInv();
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
+				}
+				else if (useGradients && useDiffusionCoeffs) {
+					// semi-implicit GMCF
+					diagCoeff = 1.0 + itPar->tau * (0.25 * gradU->at(count).sum()) * gradU->at(count).sumGInv(&g->at(count));
+					coeff = -itPar->tau * (0.25 * gradU->at(count).sum());
 				}
 
 				double sum_blue = diagCoeff * uData[pos_blue] +
 					coeff * sumNeighborPixels(
 						uData[yNorth * row + xNorth * 4 + 2], uData[yWest * row + xWest * 4 + 2],
-						uData[ySouth * row + xSouth * 4 + 2], uData[yEast * row + xEast * 4 + 2], (useGradients ? &grads->at(count) : nullptr)) -
+						uData[ySouth * row + xSouth * 4 + 2], uData[yEast * row + xEast * 4 + 2],
+						(useDiffusionCoeffs ? &g->at(count) : nullptr), (useGradients ? &gradU->at(count) : nullptr)) -
 					rhsData[pos_blue];
 				count++;
 
@@ -1350,6 +1703,27 @@ void ImageProcessor::doSORIter(ImageParams* imgPar, IterParams* itPar, double* u
 	}
 }
 
+void ImageProcessor::getDataNeighbors(double* dataNeighbors, double* data, int xPos, int yPos, int row, int channel)
+{
+	int xNorth = xPos, yNorth = yPos - 1;
+	int xSouth = xPos, ySouth = yPos + 1;
+	int xWest = xPos - 1, yWest = yPos;
+	int xEast = xPos + 1, yEast = yPos;
+
+	int stride = (channel >= 0 ? 4 : 1);
+	channel = (channel >= 0 ? channel : 0);
+
+	dataNeighbors[0] = data[yNorth * row + xWest * stride + channel]; // northwest
+	dataNeighbors[1] = data[yNorth * row + xPos * stride + channel]; // north
+	dataNeighbors[2] = data[yNorth * row + xEast * stride + channel]; // northeast
+	dataNeighbors[3] = data[yPos * row + xWest * stride + channel]; // west
+	dataNeighbors[4] = data[yPos * row + xPos * stride + channel]; // mid
+	dataNeighbors[5] = data[yPos * row + xEast * stride + channel]; // east
+	dataNeighbors[6] = data[ySouth * row + xWest * stride + channel]; // southwest
+	dataNeighbors[7] = data[ySouth * row + xPos * stride + channel]; // south
+	dataNeighbors[8] = data[ySouth * row + xEast * stride + channel]; // southeast
+}
+
 void ImageProcessor::clearMasks()
 {
 	if (W) {
@@ -1364,16 +1738,11 @@ void ImageProcessor::clearMasks()
 	}
 }
 
-ImageParams::ImageParams(int height, int width, int depth, int row)
-{
-	this->height = height; this->width = width; this->depth = depth; this->row = row;
-}
-
 IterParams::IterParams(
 	double tau, double diagCoeff, double coeff, double omega, 
-	bool printMean, bool printIter, double K_coeff)
+	bool printMean, bool printIter, double K_coeff, int printStep)
 {
 	this->tau = tau; this->diagCoeff = diagCoeff; this->coeff = coeff; this->omega = omega;
 	this->printMean = printMean; this->printIter = printIter;
-	this->K_coeff = K_coeff;
+	this->K_coeff = K_coeff; this->printStep = printStep;
 }

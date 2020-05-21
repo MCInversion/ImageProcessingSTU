@@ -1,6 +1,19 @@
 #pragma once
 #include <QtWidgets>
 
+struct ImageParams
+{
+	int height, width;
+	int depth, row;
+	QImage::Format format;
+	int dataSize;
+
+	ImageParams(int height, int width, int depth, int row, QImage::Format format, int dataSize) {
+		this->height = height; this->width = width; this->depth = depth; 
+		this->row = row; this->format = format; this->dataSize = dataSize;
+	};
+};
+
 class ViewerWidget : public QWidget {
 	Q_OBJECT
 
@@ -15,6 +28,7 @@ public:
 	void setPixel(QImage * img, int x, int y, uchar val);
 	void setPixel(QImage * img, int x, int y, double val);
 	void setPixel(QImage * img, int x, int y, double valR, double valG, double valB, const double valA = 1.);
+	ImageParams getImageParams();
 
 	// Multi-image functions
 	void allocateImages(int n);
