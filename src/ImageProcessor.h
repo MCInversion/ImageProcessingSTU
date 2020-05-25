@@ -59,6 +59,7 @@ public slots:
 	void heatEquationAccepted();
 	void peronaMalikAccepted();
 	void curvatureFlowAccepted();
+	void subsurfAccepted();
 
 	//Histogram slots
 	void on_stretch();
@@ -77,6 +78,7 @@ private:
 	// Image functions
 	bool mirrorExtendImageBy(int nPixels);
 	void writeDataToImageAndUpdate(double* uData, ImageParams* params, int i);
+	void writeScalarDataToImageAndUpdate(double* sData, ImageParams* params, int i);
 
 	// Mask image functions
 	uchar kernelSumGS(uchar* img, int row, int x, int y, int r);
@@ -112,10 +114,12 @@ private:
 	);
 	// ------------------------------
 
+	// --- Kernel ops -----------------
 	void getGaussianKernel(int radius, bool print = false);
 	void getAveragingKernel(int radius, bool print = false);
 	void getCircularKernel(int radius, bool print = false);
-
+	// --------------------------------
+	// ------ Edge detector ops -------
 	EdgeDiffusionCoeffs getEdgeDiffusionWeights(double* dataNeighbors, double* smoothedDataNeighbors, double K_coeff);
 	EdgeDiffusionCoeffs getRegularizedEdgeGradients(double* dataNeighbors, double epsilon);
 	void computeAllEdgeDiffusionCoeffs(double* uData, double* uSigmaData, ImageParams* params, std::vector<EdgeDiffusionCoeffs>* results, double K_coeff);
@@ -124,11 +128,17 @@ private:
 		double dataNorth, double dataWest, double dataSouth, double dataEast, 
 		EdgeDiffusionCoeffs* g = nullptr, EdgeDiffusionCoeffs* gradU = nullptr
 	);
+	// --------------------------------
+
+	// ---- Linear solve --------------
 	void doSORIter(
 		ImageParams* imgPar, IterParams* itPar, double* uData, double* rhsData, 
 		std::vector<EdgeDiffusionCoeffs>* g = nullptr, std::vector<EdgeDiffusionCoeffs>* gradU = nullptr
 	);
-
+	// --------------------------------
+	// -------- Eikonal ---------------
+	void setZeroLevelCurveFromIsoData(double* isoData, double* distGrid, bool* frozenCells, ImageParams* imgPar);
+	void fastSweep2D(double* distGrid, bool* frozenCells, ImageParams* imgPar);
 
 	void getDataNeighbors(double* dataNeighbors, double* uData, int xPos, int yPos, int row, int channel = -1);
 

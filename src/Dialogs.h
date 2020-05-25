@@ -12,6 +12,7 @@
 #include "../build/ui_NewImgDialog.h"
 #include "../build/ui_PeronaMalikDialog.h"
 #include "../build/ui_CurvatureFilterDialog.h"
+#include "../build/ui_SegmentDialog.h"
 
 class BernsenThresholdDialog : public QDialog
 {
@@ -167,6 +168,25 @@ public:
 	double getEpsilon() { return pow(1.0, -1.0 * curvatureFilterDialogUi->epsilonSpinBox->value()); }
 private:
 	Ui::curvatureFilterDialog* curvatureFilterDialogUi;
+};
+
+
+class SegmentDialog : public QDialog
+{
+	Q_OBJECT
+public:
+	SegmentDialog(QWidget* parent = Q_NULLPTR) : QDialog(parent), segmentDialogUi(new Ui::segmentDialog)
+	{
+		segmentDialogUi->setupUi(this);
+	};
+	int getUMin() { return segmentDialogUi->uMinSpinBox->value(); }
+	int getUMax() { return segmentDialogUi->uMaxSpinBox->value(); }
+	int getNSteps() { return segmentDialogUi->nStepsSpinBox->value(); }
+	double getTimeStep() { return segmentDialogUi->timeStepSpinBox->value(); }
+	double getKCoeff() { return segmentDialogUi->diffParamSpinBox->value(); }
+	double getEpsilon() { return pow(1.0, -1.0 * segmentDialogUi->epsilonSpinBox->value()); }
+private:
+	Ui::segmentDialog* segmentDialogUi;
 };
 
 #endif

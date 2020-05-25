@@ -54,6 +54,9 @@
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_PeronaMalikDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\VS_Projects\ImageViewerIP\build\ui_SegmentDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\VS_Projects\ImageViewerIP\src\Dialogs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -81,6 +84,7 @@
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\MultiBlurDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\NewImgDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\PeronaMalikDialog.ui" />
+    <CustomBuild Include="D:\VS_Projects\ImageViewerIP\src\SegmentDialog.ui" />
     <CustomBuild Include="D:\VS_Projects\ImageViewerIP\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>

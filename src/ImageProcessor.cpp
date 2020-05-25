@@ -277,6 +277,69 @@ void ImageProcessor::curvatureFlowAccepted()
 	emit multiImageComplete();
 }
 
+void ImageProcessor::subsurfAccepted()
+{
+	SegmentDialog* sDialog = static_cast<SegmentDialog*>(sender());
+	double uMin = sDialog->getUMin(), uMax = sDialog->getUMax();
+	double timeStep = sDialog->getTimeStep();
+	double K_coeff = sDialog->getKCoeff();
+	double epsilon = sDialog->getEpsilon();
+	nSteps = 2; // sDialog->getNSteps();
+
+	bool addThresholdedToList = true;
+	bool addDistanceFunctionToList = true;
+
+	// time step array prep:
+	_view_w->clearImages();
+	_view_w->allocateImages(/*nSteps +*/ 1 + (int)addThresholdedToList + (int)addDistanceFunctionToList);
+	QImage img = QImage(*_view_w->getImage());
+	_view_w->setImageAt(img, 0);
+
+	// isoData
+	HistogramWindow* hist = new HistogramWindow();
+	hist->setImage(_view_w->getImage());
+	connect(hist, SIGNAL(sigGrayscale()), this, SLOT(on_histogramGrayscale()));
+	connect(this, SIGNAL(sigGrayscaled()), hist, SLOT(ActionIsodataCompute()));
+	connect(hist, SIGNAL(sigThreshold()), this, SLOT(on_singleThreshold()));
+	hist->ActionIsodata();
+	QImage thresholdImg = QImage(*_view_w->getImage());
+	_view_w->setImageAt(thresholdImg, 1);
+
+	// prepare data
+	QImage extended = QImage(thresholdImg);
+	_view_w->setImage(extended);
+	mirrorExtendImageBy(1);
+	ImageParams params = _view_w->getImageParams();
+	const int dataSize = params.dataSize;
+	uchar* data = _view_w->getData();
+	double* uData = new double[dataSize]; // raw img data for each step
+	double* distData = new double[dataSize]; // SDF data
+	bool* frozenCells = new bool[dataSize]; // SDF cell status
+	double* rhsData = new double[dataSize];
+	for (int i = 0; i < dataSize; i++) {
+		uData[i] = (double)data[i];
+		distData[i] = DBL_MAX; // large val for fastSweep2D
+		frozenCells[i] = false;
+		rhsData[i] = uData[i];
+	}
+
+	setZeroLevelCurveFromIsoData(uData, distData, frozenCells, &params);
+	fastSweep2D(distData, frozenCells, &params);
+	writeScalarDataToImageAndUpdate(distData, &params, 2);
+
+	/*
+	for (int i = 3; i <= 3 + nSteps; i++) {
+		writeDataToImageAndUpdate(uData, &params, i);
+	}*/
+
+	delete[] rhsData;
+	delete[] distData;
+	delete[] frozenCells;
+	delete[] uData;
+
+	emit multiImageComplete();
+}
+
 // update viewer image after histogram stretch
 void ImageProcessor::on_stretch()
 {
@@ -480,6 +543,39 @@ void ImageProcessor::writeDataToImageAndUpdate(double* uData, ImageParams* param
 					uData[yPos * params->row + 4 * xPos + 2] / 255.
 				);
 			}
+		}
+	}
+	_view_w->setImageAt(newImg, i);
+	_view_w->setImage(newImg);
+	_view_w->update();
+}
+
+void ImageProcessor::writeScalarDataToImageAndUpdate(double* sData, ImageParams* params, int i)
+{
+	if (params->depth > 8) {
+		printf("Error, attempting to write scalar data to multi-channel image!\n");
+		return;
+	}
+
+	QImage newImg = QImage(QSize(params->width - 2, params->height - 2), params->format);
+	newImg.fill(QColor(0, 0, 0));
+
+	double minVal = 256.0, maxVal = -1.0;
+	for (int y = 0; y < params->height - 2; y++) {
+		for (int x = 0; x < params->width - 2; x++) {
+			// current pixel:
+			int xPos = x + 1, yPos = y + 1;
+			minVal = (sData[yPos * params->row + xPos] < minVal ? sData[yPos * params->row + xPos] : minVal);
+			maxVal = (sData[yPos * params->row + xPos] > maxVal ? sData[yPos * params->row + xPos] : maxVal);
+		}
+	}
+	double dataRange = maxVal - minVal;
+
+	for (int y = 0; y < params->height - 2; y++) {
+		for (int x = 0; x < params->width - 2; x++) {
+			// current pixel:
+			int xPos = x + 1, yPos = y + 1;
+			_view_w->setPixel(&newImg, x, y, sData[yPos * params->row + xPos] / dataRange);
 		}
 	}
 	_view_w->setImageAt(newImg, i);
@@ -1700,6 +1796,113 @@ void ImageProcessor::doSORIter(
 
 		printf("res(RGB) = (%lf, %lf, %lf)\n", res_red, res_green, res_blue);
 		itPar->res = std::max(res_red, std::max(res_green, res_blue)); // use the largest res for iter control
+	}
+}
+
+void ImageProcessor::setZeroLevelCurveFromIsoData(double* isoData, double* distGrid, bool* frozenCells, ImageParams* imgPar)
+{
+	const int height = imgPar->height, width = imgPar->width;
+	const int row = imgPar->row;
+	double* dataNeighbors = new double[9];
+
+	for (int y = 0; y < height - 2; y++) {
+		for (int x = 0; x < width - 2; x++) {
+			int xPos = x + 1, yPos = y + 1;
+			getDataNeighbors(dataNeighbors, isoData, xPos, yPos, row);
+			
+			// first boundary test
+			double neighborMean = 0.0;
+			for (int i = 0; i < 9; i++) neighborMean += dataNeighbors[i];
+			neighborMean /= 9.;
+
+			if (fabs(neighborMean) < DBL_EPSILON || fabs(neighborMean - 255.0) < DBL_EPSILON) {
+				continue; // not a boundary cell
+			}
+
+			frozenCells[yPos * row + xPos] = true; // processed means frozen
+
+			// second boundary tests (cell edges and corners)
+			double isoDataMid = dataNeighbors[4];
+			bool edgeCells = (
+				fabs(isoDataMid - dataNeighbors[1]) > DBL_EPSILON ||
+				fabs(isoDataMid - dataNeighbors[3]) > DBL_EPSILON ||
+				fabs(isoDataMid - dataNeighbors[5]) > DBL_EPSILON ||
+				fabs(isoDataMid - dataNeighbors[7]) > DBL_EPSILON
+			);
+			bool cornerCells = (
+				fabs(isoDataMid - dataNeighbors[0]) > DBL_EPSILON ||
+				fabs(isoDataMid - dataNeighbors[2]) > DBL_EPSILON ||
+				fabs(isoDataMid - dataNeighbors[6]) > DBL_EPSILON ||
+				fabs(isoDataMid - dataNeighbors[8]) > DBL_EPSILON 
+			);
+
+			if (cornerCells && !edgeCells) {
+				distGrid[yPos * row + xPos] = M_SQRT2 / 2.0; // distance from cell centroid to corner
+			}
+			else {
+				distGrid[yPos * row + xPos] = 0.5; // distance from cell centroid to edge
+			}
+		}
+	}
+
+	delete[] dataNeighbors;
+}
+
+void ImageProcessor::fastSweep2D(double* distGrid, bool* frozenCells, ImageParams* imgPar)
+{
+	const int height = imgPar->height, width = imgPar->width;
+	const int row = imgPar->row;
+
+	const int NSweeps = 4;
+	// sweep directions { start, end, step }
+	const int dirX[NSweeps][3] = { {0, width - 1, 1} , {width - 1, 0, -1}, {width - 1, 0, -1}, {0, width - 1, 1} };
+	const int dirY[NSweeps][3] = { {0, height - 1, 1}, {0, height - 1, 1}, {height - 1, 0, -1}, {height - 1, 0, -1} };
+	double aa[2], tmp, eps = 1e-6;
+	double d_curr, d_new, a, b, c, D;
+	int s, ix, iy, gridPos;
+	const double h = 1.0, f = 1.0;
+
+	for (s = 0; s < NSweeps; s++) {
+		printf("sweep %d ... \n", s);
+		for (iy = dirY[s][0]; dirY[s][2] * iy <= dirY[s][1]; iy += dirY[s][2]) {
+			for (ix = dirX[s][0]; dirX[s][2] * ix <= dirX[s][1]; ix += dirX[s][2]) {
+
+				gridPos = iy * row + ix;
+
+				if (!frozenCells[gridPos]) {
+
+					// === neighboring cells (Upwind Godunov) ===
+					if (iy == 0 || iy == (height - 1)) {
+						if (iy == 0) {
+							aa[1] = distGrid[gridPos] < distGrid[(iy + 1) * row + ix] ? distGrid[gridPos] : distGrid[(iy + 1) * row + ix];
+						}
+						if (iy == (height - 1)) {
+							aa[1] = distGrid[(iy - 1) * row + ix] < distGrid[gridPos] ? distGrid[(iy - 1) * row + ix] : distGrid[gridPos];
+						}
+					}
+					else {
+						aa[1] = distGrid[(iy - 1) * row + ix] < distGrid[(iy + 1) * row + ix] ? distGrid[(iy - 1) * row + ix] : distGrid[(iy + 1) * row + ix];
+					}
+
+					if (ix == 0 || ix == (width - 1)) {
+						if (ix == 0) {
+							aa[0] = distGrid[gridPos] < distGrid[iy * row + (ix + 1)] ? distGrid[gridPos] : distGrid[iy * row + (ix + 1)];
+						}
+						if (ix == (width - 1)) {
+							aa[0] = distGrid[iy * row + (ix - 1)] < distGrid[gridPos] ? distGrid[iy * row + (ix - 1)] : distGrid[gridPos];
+						}
+					}
+					else {
+						aa[0] = distGrid[iy * row + (ix - 1)] < distGrid[iy * row + (ix + 1)] ? distGrid[iy * row + (ix - 1)] : distGrid[iy * row + (ix + 1)];
+					}
+
+					a = aa[0]; b = aa[1];
+					d_new = (fabs(a - b) < f * h ? (a + b + sqrt(2.0 * f * f * h * h - (a - b) * (a - b))) * 0.5 : std::fminf(a, b) + f * h);
+
+					distGrid[gridPos] = distGrid[gridPos] < d_new ? distGrid[gridPos] : d_new;
+				}
+			}
+		}
 	}
 }
 

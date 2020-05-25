@@ -505,3 +505,19 @@ void ImageViewer::on_actionCurvature_Filter_triggered()
 	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
 	cfDialog->exec();
 }
+
+void ImageViewer::on_actionSegment_simple_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	SegmentDialog* sDialog = new SegmentDialog(this);
+	connect(sDialog, SIGNAL(accepted()), ip, SLOT(subsurfAccepted()));
+	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
+	sDialog->exec();
+}

@@ -568,6 +568,12 @@ int HistogramWindow::getIsodataThresholdRED()
 	if (!_cumulativeComputed) getCumulativeSums();
 
 	int threshold = pixelMeanRED(0, 255);
+
+	if (threshold == 0 || threshold == 255) {
+		// simple mid
+		return std::round((double)threshold / 2);
+	}
+
 	int prevThreshold, iter = 0, maxIter = 256;
 
 	while (iter < maxIter) {
