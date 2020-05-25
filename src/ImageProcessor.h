@@ -7,6 +7,9 @@
 #include <QtCore/QObject>
 #include <vector>
 #include <fstream>
+#include <stack>
+#include <fstream>
+#include <algorithm>
 #include "ViewerWidget.h"
 #include "Dialogs.h"
 #include "HistogramWindow.h"
@@ -55,10 +58,16 @@ public slots:
 	void mirrorExtendAccepted();
 	void blurAccepted();
 	void bernsenThresholdAccepted();
+
 	void multiBlurAccepted();
 	void heatEquationAccepted();
+
 	void peronaMalikAccepted();
+
 	void curvatureFlowAccepted();
+
+	void threshDistanceAccepted();
+	void threshSignedDistanceAccepted();
 	void subsurfAccepted();
 
 	//Histogram slots
@@ -78,7 +87,8 @@ private:
 	// Image functions
 	bool mirrorExtendImageBy(int nPixels);
 	void writeDataToImageAndUpdate(double* uData, ImageParams* params, int i);
-	void writeScalarDataToImageAndUpdate(double* sData, ImageParams* params, int i);
+	void writeDistanceDataToImageAndUpdate(double* dData, bool* frozenCells, ImageParams* params, int i, bool drawContour = true);
+	void writeScalarDataToImageAndUpdate(double* data, double dataMin, double dataMax, ImageParams* params, int i);
 
 	// Mask image functions
 	uchar kernelSumGS(uchar* img, int row, int x, int y, int r);
@@ -90,7 +100,7 @@ private:
 	bool bernsenThreshold(int radius, int minContrast, int bgType);
 	// --- Filtration operations ------
 	bool explicitHeatEquation(
-		double timeStep, double* uData, ImageParams* params
+		double timeStep, double* uData, ImageParams* params, bool printMean = true
 	);
 	bool implicitHeatEquation(
 		double timeStep, double* uData, double* rhsData,
@@ -139,6 +149,9 @@ private:
 	// -------- Eikonal ---------------
 	void setZeroLevelCurveFromIsoData(double* isoData, double* distGrid, bool* frozenCells, ImageParams* imgPar);
 	void fastSweep2D(double* distGrid, bool* frozenCells, ImageParams* imgPar);
+	void negateData(double* data, ImageParams* imgPar);
+	void computeSignFloodFill(double* distGrid, bool* frozenCells, ImageParams* imgPar);
+	void computeSignFromIsoData(double* distGrid, uchar* isoData, ImageParams* imgPar);
 
 	void getDataNeighbors(double* dataNeighbors, double* uData, int xPos, int yPos, int row, int channel = -1);
 

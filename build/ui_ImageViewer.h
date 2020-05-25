@@ -49,6 +49,8 @@ public:
     QAction *actionPerona_Malik;
     QAction *actionCurvature_Filter;
     QAction *actionSegment_simple;
+    QAction *actionDistance_To_Threshold_test;
+    QAction *actionSigned_Dist_To_Threshold_test;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QTabWidget *tabWidget;
@@ -110,6 +112,10 @@ public:
         actionCurvature_Filter->setObjectName(QString::fromUtf8("actionCurvature_Filter"));
         actionSegment_simple = new QAction(ImageViewerClass);
         actionSegment_simple->setObjectName(QString::fromUtf8("actionSegment_simple"));
+        actionDistance_To_Threshold_test = new QAction(ImageViewerClass);
+        actionDistance_To_Threshold_test->setObjectName(QString::fromUtf8("actionDistance_To_Threshold_test"));
+        actionSigned_Dist_To_Threshold_test = new QAction(ImageViewerClass);
+        actionSigned_Dist_To_Threshold_test->setObjectName(QString::fromUtf8("actionSigned_Dist_To_Threshold_test"));
         centralWidget = new QWidget(ImageViewerClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -192,6 +198,9 @@ public:
         menuImage->addAction(actionPerona_Malik);
         menuImage->addAction(actionCurvature_Filter);
         menuImage->addAction(actionSegment_simple);
+        menuImage->addSeparator();
+        menuImage->addAction(actionDistance_To_Threshold_test);
+        menuImage->addAction(actionSigned_Dist_To_Threshold_test);
         menuTools->addAction(actionHistogram);
         menuEdit->addAction(actionUndo);
         menuEdit->addAction(actionRedo);
@@ -224,6 +233,8 @@ public:
         actionPerona_Malik->setText(QCoreApplication::translate("ImageViewerClass", "Perona-Malik", nullptr));
         actionCurvature_Filter->setText(QCoreApplication::translate("ImageViewerClass", "Curvature Filter", nullptr));
         actionSegment_simple->setText(QCoreApplication::translate("ImageViewerClass", "Segment (simple)", nullptr));
+        actionDistance_To_Threshold_test->setText(QCoreApplication::translate("ImageViewerClass", "Distance To Threshold (test)", nullptr));
+        actionSigned_Dist_To_Threshold_test->setText(QCoreApplication::translate("ImageViewerClass", "Signed Dist To Threshold (test)", nullptr));
         timeLabel->setText(QCoreApplication::translate("ImageViewerClass", "t = 0", nullptr));
         menuFile->setTitle(QCoreApplication::translate("ImageViewerClass", "File", nullptr));
         menuImage->setTitle(QCoreApplication::translate("ImageViewerClass", "Image", nullptr));

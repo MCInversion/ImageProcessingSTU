@@ -87,4 +87,9 @@ private slots:
 	void on_actionPerona_Malik_triggered();
 	void on_actionCurvature_Filter_triggered();
 	void on_actionSegment_simple_triggered();
+
+	void on_actionDistance_To_Threshold_test_triggered();
+	void on_actionSigned_Dist_To_Threshold_test_triggered();
+signals:
+	void computeThreshDist();
 };

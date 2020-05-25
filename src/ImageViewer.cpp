@@ -521,3 +521,35 @@ void ImageViewer::on_actionSegment_simple_triggered()
 	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
 	sDialog->exec();
 }
+
+void ImageViewer::on_actionDistance_To_Threshold_test_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	connect(this, SIGNAL(computeThreshDist()), ip, SLOT(threshDistanceAccepted()));
+	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
+
+	emit computeThreshDist();
+}
+
+void ImageViewer::on_actionSigned_Dist_To_Threshold_test_triggered()
+{
+	if (!isImgOpened()) {
+		msgBox.setText("No image is opened.");
+		msgBox.setIcon(QMessageBox::Information);
+		msgBox.exec();
+		return;
+	}
+
+	ImageProcessor* ip = new ImageProcessor(getCurrentViewerWidget());
+	connect(this, SIGNAL(computeThreshDist()), ip, SLOT(threshSignedDistanceAccepted()));
+	connect(ip, SIGNAL(multiImageComplete()), this, SLOT(on_multiBlurControls()));
+
+	emit computeThreshDist();
+}

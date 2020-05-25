@@ -100,6 +100,9 @@
     <addaction name="actionPerona_Malik"/>
     <addaction name="actionCurvature_Filter"/>
     <addaction name="actionSegment_simple"/>
+    <addaction name="separator"/>
+    <addaction name="actionDistance_To_Threshold_test"/>
+    <addaction name="actionSigned_Dist_To_Threshold_test"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -230,6 +233,16 @@
   <action name="actionSegment_simple">
    <property name="text">
     <string>Segment (simple)</string>
+   </property>
+  </action>
+  <action name="actionDistance_To_Threshold_test">
+   <property name="text">
+    <string>Distance To Threshold (test)</string>
+   </property>
+  </action>
+  <action name="actionSigned_Dist_To_Threshold_test">
+   <property name="text">
+    <string>Signed Dist To Threshold (test)</string>
    </property>
   </action>
  </widget>

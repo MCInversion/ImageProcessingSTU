@@ -235,11 +235,12 @@ void ImageProcessor::curvatureFlowAccepted()
 		uSigmaData[i] = uData[i];
 		rhsData[i] = uData[i];
 	}
+	
+	size_t nGs = (params.width - 2) * (params.height - 2) * (params.depth == 8 ? 1 : 3);
 
 	for (int i = 1; i <= nSteps; i++) {
 		printf("<=== %s Mean Curvature Flow step %d...\n", (scheme > 0 ? "Geodesic" : ""), i);
-
-		size_t nGs = (params.width - 2) * (params.height - 2) * (params.depth == 8 ? 1 : 3);
+		
 		if (scheme == 0) {
 			printf("... MCF step: \n");
 
@@ -277,21 +278,12 @@ void ImageProcessor::curvatureFlowAccepted()
 	emit multiImageComplete();
 }
 
-void ImageProcessor::subsurfAccepted()
+void ImageProcessor::threshDistanceAccepted()
 {
-	SegmentDialog* sDialog = static_cast<SegmentDialog*>(sender());
-	double uMin = sDialog->getUMin(), uMax = sDialog->getUMax();
-	double timeStep = sDialog->getTimeStep();
-	double K_coeff = sDialog->getKCoeff();
-	double epsilon = sDialog->getEpsilon();
-	nSteps = 2; // sDialog->getNSteps();
-
-	bool addThresholdedToList = true;
-	bool addDistanceFunctionToList = true;
-
 	// time step array prep:
+	nSteps = 2;
 	_view_w->clearImages();
-	_view_w->allocateImages(/*nSteps +*/ 1 + (int)addThresholdedToList + (int)addDistanceFunctionToList);
+	_view_w->allocateImages(3);
 	QImage img = QImage(*_view_w->getImage());
 	_view_w->setImageAt(img, 0);
 
@@ -315,27 +307,151 @@ void ImageProcessor::subsurfAccepted()
 	double* uData = new double[dataSize]; // raw img data for each step
 	double* distData = new double[dataSize]; // SDF data
 	bool* frozenCells = new bool[dataSize]; // SDF cell status
-	double* rhsData = new double[dataSize];
 	for (int i = 0; i < dataSize; i++) {
 		uData[i] = (double)data[i];
 		distData[i] = DBL_MAX; // large val for fastSweep2D
 		frozenCells[i] = false;
-		rhsData[i] = uData[i];
 	}
 
 	setZeroLevelCurveFromIsoData(uData, distData, frozenCells, &params);
 	fastSweep2D(distData, frozenCells, &params);
-	writeScalarDataToImageAndUpdate(distData, &params, 2);
+	writeDistanceDataToImageAndUpdate(distData, frozenCells, &params, 2);
 
-	/*
-	for (int i = 3; i <= 3 + nSteps; i++) {
-		writeDataToImageAndUpdate(uData, &params, i);
-	}*/
-
-	delete[] rhsData;
 	delete[] distData;
 	delete[] frozenCells;
 	delete[] uData;
+
+	emit multiImageComplete();
+}
+
+void ImageProcessor::threshSignedDistanceAccepted()
+{
+	// time step array prep:
+	nSteps = 2;
+	_view_w->clearImages();
+	_view_w->allocateImages(3);
+	QImage img = QImage(*_view_w->getImage());
+	_view_w->setImageAt(img, 0);
+
+	// isoData
+	HistogramWindow* hist = new HistogramWindow();
+	hist->setImage(_view_w->getImage());
+	connect(hist, SIGNAL(sigGrayscale()), this, SLOT(on_histogramGrayscale()));
+	connect(this, SIGNAL(sigGrayscaled()), hist, SLOT(ActionIsodataCompute()));
+	connect(hist, SIGNAL(sigThreshold()), this, SLOT(on_singleThreshold()));
+	hist->ActionIsodata();
+	QImage thresholdImg = QImage(*_view_w->getImage());
+	_view_w->setImageAt(thresholdImg, 1);
+
+	// prepare data
+	QImage extended = QImage(thresholdImg);
+	_view_w->setImage(extended);
+	mirrorExtendImageBy(1);
+	ImageParams params = _view_w->getImageParams();
+	const int dataSize = params.dataSize;
+	uchar* data = _view_w->getData();
+	double* uData = new double[dataSize]; // raw img data for each step
+	double* distData = new double[dataSize]; // SDF data
+	bool* contourCells = new bool[dataSize]; // contour data
+	bool* frozenCells = new bool[dataSize]; // SDF cell status
+	for (int i = 0; i < dataSize; i++) {
+		uData[i] = (double)data[i];
+		distData[i] = DBL_MAX; // large val for fastSweep2D
+		frozenCells[i] = false;
+	}
+
+	setZeroLevelCurveFromIsoData(uData, distData, frozenCells, &params);
+	for (int i = 0; i < dataSize; i++) contourCells[i] = frozenCells[i];
+
+	fastSweep2D(distData, frozenCells, &params);
+	computeSignFloodFill(distData, frozenCells, &params);
+	// computeSignFromIsoData(distData, data, &params);
+
+	writeDistanceDataToImageAndUpdate(distData, contourCells, &params, 2);
+
+	delete[] distData;
+	delete[] frozenCells;
+	delete[] contourCells;
+	delete[] uData;
+
+	emit multiImageComplete();
+}
+
+void ImageProcessor::subsurfAccepted()
+{
+	SegmentDialog* sDialog = static_cast<SegmentDialog*>(sender());
+	double uMin = sDialog->getUMin(), uMax = sDialog->getUMax();
+	double timeStep = sDialog->getTimeStep();
+	double K_coeff = sDialog->getKCoeff();
+	double epsilon = sDialog->getEpsilon();
+	nSteps = sDialog->getNSteps();
+
+	bool addThresholdedToList = sDialog->addIsoDataImage();
+
+	// time step array prep:
+	_view_w->clearImages();
+	_view_w->allocateImages(nSteps + 1 + (int)addThresholdedToList);
+
+	// grayscale original
+	grayscale();
+	QImage img = QImage(*_view_w->getImage());
+	_view_w->setImageAt(img, 0);
+
+	// prepare data
+	QImage extended = QImage(*_view_w->getImage());
+	_view_w->setImage(extended);
+	mirrorExtendImageBy(1);
+	ImageParams params = _view_w->getImageParams();
+	const int dataSize = params.dataSize;
+
+	uchar* origImgData = _view_w->getData();
+	double* iData = new double[dataSize];
+	for (int i = 0; i < dataSize; i++) {
+		iData[i] = (double)origImgData[i] / 255.0; // [0, 255] switch to [0, 1] ?
+	}
+	explicitHeatEquation(0.2, iData, &params); // img data smoothing
+
+	// isoData
+	HistogramWindow* hist = new HistogramWindow();
+	hist->setImage(_view_w->getImage());
+	connect(hist, SIGNAL(sigGrayscale()), this, SLOT(on_histogramGrayscale()));
+	connect(this, SIGNAL(sigGrayscaled()), hist, SLOT(ActionIsodataCompute()));
+	connect(hist, SIGNAL(sigThreshold()), this, SLOT(on_singleThreshold()));
+	hist->ActionIsodata();
+
+	uchar* threshData = _view_w->getData();
+	double* uData = new double[dataSize]; // raw img data for each step
+	double* rhsData = new double[dataSize];
+	for (int i = 0; i < dataSize; i++) {
+		uData[i] = ((double)threshData[i] / 255.0) * (uMax - uMin) + uMin; // rescale to [uMin, uMax]
+		rhsData[i] = uData[i];
+	}
+
+	int startId = 1;
+	if (addThresholdedToList) {
+		writeScalarDataToImageAndUpdate(uData, uMin, uMax, &params, startId);
+		startId++;
+	}
+	
+	size_t nGs = (params.width - 2) * (params.height - 2) * (params.depth == 8 ? 1 : 3);
+
+	for (int i = startId; i <= startId + nSteps; i++) {
+		printf("SUBSURF step : %d ...\n", i - (int)addThresholdedToList);
+		std::vector<EdgeDiffusionCoeffs> grads(nGs);
+		std::vector<EdgeDiffusionCoeffs> gCoeffs(nGs);
+
+		computeAllEdgeRegularizedGradientCoeffs(uData, &params, &grads, epsilon);
+		computeAllEdgeDiffusionCoeffs(uData, iData, &params, &gCoeffs, K_coeff);
+
+		geodesicMeanCurvatureFlow(timeStep, K_coeff, uData, rhsData, &gCoeffs, &grads, &params);
+
+		writeScalarDataToImageAndUpdate(uData, uMin, uMax, &params, i);
+		printf("... SUBSURF step : %d complete\n", i - (int)addThresholdedToList);
+	}
+
+	delete[] rhsData;
+	delete[] uData;
+	delete[] iData;
 
 	emit multiImageComplete();
 }
@@ -356,6 +472,9 @@ void ImageProcessor::on_singleThreshold()
 {
 	HistogramWindow* hw = static_cast<HistogramWindow*>(sender());
 	int threshold = hw->threshold();
+	if (threshold < 0) {
+		_view_w->getImage()->fill(QColor(0, 0, 0));
+	}
 
 	uchar* data = _view_w->getData();
 	int height = _view_w->getImgHeight();
@@ -550,7 +669,7 @@ void ImageProcessor::writeDataToImageAndUpdate(double* uData, ImageParams* param
 	_view_w->update();
 }
 
-void ImageProcessor::writeScalarDataToImageAndUpdate(double* sData, ImageParams* params, int i)
+void ImageProcessor::writeDistanceDataToImageAndUpdate(double* dData, bool* frozenCells, ImageParams* params, int i, bool drawContour)
 {
 	if (params->depth > 8) {
 		printf("Error, attempting to write scalar data to multi-channel image!\n");
@@ -565,8 +684,8 @@ void ImageProcessor::writeScalarDataToImageAndUpdate(double* sData, ImageParams*
 		for (int x = 0; x < params->width - 2; x++) {
 			// current pixel:
 			int xPos = x + 1, yPos = y + 1;
-			minVal = (sData[yPos * params->row + xPos] < minVal ? sData[yPos * params->row + xPos] : minVal);
-			maxVal = (sData[yPos * params->row + xPos] > maxVal ? sData[yPos * params->row + xPos] : maxVal);
+			minVal = (dData[yPos * params->row + xPos] < minVal ? dData[yPos * params->row + xPos] : minVal);
+			maxVal = (dData[yPos * params->row + xPos] > maxVal ? dData[yPos * params->row + xPos] : maxVal);
 		}
 	}
 	double dataRange = maxVal - minVal;
@@ -575,7 +694,37 @@ void ImageProcessor::writeScalarDataToImageAndUpdate(double* sData, ImageParams*
 		for (int x = 0; x < params->width - 2; x++) {
 			// current pixel:
 			int xPos = x + 1, yPos = y + 1;
-			_view_w->setPixel(&newImg, x, y, sData[yPos * params->row + xPos] / dataRange);
+			if (drawContour && frozenCells[yPos * params->row + xPos]) {
+				_view_w->setPixel(&newImg, x, y, 1.0);
+				continue;
+			}
+
+			_view_w->setPixel(&newImg, x, y, (dData[yPos * params->row + xPos] - minVal) / dataRange);
+		}
+	}
+	_view_w->setImageAt(newImg, i);
+	_view_w->setImage(newImg);
+	_view_w->update();
+}
+
+void ImageProcessor::writeScalarDataToImageAndUpdate(double* data, double dataMin, double dataMax, ImageParams* params, int i)
+{
+	if (params->depth > 8) {
+		printf("Error, attempting to write scalar data to multi-channel image!\n");
+		return;
+	}
+
+	double dataRange = dataMax - dataMin;
+	QImage newImg = QImage(QSize(params->width - 2, params->height - 2), params->format);
+	newImg.fill(QColor(0, 0, 0));
+
+	for (int y = 0; y < params->height - 2; y++) {
+		for (int x = 0; x < params->width - 2; x++) {
+			// current pixel:
+			int xPos = x + 1, yPos = y + 1;
+
+			double val = (data[yPos * params->row + xPos] - dataMin) / dataRange;
+			_view_w->setPixel(&newImg, x, y, val);
 		}
 	}
 	_view_w->setImageAt(newImg, i);
@@ -727,7 +876,7 @@ bool ImageProcessor::bernsenThreshold(int radius, int minContrast, int bgType)
 	return true;
 }
 
-bool ImageProcessor::explicitHeatEquation(double timeStep, double* uData, ImageParams* params)
+bool ImageProcessor::explicitHeatEquation(double timeStep, double* uData, ImageParams* params, bool printMean)
 {
 	int height = params->height;
 	int width = params->width;
@@ -804,15 +953,17 @@ bool ImageProcessor::explicitHeatEquation(double timeStep, double* uData, ImageP
 			}
 		}
 	}
-	if (depth == 8) {
-		mean /= (width * height);
-		printf("u_mean = %f\n", mean);
-	}
-	else {
-		mean_red /= (width * height);
-		mean_green /= (width * height);
-		mean_blue /= (width * height);
-		printf("u_mean(RGB) = (%f, %f, %f)\n", mean_red, mean_green, mean_blue);
+	if (printMean) {
+		if (depth == 8) {
+			mean /= (width * height);
+			printf("u_mean = %f\n", mean);
+		}
+		else {
+			mean_red /= (width * height);
+			mean_green /= (width * height);
+			mean_blue /= (width * height);
+			printf("u_mean(RGB) = (%f, %f, %f)\n", mean_red, mean_green, mean_blue);
+		}
 	}
 
 	delete[] newData;
@@ -1863,7 +2014,7 @@ void ImageProcessor::fastSweep2D(double* distGrid, bool* frozenCells, ImageParam
 	const double h = 1.0, f = 1.0;
 
 	for (s = 0; s < NSweeps; s++) {
-		printf("sweep %d ... \n", s);
+		//printf("sweep %d ... \n", s);
 		for (iy = dirY[s][0]; dirY[s][2] * iy <= dirY[s][1]; iy += dirY[s][2]) {
 			for (ix = dirX[s][0]; dirX[s][2] * ix <= dirX[s][1]; ix += dirX[s][2]) {
 
@@ -1902,6 +2053,77 @@ void ImageProcessor::fastSweep2D(double* distGrid, bool* frozenCells, ImageParam
 					distGrid[gridPos] = distGrid[gridPos] < d_new ? distGrid[gridPos] : d_new;
 				}
 			}
+		}
+	}
+}
+
+void ImageProcessor::negateData(double* data, ImageParams* imgPar)
+{
+	const int height = imgPar->height, width = imgPar->width;
+	const int row = imgPar->row;
+
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			data[y * row + x] = -data[y * row + x];
+		}
+	}
+}
+
+void ImageProcessor::computeSignFloodFill(double* distGrid, bool* frozenCells, ImageParams* imgPar)
+{
+	negateData(distGrid, imgPar);
+
+	double val; int gridPos;
+	const int row = imgPar->row;
+	const int nx = imgPar->width - 1;
+	const int ny = imgPar->height - 1;
+	int ix = 0, iy = 0;
+
+	std::stack<std::tuple<int, int>> stack = {};
+	std::tuple<int, int> idsPair;
+	// find the first unfrozen cell
+	gridPos = 0;
+	while (frozenCells[gridPos]) {
+		ix += (ix < nx ? 1 : 0);
+		iy += (iy < ny ? 1 : 0);
+		gridPos = row * iy + ix;
+	}
+	stack.push({ ix, iy });
+	// a simple pixel flood
+	while (stack.size()) {
+		idsPair = stack.top();
+		stack.pop();
+		ix = std::get<0>(idsPair);
+		iy = std::get<1>(idsPair);
+		gridPos = row * iy + ix;
+		if (!frozenCells[gridPos]) {
+			val = -1.0 * distGrid[gridPos];
+			distGrid[gridPos] = val;
+			frozenCells[gridPos] = true; // freeze cell when done
+			if (ix > 0) {
+				stack.push({ ix - 1, iy });
+			}
+			if (ix < nx) {
+				stack.push({ ix + 1, iy });
+			}
+			if (iy > 0) {
+				stack.push({ ix, iy - 1 });
+			}
+			if (iy < ny) {
+				stack.push({ ix, iy + 1 });
+			}
+		}
+	}
+}
+
+void ImageProcessor::computeSignFromIsoData(double* distGrid, uchar* isoData, ImageParams* imgPar)
+{
+	const int height = imgPar->height, width = imgPar->width;
+	const int row = imgPar->row;
+
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			distGrid[y * row + x] *= (isoData[y * row + x] > 0 ? 1.0 : -1.0);
 		}
 	}
 }

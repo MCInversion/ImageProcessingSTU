@@ -578,7 +578,7 @@ int HistogramWindow::getIsodataThresholdRED()
 
 	while (iter < maxIter) {
 		int bg_population = _sums_RED[threshold] - _sums_RED[0];
-		int fg_population = _sums_RED[255] - _sums_RED[threshold + 1];
+		int fg_population = _sums_RED[255] - _sums_RED[(threshold < 255 ? threshold + 1 : threshold)];
 
 		if (bg_population == 0 || fg_population == 1) {
 			return -1; // all pixels have the same intensity

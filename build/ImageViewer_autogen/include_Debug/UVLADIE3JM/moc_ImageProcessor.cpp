@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_ImageProcessor_t {
-    QByteArrayData data[15];
-    char stringdata0[257];
+    QByteArrayData data[17];
+    char stringdata0[309];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -43,10 +43,12 @@ QT_MOC_LITERAL(7, 108, 17), // "multiBlurAccepted"
 QT_MOC_LITERAL(8, 126, 20), // "heatEquationAccepted"
 QT_MOC_LITERAL(9, 147, 19), // "peronaMalikAccepted"
 QT_MOC_LITERAL(10, 167, 21), // "curvatureFlowAccepted"
-QT_MOC_LITERAL(11, 189, 15), // "subsurfAccepted"
-QT_MOC_LITERAL(12, 205, 10), // "on_stretch"
-QT_MOC_LITERAL(13, 216, 21), // "on_histogramGrayscale"
-QT_MOC_LITERAL(14, 238, 18) // "on_singleThreshold"
+QT_MOC_LITERAL(11, 189, 22), // "threshDistanceAccepted"
+QT_MOC_LITERAL(12, 212, 28), // "threshSignedDistanceAccepted"
+QT_MOC_LITERAL(13, 241, 15), // "subsurfAccepted"
+QT_MOC_LITERAL(14, 257, 10), // "on_stretch"
+QT_MOC_LITERAL(15, 268, 21), // "on_histogramGrayscale"
+QT_MOC_LITERAL(16, 290, 18) // "on_singleThreshold"
 
     },
     "ImageProcessor\0sigGrayscaled\0\0"
@@ -54,6 +56,8 @@ QT_MOC_LITERAL(14, 238, 18) // "on_singleThreshold"
     "blurAccepted\0bernsenThresholdAccepted\0"
     "multiBlurAccepted\0heatEquationAccepted\0"
     "peronaMalikAccepted\0curvatureFlowAccepted\0"
+    "threshDistanceAccepted\0"
+    "threshSignedDistanceAccepted\0"
     "subsurfAccepted\0on_stretch\0"
     "on_histogramGrayscale\0on_singleThreshold"
 };
@@ -65,7 +69,7 @@ static const uint qt_meta_data_ImageProcessor[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      13,   14, // methods
+      15,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -73,27 +77,31 @@ static const uint qt_meta_data_ImageProcessor[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   79,    2, 0x06 /* Public */,
-       3,    0,   80,    2, 0x06 /* Public */,
+       1,    0,   89,    2, 0x06 /* Public */,
+       3,    0,   90,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       4,    0,   81,    2, 0x0a /* Public */,
-       5,    0,   82,    2, 0x0a /* Public */,
-       6,    0,   83,    2, 0x0a /* Public */,
-       7,    0,   84,    2, 0x0a /* Public */,
-       8,    0,   85,    2, 0x0a /* Public */,
-       9,    0,   86,    2, 0x0a /* Public */,
-      10,    0,   87,    2, 0x0a /* Public */,
-      11,    0,   88,    2, 0x0a /* Public */,
-      12,    0,   89,    2, 0x0a /* Public */,
-      13,    0,   90,    2, 0x0a /* Public */,
-      14,    0,   91,    2, 0x0a /* Public */,
+       4,    0,   91,    2, 0x0a /* Public */,
+       5,    0,   92,    2, 0x0a /* Public */,
+       6,    0,   93,    2, 0x0a /* Public */,
+       7,    0,   94,    2, 0x0a /* Public */,
+       8,    0,   95,    2, 0x0a /* Public */,
+       9,    0,   96,    2, 0x0a /* Public */,
+      10,    0,   97,    2, 0x0a /* Public */,
+      11,    0,   98,    2, 0x0a /* Public */,
+      12,    0,   99,    2, 0x0a /* Public */,
+      13,    0,  100,    2, 0x0a /* Public */,
+      14,    0,  101,    2, 0x0a /* Public */,
+      15,    0,  102,    2, 0x0a /* Public */,
+      16,    0,  103,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -124,10 +132,12 @@ void ImageProcessor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 6: _t->heatEquationAccepted(); break;
         case 7: _t->peronaMalikAccepted(); break;
         case 8: _t->curvatureFlowAccepted(); break;
-        case 9: _t->subsurfAccepted(); break;
-        case 10: _t->on_stretch(); break;
-        case 11: _t->on_histogramGrayscale(); break;
-        case 12: _t->on_singleThreshold(); break;
+        case 9: _t->threshDistanceAccepted(); break;
+        case 10: _t->threshSignedDistanceAccepted(); break;
+        case 11: _t->subsurfAccepted(); break;
+        case 12: _t->on_stretch(); break;
+        case 13: _t->on_histogramGrayscale(); break;
+        case 14: _t->on_singleThreshold(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -179,13 +189,13 @@ int ImageProcessor::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 13)
+        if (_id < 15)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 13;
+        _id -= 15;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 13)
+        if (_id < 15)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 13;
+        _id -= 15;
     }
     return _id;
 }

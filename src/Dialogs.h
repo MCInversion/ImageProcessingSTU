@@ -185,6 +185,7 @@ public:
 	double getTimeStep() { return segmentDialogUi->timeStepSpinBox->value(); }
 	double getKCoeff() { return segmentDialogUi->diffParamSpinBox->value(); }
 	double getEpsilon() { return pow(1.0, -1.0 * segmentDialogUi->epsilonSpinBox->value()); }
+	bool addIsoDataImage() { return segmentDialogUi->addIsoDataCheckBox->isChecked(); }
 private:
 	Ui::segmentDialog* segmentDialogUi;
 };
