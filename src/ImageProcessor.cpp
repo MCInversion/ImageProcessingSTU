@@ -434,14 +434,14 @@ void ImageProcessor::subsurfAccepted()
 	}
 	
 	size_t nGs = (params.width - 2) * (params.height - 2) * (params.depth == 8 ? 1 : 3);
+	std::vector<EdgeDiffusionCoeffs> gCoeffs(nGs);
+	computeAllEdgeDiffusionCoeffs(iData, iData, &params, &gCoeffs, K_coeff);
 
 	for (int i = startId; i <= startId + nSteps; i++) {
 		printf("SUBSURF step : %d ...\n", i - (int)addThresholdedToList);
 		std::vector<EdgeDiffusionCoeffs> grads(nGs);
-		std::vector<EdgeDiffusionCoeffs> gCoeffs(nGs);
 
 		computeAllEdgeRegularizedGradientCoeffs(uData, &params, &grads, epsilon);
-		computeAllEdgeDiffusionCoeffs(uData, iData, &params, &gCoeffs, K_coeff);
 
 		geodesicMeanCurvatureFlow(timeStep, K_coeff, uData, rhsData, &gCoeffs, &grads, &params);
 
