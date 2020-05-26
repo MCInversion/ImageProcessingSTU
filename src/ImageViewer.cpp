@@ -182,6 +182,18 @@ bool ImageViewer::saveImage(QString filename)
 	QString extension = fi.completeSuffix();
 	ViewerWidget* w = getCurrentViewerWidget();
 
+	if (w->imgArray.size()) {
+		for (int i = 0; i < w->imgArray.size(); i++) {
+			w->setImage(w->imgArray[i]);
+			w->update();
+			QImage* img = w->getImage();
+			QString fileN = filename.split(".").first();
+			QString fileSuff = filename.split(".").last();
+			img->save(fileN + "_" + QString::number(i) + "." + fileSuff, extension.toStdString().c_str());
+		}
+		return true;
+	}
+
 	QImage* img = w->getImage();
 	return img->save(filename, extension.toStdString().c_str());
 }

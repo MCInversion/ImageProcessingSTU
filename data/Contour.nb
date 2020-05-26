@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     12319,        321]
-NotebookOptionsPosition[     11471,        295]
-NotebookOutlinePosition[     11815,        310]
-CellTagsIndexPosition[     11772,        307]
+NotebookDataLength[     16153,        417]
+NotebookOptionsPosition[     15098,        387]
+NotebookOutlinePosition[     15442,        402]
+CellTagsIndexPosition[     15399,        399]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -141,18 +141,6 @@ Cell[BoxData[{
      RowBox[{"RemoveAlphaChannel", "@", "imgOrig"}], ",", 
      "\"\<Grayscale\>\""}], "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"imggrayStep1", "=", 
-   RowBox[{"ColorConvert", "[", 
-    RowBox[{
-     RowBox[{"RemoveAlphaChannel", "@", "imgIso"}], ",", 
-     "\"\<Grayscale\>\""}], "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"imggray", "=", 
-   RowBox[{"ColorConvert", "[", 
-    RowBox[{
-     RowBox[{"RemoveAlphaChannel", "@", "img"}], ",", "\"\<Grayscale\>\""}], 
-    "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
   RowBox[{"origImg", "=", 
    RowBox[{"ListContourPlot", "[", 
     RowBox[{
@@ -166,58 +154,72 @@ Cell[BoxData[{
      RowBox[{"ImageSize", "\[Rule]", "800"}]}], "]"}]}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"isoImg", "=", 
-   RowBox[{"Table", "[", 
-    RowBox[{
-     RowBox[{"ListContourPlot", "[", 
+  RowBox[{
+   RowBox[{"imggrayStep1", "=", 
+    RowBox[{"ColorConvert", "[", 
+     RowBox[{
+      RowBox[{"RemoveAlphaChannel", "@", "imgIso"}], ",", 
+      "\"\<Grayscale\>\""}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"imggray", "=", 
+     RowBox[{"ColorConvert", "[", 
       RowBox[{
-       RowBox[{"ImageData", "[", 
-        RowBox[{"imggrayStep1", ",", 
-         RowBox[{"DataReversed", "\[Rule]", "True"}]}], "]"}], ",", 
-       RowBox[{"Contours", "\[Rule]", 
-        RowBox[{"{", 
-         RowBox[{"{", 
-          RowBox[{
-           RowBox[{"(", 
-            RowBox[{"i", "-", "1"}], ")"}], "/", "100"}], "}"}], "}"}]}], ",", 
-       RowBox[{"ContourStyle", "\[Rule]", 
-        RowBox[{"{", 
-         RowBox[{"(*", "*)"}], 
-         RowBox[{
-          RowBox[{"Thickness", "[", "0.005", "]"}], ",", "Orange"}], "}"}]}], 
-       ",", 
-       RowBox[{"ContourShading", "\[Rule]", "None"}], ",", 
-       RowBox[{"AspectRatio", "\[Rule]", "Automatic"}]}], "]"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"i", ",", "1", ",", "101"}], "}"}]}], "]"}]}], 
-  ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"subsurfImg", "=", 
-   RowBox[{"Table", "[", "\[IndentingNewLine]", 
-    RowBox[{
-     RowBox[{"ListContourPlot", "[", 
+       RowBox[{"RemoveAlphaChannel", "@", "img"}], ",", "\"\<Grayscale\>\""}],
+       "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"isoImg", "=", 
+     RowBox[{"Table", "[", 
       RowBox[{
-       RowBox[{"ImageData", "[", 
-        RowBox[{"imggray", ",", 
-         RowBox[{"DataReversed", "\[Rule]", "True"}]}], "]"}], ",", 
-       RowBox[{"Contours", "\[Rule]", 
-        RowBox[{"{", 
-         RowBox[{"{", 
-          RowBox[{
-           RowBox[{"(", 
-            RowBox[{"i", "-", "1"}], ")"}], "/", "100"}], "}"}], "}"}]}], ",", 
-       RowBox[{"ContourStyle", "\[Rule]", 
-        RowBox[{"{", 
-         RowBox[{"(*", "*)"}], 
-         RowBox[{
-          RowBox[{"Thickness", "[", "0.005", "]"}], ",", "Blue"}], "}"}]}], 
-       ",", 
-       RowBox[{"ContourShading", "\[Rule]", "None"}], ",", 
-       RowBox[{"AspectRatio", "\[Rule]", "Automatic"}]}], "]"}], 
-     "\[IndentingNewLine]", ",", 
-     RowBox[{"{", 
-      RowBox[{"i", ",", "1", ",", "101"}], "}"}]}], "]"}]}], 
-  ";"}], "\[IndentingNewLine]"}], "Input",
+       RowBox[{"ListContourPlot", "[", 
+        RowBox[{
+         RowBox[{"ImageData", "[", 
+          RowBox[{"imggrayStep1", ",", 
+           RowBox[{"DataReversed", "\[Rule]", "True"}]}], "]"}], ",", 
+         RowBox[{"Contours", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"i", "-", "1"}], ")"}], "/", "100"}], "}"}], "}"}]}], 
+         ",", 
+         RowBox[{"ContourStyle", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"(*", "*)"}], 
+           RowBox[{
+            RowBox[{"Thickness", "[", "0.005", "]"}], ",", "Orange"}], 
+           "}"}]}], ",", 
+         RowBox[{"ContourShading", "\[Rule]", "None"}], ",", 
+         RowBox[{"AspectRatio", "\[Rule]", "Automatic"}]}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "101"}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"subsurfImg", "=", 
+     RowBox[{"Table", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"ListContourPlot", "[", 
+        RowBox[{
+         RowBox[{"ImageData", "[", 
+          RowBox[{"imggray", ",", 
+           RowBox[{"DataReversed", "\[Rule]", "True"}]}], "]"}], ",", 
+         RowBox[{"Contours", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"i", "-", "1"}], ")"}], "/", "100"}], "}"}], "}"}]}], 
+         ",", 
+         RowBox[{"ContourStyle", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"(*", "*)"}], 
+           RowBox[{
+            RowBox[{"Thickness", "[", "0.005", "]"}], ",", "Blue"}], "}"}]}], 
+         ",", 
+         RowBox[{"ContourShading", "\[Rule]", "None"}], ",", 
+         RowBox[{"AspectRatio", "\[Rule]", "Automatic"}]}], "]"}], 
+       "\[IndentingNewLine]", ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "101"}], "}"}]}], "]"}]}], ";"}], 
+   "*)"}]}], "\[IndentingNewLine]"}], "Input",
  CellChangeTimes->{{3.7994691908946023`*^9, 3.7994692901855373`*^9}, {
    3.7994693975735874`*^9, 3.7994694198575153`*^9}, {3.799469458340519*^9, 
    3.799469473908514*^9}, {3.7994695071565127`*^9, 3.799469646193471*^9}, {
@@ -230,9 +232,101 @@ Cell[BoxData[{
    3.799470972214176*^9, 3.7994709857512083`*^9}, {3.799471036136158*^9, 
    3.7994710778290205`*^9}, 3.7994711435680985`*^9, {3.7994713023490305`*^9, 
    3.7994713212822676`*^9}, {3.799471367005057*^9, 3.799471377886039*^9}, {
-   3.7994721743508186`*^9, 
-   3.7994721869388175`*^9}},ExpressionUUID->"a16bcfc3-93aa-42a3-94cb-\
+   3.7994721743508186`*^9, 3.7994721869388175`*^9}, {3.7994747440131645`*^9, 
+   3.7994747730631356`*^9}, {3.799474827838112*^9, 3.799474831121644*^9}, {
+   3.7994748835291243`*^9, 
+   3.7994748928791075`*^9}},ExpressionUUID->"a16bcfc3-93aa-42a3-94cb-\
 1565f4e97315"],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{"Manipulate", "[", "\n", 
+   RowBox[{
+    RowBox[{"Show", "[", "\[IndentingNewLine]", 
+     RowBox[{"origImg", ",", "\[IndentingNewLine]", 
+      RowBox[{"isoImg", "[", 
+       RowBox[{"[", "level", "]"}], "]"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"subsurfImg", "[", 
+       RowBox[{"[", "level", "]"}], "]"}]}], "]"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{"level", ",", "1", ",", "101", ",", "1"}], "}"}]}], "]"}], 
+  "*)"}]], "Input",
+ CellChangeTimes->{{3.7994712426840563`*^9, 3.799471243623064*^9}, {
+  3.7994747557281775`*^9, 
+  3.7994747592921424`*^9}},ExpressionUUID->"088ce7d7-5b10-493d-b895-\
+9c40ce674c9e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"level", "=", "0.5"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"isoImgSingle", "=", 
+   RowBox[{"ListContourPlot", "[", 
+    RowBox[{
+     RowBox[{"ImageData", "[", 
+      RowBox[{"imggrayStep1", ",", 
+       RowBox[{"DataReversed", "\[Rule]", "True"}]}], "]"}], ",", 
+     RowBox[{"Contours", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"{", "level", "}"}], "}"}]}], ",", 
+     RowBox[{"ContourStyle", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"(*", "*)"}], 
+       RowBox[{
+        RowBox[{"Thickness", "[", "0.005", "]"}], ",", "Orange"}], "}"}]}], 
+     ",", 
+     RowBox[{"ContourShading", "\[Rule]", "None"}], ",", 
+     RowBox[{"AspectRatio", "\[Rule]", "Automatic"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Nt", "=", "60"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"subsurfImgsEvol", "=", 
+   RowBox[{"{", "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"For", "[", 
+   RowBox[{
+    RowBox[{"i", "=", "1"}], ",", 
+    RowBox[{"i", "\[LessEqual]", "Nt"}], ",", 
+    RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"currImgFile", "=", 
+      RowBox[{"Import", "[", 
+       RowBox[{
+       "\"\<D:\\\\VS_Projects\\\\ImageViewerIP\\\\data\\\\MakrofagEvol\\\\\
+cropT1_\>\"", " ", "<>", " ", 
+        RowBox[{"ToString", "[", "i", "]"}], "<>", "\"\<.jpg\>\""}], "]"}]}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{"currImgGray", " ", "=", " ", 
+      RowBox[{"ColorConvert", "[", 
+       RowBox[{
+        RowBox[{"RemoveAlphaChannel", "@", "currImgFile"}], ",", 
+        "\"\<Grayscale\>\""}], "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"AppendTo", "[", 
+      RowBox[{"subsurfImgsEvol", ",", "\[IndentingNewLine]", 
+       RowBox[{"ListContourPlot", "[", 
+        RowBox[{
+         RowBox[{"ImageData", "[", 
+          RowBox[{"currImgGray", ",", 
+           RowBox[{"DataReversed", "\[Rule]", "True"}]}], "]"}], ",", 
+         RowBox[{"Contours", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"{", "level", "}"}], "}"}]}], ",", 
+         RowBox[{"ContourStyle", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"(*", "*)"}], 
+           RowBox[{
+            RowBox[{"Thickness", "[", "0.005", "]"}], ",", "Blue"}], "}"}]}], 
+         ",", 
+         RowBox[{"ContourShading", "\[Rule]", "None"}], ",", 
+         RowBox[{"AspectRatio", "\[Rule]", "Automatic"}]}], "]"}]}], 
+      "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", "]"}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.7994741560063176`*^9, 3.7994743158272443`*^9}, {
+  3.799474395869215*^9, 3.799474537902233*^9}, {3.7994745746941533`*^9, 
+  3.7994745759801655`*^9}},ExpressionUUID->"5d8b9811-c304-4bb4-adf7-\
+81008766ff69"],
 
 Cell[CellGroupData[{
 
@@ -240,41 +334,40 @@ Cell[BoxData[
  RowBox[{"Manipulate", "[", "\n", 
   RowBox[{
    RowBox[{"Show", "[", "\[IndentingNewLine]", 
-    RowBox[{"origImg", ",", "\[IndentingNewLine]", 
-     RowBox[{"isoImg", "[", 
-      RowBox[{"[", "level", "]"}], "]"}], ",", "\[IndentingNewLine]", 
-     RowBox[{"subsurfImg", "[", 
-      RowBox[{"[", "level", "]"}], "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+    "origImg", ",", "\[IndentingNewLine]", "isoImgSingle", ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"subsurfImgsEvol", "[", 
+      RowBox[{"[", "t", "]"}], "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
    RowBox[{"{", 
-    RowBox[{"level", ",", "1", ",", "101", ",", "1"}], "}"}]}], 
-  "]"}]], "Input",
- CellChangeTimes->{{3.7994712426840563`*^9, 
-  3.799471243623064*^9}},ExpressionUUID->"088ce7d7-5b10-493d-b895-\
-9c40ce674c9e"],
+    RowBox[{"t", ",", "1", ",", "Nt", ",", "1"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.799474647086151*^9, 
+  3.7994746681031885`*^9}},ExpressionUUID->"6291ba51-575f-4119-a853-\
+c2132c7e41ba"],
 
 Cell[BoxData[
  TagBox[
   StyleBox[
-   DynamicModuleBox[{$CellContext`level$$ = 59, Typeset`show$$ = True, 
+   DynamicModuleBox[{$CellContext`t$$ = 60, Typeset`show$$ = True, 
     Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
     "\"untitled\"", Typeset`specs$$ = {{
-      Hold[$CellContext`level$$], 1, 101, 1}}, Typeset`size$$ = {
+      Hold[$CellContext`t$$], 1, 60, 1}}, Typeset`size$$ = {
     800., {398., 403.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
-    Typeset`skipInitDone$$ = True, $CellContext`level$11252$$ = 0}, 
+    Typeset`skipInitDone$$ = True, $CellContext`t$8050$$ = 0}, 
     DynamicBox[Manipulate`ManipulateBoxes[
-     1, StandardForm, "Variables" :> {$CellContext`level$$ = 1}, 
+     1, StandardForm, "Variables" :> {$CellContext`t$$ = 1}, 
       "ControllerVariables" :> {
-        Hold[$CellContext`level$$, $CellContext`level$11252$$, 0]}, 
+        Hold[$CellContext`t$$, $CellContext`t$8050$$, 0]}, 
       "OtherVariables" :> {
        Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
         Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
         Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
-         Typeset`skipInitDone$$}, "Body" :> Show[$CellContext`origImg, 
-        Part[$CellContext`isoImg, $CellContext`level$$], 
-        Part[$CellContext`subsurfImg, $CellContext`level$$]], 
-      "Specifications" :> {{$CellContext`level$$, 1, 101, 1}}, 
-      "Options" :> {}, "DefaultOptions" :> {}],
+         Typeset`skipInitDone$$}, "Body" :> 
+      Show[$CellContext`origImg, $CellContext`isoImgSingle, 
+        Part[$CellContext`subsurfImgsEvol, $CellContext`t$$]], 
+      "Specifications" :> {{$CellContext`t$$, 1, 60, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
      ImageSizeCache->{851., {445., 451.}},
      SingleEvaluation->True],
     Deinitialization:>None,
@@ -286,11 +379,10 @@ Cell[BoxData[
    Deployed->True,
    StripOnInput->False],
   Manipulate`InterpretManipulate[1]]], "Output",
- CellChangeTimes->{
-  3.7994711510190907`*^9, {3.799471221270073*^9, 3.7994712448021164`*^9}, 
-   3.7994714238879824`*^9, 
-   3.7994722444848166`*^9},ExpressionUUID->"5667254f-8060-42f6-ae91-\
-5740dc9636c7"]
+ CellChangeTimes->{3.7994746711470823`*^9, 3.799474807598071*^9, 
+  3.7994748620980883`*^9, 
+  3.799474920804096*^9},ExpressionUUID->"4c4f5444-78e1-47c1-a6d4-\
+e9e8c7c54464"]
 }, Open  ]]
 },
 WindowSize->{1536, 781},
@@ -315,13 +407,17 @@ Cell[2041, 59, 1376, 35, 88, "Input", "ExpressionUUID" -> \
 "5f9a9eb7-1c37-439a-8832-bed573962ec6"],
 Cell[3420, 96, 1325, 35, 88, "Input", "ExpressionUUID" -> \
 "02c17511-ef60-4585-b813-9cae01a6a64d"],
-Cell[4748, 133, 4200, 101, 221, "Input", "ExpressionUUID" -> \
+Cell[4748, 133, 4508, 105, 202, "Input", "ExpressionUUID" -> \
 "a16bcfc3-93aa-42a3-94cb-1565f4e97315"],
-Cell[CellGroupData[{
-Cell[8973, 238, 601, 14, 126, "Input", "ExpressionUUID" -> \
+Cell[9259, 240, 693, 17, 126, "Input", "ExpressionUUID" -> \
 "088ce7d7-5b10-493d-b895-9c40ce674c9e"],
-Cell[9577, 254, 1878, 38, 913, "Output", "ExpressionUUID" -> \
-"5667254f-8060-42f6-ae91-5740dc9636c7"]
+Cell[9955, 259, 2760, 69, 221, "Input", "ExpressionUUID" -> \
+"5d8b9811-c304-4bb4-adf7-81008766ff69"],
+Cell[CellGroupData[{
+Cell[12740, 332, 549, 13, 126, "Input", "ExpressionUUID" -> \
+"6291ba51-575f-4119-a853-c2132c7e41ba"],
+Cell[13292, 347, 1790, 37, 913, "Output", "ExpressionUUID" -> \
+"4c4f5444-78e1-47c1-a6d4-e9e8c7c54464"]
 }, Open  ]]
 }
 ]
